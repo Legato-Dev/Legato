@@ -21,10 +21,5 @@ namespace Legato.Interop.Aimp.Enum
 		/// プロパティを示すウインドウメッセージです
 		/// </summary>
 		Property = WindowMessage.USER + 0x77,
-
-		/// <summary>
-		/// アートワークを示します
-		/// </summary>
-		CopyDataCoverId = 0x41495043,
 	}
 }

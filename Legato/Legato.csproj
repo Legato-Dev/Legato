@@ -50,7 +50,7 @@
     <Compile Include="Interop\Aimp\Enum\PlayerState.cs" />
     <Compile Include="Interop\Aimp\Enum\PropertyAccessMode.cs" />
     <Compile Include="Interop\Aimp\Enum\PropertyType.cs" />
-    <Compile Include="Interop\Aimp\Helper.cs" />
+    <Compile Include="Interop\Aimp\RemoteHelper.cs" />
     <Compile Include="Interop\Win32\API.cs" />
     <Compile Include="Interop\Win32\Enum\SendMessageTimeoutType.cs" />
     <Compile Include="Interop\Win32\Enum\WindowMessage.cs" />
