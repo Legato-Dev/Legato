@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Legato", "Legato\Legato.csproj", "{FE129430-6D84-4D1B-8002-20A12A2D936E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Legato.Sample", "Legato.Sample\Legato.Sample.csproj", "{0D4FB9E7-F7FC-4223-987F-C10794CA565C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE129430-6D84-4D1B-8002-20A12A2D936E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE129430-6D84-4D1B-8002-20A12A2D936E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE129430-6D84-4D1B-8002-20A12A2D936E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE129430-6D84-4D1B-8002-20A12A2D936E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D4FB9E7-F7FC-4223-987F-C10794CA565C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D4FB9E7-F7FC-4223-987F-C10794CA565C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D4FB9E7-F7FC-4223-987F-C10794CA565C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D4FB9E7-F7FC-4223-987F-C10794CA565C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
