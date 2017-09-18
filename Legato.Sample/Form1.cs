@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Legato.Sample
@@ -10,37 +12,51 @@ namespace Legato.Sample
 			InitializeComponent();
 		}
 
-		private Legato _Accesser { get; set; }
+		private Legato _Legato { get; set; }
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			_Accesser = new Legato();
+			_Legato = new Legato();
 		}
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			_Accesser = null;
+			_Legato = null;
 		}
 
 		private void buttonGet_Click(object sender, EventArgs e)
 		{
-			if (_Accesser != null)
+			Console.WriteLine($"IsRunning:{_Legato.IsRunning}");
+
+			if (_Legato?.IsRunning ?? false)
 			{
-				Console.WriteLine($"State:{_Accesser.State}");
-				Console.WriteLine($"IsShuffle:{_Accesser.IsShuffle}");
-				Console.WriteLine($"Volume:{_Accesser.Volume}");
-				Console.WriteLine($"Position:{_Accesser.Position} - {_Accesser.Duration}");
+				Console.WriteLine($"State:{_Legato.State}");
+				Console.WriteLine($"IsShuffle:{_Legato.IsShuffle}");
+				Console.WriteLine($"Volume:{_Legato.Volume}");
+				Console.WriteLine($"Position:{_Legato.Position} - {_Legato.Duration}");
+
+				var albumArt = _Legato.AlbumArt;
+				Console.WriteLine($"AlbumArt: {albumArt != null} {albumArt.Length}");
+
+				if ((albumArt?.Length ?? 0) != 0)
+				{
+					using (var memory = new MemoryStream())
+					{
+						memory.Write(albumArt, 0, albumArt.Length);
+						pictureBox1.Image = Image.FromStream(memory);
+					}
+				}
 			}
 		}
 
 		private void buttonPlayPause_Click(object sender, EventArgs e)
 		{
-			if (_Accesser != null)
+			if (_Legato?.IsRunning ?? false)
 			{
-					if (_Accesser.State == Interop.Aimp.Enum.PlayerState.Playing)
-					_Accesser.Pause();
+				if (_Legato.State == Interop.Aimp.Enum.PlayerState.Playing)
+					_Legato.Pause();
 				else
-					_Accesser.Play();
+					_Legato.Play();
 			}
 		}
 	}
