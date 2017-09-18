@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace AimpAccesser.Sample
+namespace Legato.Sample
 {
 	static class Program
 	{
