@@ -79,12 +79,12 @@ namespace Legato.Interop.Aimp
 		}
 
 		/// <summary>
-		/// アートワークの送信をリクエストします
+		/// アルバムアートをリクエストします
 		/// </summary>
 		/// <param name="communicationWindow">ArtWorkを受け取る通信ウィンドウ</param>
-		public static bool RequestArtWork(CommunicationWindow communicationWindow)
+		public static bool RequestAlbumArt(CommunicationWindow communicationWindow)
 		{
-			return SendCommandMessage(CommandType.GetArtwork, communicationWindow.Handle) != IntPtr.Zero;
+			return SendCommandMessage(CommandType.RequestAlbumArt, communicationWindow.Handle) != IntPtr.Zero;
 		}
 	}
 }

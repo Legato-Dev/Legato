@@ -1,48 +1,58 @@
 ﻿namespace Legato.Interop.Aimp.Enum
 {
 	/// <summary>
-	/// AIMP 上の使用コマンドを定義します
+	/// コマンドメッセージの種類を表します
 	/// </summary>
 	public enum CommandType
 	{
 		/// <summary>
-		/// 再生を行うことを示すコマンドです
+		/// 通知の登録(valueにwindowHandleを与えてください)
+		/// </summary>
+		RegisterNotify = 11,
+
+		/// <summary>
+		/// 通知の登録解除(valueにwindowHandleを与えてください)
+		/// </summary>
+		UnregisterNotify = 12,
+
+		/// <summary>
+		/// 再生
 		/// </summary>
 		Playing = 13,
 
 		/// <summary>
-		/// 再生と一時停止の切り替えを行うことを示すコマンドです
+		/// 再生と一時停止の切り替え
 		/// </summary>
 		PlayPause = 14,
 
 		/// <summary>
-		/// 一時停止を行うことを示すコマンドです
+		/// 一時停止
 		/// </summary>
 		Pausing = 15,
 
 		/// <summary>
-		/// 停止を行うことを示すコマンドです
+		/// 停止
 		/// </summary>
 		Stopped = 16,
 
 		/// <summary>
-		/// 次の曲へ移動を行うことを示すコマンドです
+		/// 次の曲へ移動
 		/// </summary>
 		Next = 17,
 
 		/// <summary>
-		/// 前の曲へ移動を行うことを示すコマンドです
+		/// 前の曲へ移動
 		/// </summary>
 		Previous = 18,
 
 		/// <summary>
-		/// AIMPの終了を行うことを示すコマンドです
+		/// AIMPの終了
 		/// </summary>
 		Quit = 21,
 
 		/// <summary>
-		/// アルバムアートを取得することを示すコマンドです(このコマンドは32bitアプリケーションでのみ動作します)
+		/// アルバムアートの取得(このコマンドは32bitアプリケーションでのみ動作します)
 		/// </summary>
-		GetArtwork = 29,
+		RequestAlbumArt = 29,
 	}
 }

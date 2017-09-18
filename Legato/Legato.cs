@@ -112,7 +112,7 @@ namespace Legato
 		{
 			get
 			{
-				if (!RemoteHelper.RequestArtWork(_Communicator))
+				if (!RemoteHelper.RequestAlbumArt(_Communicator))
 					return null;
 
 				return _AlbumArt;
