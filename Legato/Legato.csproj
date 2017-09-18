@@ -46,6 +46,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Interop\Aimp\Enum\AimpWindowMessage.cs" />
+    <Compile Include="Interop\Aimp\Enum\NotifyType.cs" />
     <Compile Include="Interop\Aimp\Enum\CommandType.cs" />
     <Compile Include="Interop\Aimp\Enum\PlayerState.cs" />
     <Compile Include="Interop\Aimp\Enum\PropertyAccessMode.cs" />

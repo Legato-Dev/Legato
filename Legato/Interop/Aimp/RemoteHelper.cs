@@ -86,5 +86,15 @@ namespace Legato.Interop.Aimp
 		{
 			return SendCommandMessage(CommandType.RequestAlbumArt, communicationWindow.Handle) != IntPtr.Zero;
 		}
+
+		public static bool RegisterNotify(CommunicationWindow communicationWindow)
+		{
+			return SendCommandMessage(CommandType.RegisterNotify, communicationWindow.Handle) != IntPtr.Zero;
+		}
+
+		public static bool UnregisterNotify(CommunicationWindow communicationWindow)
+		{
+			return SendCommandMessage(CommandType.UnregisterNotify, communicationWindow.Handle) != IntPtr.Zero;
+		}
 	}
 }

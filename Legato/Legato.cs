@@ -10,7 +10,8 @@ namespace Legato
 		public Legato()
 		{
 			_Communicator = new CommunicationWindow();
-			_Communicator.CopyDataMessageReceived += (senderWindowHandle, copyData) =>
+
+			_Communicator.CopyDataMessageReceived += (copyData) =>
 			{
 				// AlbumArtの更新
 				if (copyData.dwData == new IntPtr(RemoteHelper.CopyDataIdArtWork))
@@ -20,6 +21,14 @@ namespace Legato
 					Marshal.Copy(copyData.lpData, _AlbumArt, 0, dataLength);
 				}
 			};
+
+			_Communicator.NotifyMessageReceived += (notifyType) =>
+			{
+				// TODO: 通知
+			};
+
+			if (IsRunning)
+				RemoteHelper.RegisterNotify(_Communicator);
 		}
 
 		private CommunicationWindow _Communicator { get; set; }
