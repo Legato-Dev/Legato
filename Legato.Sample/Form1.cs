@@ -24,7 +24,7 @@ namespace Legato.Sample
 			_Legato = null;
 		}
 
-		private void buttonGet_Click(object sender, EventArgs e)
+		private void buttonFetch_Click(object sender, EventArgs e)
 		{
 			Console.WriteLine($"IsRunning:{_Legato.IsRunning}");
 
@@ -57,6 +57,22 @@ namespace Legato.Sample
 					_Legato.Pause();
 				else
 					_Legato.Play();
+			}
+		}
+
+		private void buttonNext_Click(object sender, EventArgs e)
+		{
+			if (_Legato?.IsRunning ?? false)
+			{
+				_Legato.Next();
+			}
+		}
+
+		private void buttonPrev_Click(object sender, EventArgs e)
+		{
+			if (_Legato?.IsRunning ?? false)
+			{
+				_Legato.Prev();
 			}
 		}
 	}
