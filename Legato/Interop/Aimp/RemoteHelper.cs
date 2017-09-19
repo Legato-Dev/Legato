@@ -1,8 +1,10 @@
-﻿using Legato.Interop.Aimp.Enum;
+﻿using AimpArtwork.Exception;
+using Legato.Interop.Aimp.Enum;
 using Legato.Interop.Win32.Enum;
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 
 namespace Legato.Interop.Aimp
 {
@@ -26,7 +28,7 @@ namespace Legato.Interop.Aimp
 				var handle = Win32.API.FindWindow(RemoteClassName, null);
 
 				if (handle == IntPtr.Zero)
-					throw new Exception("remote window not found");
+					throw new AIMPNotRunningException();
 
 				return handle;
 			}
@@ -49,8 +51,11 @@ namespace Legato.Interop.Aimp
 
 			if (result == IntPtr.Zero)
 			{
-				// TODO 例外処理
-				throw new Exception("on SendMessageBase");
+				var code = Marshal.GetLastWin32Error();
+				if (code == 0)
+					throw new TimeoutException("AIMPとの通信がタイムアウトしました");
+
+				throw new ApplicationException($"AIMPとの通信中に失敗しました。(原因不明, code={code})");
 			}
 
 			return output;

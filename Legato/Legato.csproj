@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interop\Aimp\Exceptions\AIMPNotRunningException.cs" />
     <Compile Include="Interop\Aimp\CommunicationWindow.cs">
       <SubType>Form</SubType>
     </Compile>
