@@ -2,7 +2,6 @@
 using Legato.Interop.Aimp.Enum;
 using System;
 using System.IO;
-using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -28,26 +27,6 @@ namespace Legato
 			_Communicator.NotifyMessageReceived += (notifyType) =>
 			{
                 // TODO: 通知
-                var PreviousTrackName = "前の曲名";
-                var CurrentTrackName = "今の曲名";
-                var JudgeTrackName = "退避用";
-
-                // 今の曲名と退避用の曲名が一致していなかったら
-                // 曲が変わったということで。
-                if (PreviousTrackName != CurrentTrackName)
-                {
-                    _Communicator.CopyDataMessageReceived += (copyData) =>
-                    {
-                        // AlbumArtの更新
-                        if (copyData.dwData == new IntPtr(RemoteHelper.CopyDataIdArtWork))
-                        {
-                            var dataLength = (int)copyData.cbData;
-                            _AlbumArt = new byte[dataLength];
-                            Marshal.Copy(copyData.lpData, _AlbumArt, 0, dataLength);
-                        }
-                    };
-
-                }
             };
 
 			if (IsRunning)
