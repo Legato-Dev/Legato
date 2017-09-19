@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -28,10 +28,10 @@ namespace Legato.Sample
         #endregion
 
         public Form1()
-		{
-			InitializeComponent();
-            Initialize();
-		}
+        {
+		    InitializeComponent();
+        	Initialize();
+	    }
 
         public void Initialize()
         {
@@ -42,17 +42,17 @@ namespace Legato.Sample
             OnlyTimerStartFlg = false;
         }
 
-		private Legato _Legato { get; set; }
+	    private Legato _Legato { get; set; }
 
-		private void Form1_Load(object sender, EventArgs e)
-		{
-			_Legato = new Legato();
-		}
+	    private void Form1_Load(object sender, EventArgs e)
+	    {
+		    _Legato = new Legato();
+	    }
 
-		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			_Legato = null;
-		}
+	    private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+	    {
+	    	_Legato = null;
+	    }
 
         private void DisSigneture()
         {
@@ -62,28 +62,28 @@ namespace Legato.Sample
         }
 
         private void buttonFetch_Click(object sender, EventArgs e)
-		{
-			WriteLine($"IsRunning:{_Legato.IsRunning}");
+	    {
+		    WriteLine($"IsRunning:{_Legato.IsRunning}");
 
-            if (_Legato?.IsRunning ?? false)
-			{
-				WriteLine($"State:{_Legato.State}");
-				WriteLine($"IsShuffle:{_Legato.IsShuffle}");
-				WriteLine($"Volume:{_Legato.Volume}");
-				WriteLine($"Position:{_Legato.Position} - {_Legato.Duration}");
+           	if (_Legato?.IsRunning ?? false)
+		    {
+                WriteLine($"State:{_Legato.State}");
+                WriteLine($"IsShuffle:{_Legato.IsShuffle}");
+                WriteLine($"Volume:{_Legato.Volume}");
+                WriteLine($"Position:{_Legato.Position} - {_Legato.Duration}");
 
-				var albumArt = _Legato.AlbumArt;
-				WriteLine($"AlbumArt: {albumArt != null} {albumArt.Length}");
+                var albumArt = _Legato.AlbumArt;
+                WriteLine($"AlbumArt: {albumArt != null} {albumArt.Length}");
 
-				if ((albumArt?.Length ?? 0) != 0)
-				{
-					using (var memory = new MemoryStream())
-					{
-						memory.Write(albumArt, 0, albumArt.Length);
-						pictureBox1.Image = Image.FromStream(memory);
-					}
-				}
-			}
+                if ((albumArt?.Length ?? 0) != 0)
+                {
+                    using (var memory = new MemoryStream())
+                    {
+                        memory.Write(albumArt, 0, albumArt.Length);
+                        pictureBox1.Image = Image.FromStream(memory);
+                    }
+                }
+		    }
         }
 
 		private void buttonPlayPause_Click(object sender, EventArgs e)
@@ -91,10 +91,10 @@ namespace Legato.Sample
 			if (_Legato?.IsRunning ?? false)
 			{
 				if (_Legato.State == Interop.Aimp.Enum.PlayerState.Playing)
-                {
+			    {
                     _Legato.Pause();
                     _timer.Stop();
-                }
+			    }
                 else
                 {
                     Task.Run(async () =>
@@ -138,25 +138,25 @@ namespace Legato.Sample
                         _timer.Start();
                     }); 
                 }
-			}
+		    }
 		}
 
-		private void buttonNext_Click(object sender, EventArgs e)
-		{
-			if (_Legato?.IsRunning ?? false)
-			{
-				_Legato.Next();
-                DisSigneture();
-			}
-		}
-
-		private void buttonPrev_Click(object sender, EventArgs e)
-		{
-			if (_Legato?.IsRunning ?? false)
-			{
-				_Legato.Prev();
+        private void buttonNext_Click(object sender, EventArgs e)
+        {
+            if (_Legato?.IsRunning ?? false)
+            {
+                _Legato.Next();
                 DisSigneture();
             }
-		}
+        }
+
+        private void buttonPrev_Click(object sender, EventArgs e)
+        {
+            if (_Legato?.IsRunning ?? false)
+            {
+                _Legato.Prev();
+                DisSigneture();
+            }
+        }
 	}
 }
