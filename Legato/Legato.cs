@@ -1,7 +1,10 @@
 ﻿using Legato.Interop.Aimp;
 using Legato.Interop.Aimp.Enum;
 using System;
+using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Legato
 {
@@ -24,8 +27,28 @@ namespace Legato
 
 			_Communicator.NotifyMessageReceived += (notifyType) =>
 			{
-				// TODO: 通知
-			};
+                // TODO: 通知
+                var PreviousTrackName = "前の曲名";
+                var CurrentTrackName = "今の曲名";
+                var JudgeTrackName = "退避用";
+
+                // 今の曲名と退避用の曲名が一致していなかったら
+                // 曲が変わったということで。
+                if (PreviousTrackName != CurrentTrackName)
+                {
+                    _Communicator.CopyDataMessageReceived += (copyData) =>
+                    {
+                        // AlbumArtの更新
+                        if (copyData.dwData == new IntPtr(RemoteHelper.CopyDataIdArtWork))
+                        {
+                            var dataLength = (int)copyData.cbData;
+                            _AlbumArt = new byte[dataLength];
+                            Marshal.Copy(copyData.lpData, _AlbumArt, 0, dataLength);
+                        }
+                    };
+
+                }
+            };
 
 			if (IsRunning)
 				RemoteHelper.RegisterNotify(_Communicator);
@@ -107,17 +130,74 @@ namespace Legato
 			set { RemoteHelper.SendPropertyMessage(PropertyType.IsShuffle, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
 		}
 
-		/* TODO
 		public TrackInfo CurrentTrack
 		{
-			get;
-		}
-		*/
+			get
+            {
+                string CurrentTrackInfo;
+                var dataInfo = new TrackInfoBase();
+                var trackInfo = new TrackInfo();
 
-		/// <summary>
-		/// 再生中のアルバムアートを取得します。
-		/// </summary>
-		public byte[] AlbumArt
+                using (var memory = RemoteHelper.RemoteMmfStream)
+                {
+                    byte[] buf = new byte[8];
+
+                    dataInfo.HeaderSize = RemoteHelper.ReadToUint32(buf, memory);
+                    trackInfo.IsActive = RemoteHelper.ReadToUint32(buf, memory) != 0;
+                    trackInfo.BitRate = RemoteHelper.ReadToUint32(buf, memory);
+                    trackInfo.channelType = (ChannelType)RemoteHelper.ReadToUint32(buf, memory);
+                    trackInfo.Duration = RemoteHelper.ReadToUint32(buf, memory);
+
+                    trackInfo.FileSize = RemoteHelper.ReadToUint64(buf, memory);
+
+                    dataInfo.Mask = RemoteHelper.ReadToUint32(buf, memory);
+                    trackInfo.SampleRate = RemoteHelper.ReadToUint32(buf, memory);
+                    trackInfo.TrackNumber = RemoteHelper.ReadToUint32(buf, memory);
+                    dataInfo.AlbumStringLength = RemoteHelper.ReadToUint32(buf, memory);
+                    dataInfo.ArtistStringLength = RemoteHelper.ReadToUint32(buf, memory);
+                    dataInfo.YearStringLength = RemoteHelper.ReadToUint32(buf, memory);
+                    dataInfo.FilePathStringLength = RemoteHelper.ReadToUint32(buf, memory);
+                    dataInfo.GenreStringLength = RemoteHelper.ReadToUint32(buf, memory);
+                    dataInfo.TitleStringLength = RemoteHelper.ReadToUint32(buf, memory);
+
+                    memory.Position = dataInfo.HeaderSize;
+                    buf = new byte[RemoteHelper.RemoteMapFileSize - dataInfo.HeaderSize];
+                    memory.Read(buf, 0, buf.Length);
+                    CurrentTrackInfo = Encoding.Unicode.GetString(buf);
+                }
+
+                using (StringReader sr = new StringReader(CurrentTrackInfo))
+                {
+					const uint maskVal = 0x7FFFFFFF;
+                    int len;
+
+					len = (int)(dataInfo.AlbumStringLength & maskVal);
+					trackInfo.Album = RemoteHelper.ReadToString(len, new char[len], sr);
+
+                    len = (int)(dataInfo.ArtistStringLength & maskVal);
+                    trackInfo.Artist = RemoteHelper.ReadToString(len, new char[len], sr);
+
+					len = (int)(dataInfo.YearStringLength & maskVal);
+                    trackInfo.Year = RemoteHelper.ReadToString(len, new char[len], sr);
+
+					len = (int)(dataInfo.FilePathStringLength & maskVal);
+                    trackInfo.FilePath = RemoteHelper.ReadToString(len, new char[len], sr);
+
+					len = (int)(dataInfo.GenreStringLength & maskVal);
+                    trackInfo.Genre = RemoteHelper.ReadToString(len, new char[len], sr);
+
+					len = (int)(dataInfo.TitleStringLength & maskVal);
+                    trackInfo.Title = RemoteHelper.ReadToString(len, new char[len], sr);
+				}
+
+                return ( trackInfo );
+            }
+		}
+
+        /// <summary>
+        /// 再生中のアルバムアートを取得します。
+        /// </summary>
+        public byte[] AlbumArt
 		{
 			get
 			{

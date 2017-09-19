@@ -75,7 +75,11 @@ namespace Legato.Sample
                 var albumArt = _Legato.AlbumArt;
                 WriteLine($"AlbumArt: {albumArt != null} {albumArt.Length}");
 
-                if ((albumArt?.Length ?? 0) != 0)
+                WriteLine($"Information:{_Legato.CurrentTrack.Title}");
+				WriteLine($"Information:{_Legato.CurrentTrack.Artist}");
+				WriteLine($"Information:{_Legato.CurrentTrack.Album}");
+
+				if ((albumArt?.Length ?? 0) != 0)
                 {
                     using (var memory = new MemoryStream())
                     {
