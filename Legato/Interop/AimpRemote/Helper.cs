@@ -144,8 +144,11 @@ namespace Legato.Interop.AimpRemote
 
 			if (result == IntPtr.Zero)
 			{
-				// TODO 例外処理
-				throw new Exception("on SendMessageBase");
+				var code = Marshal.GetLastWin32Error();
+				if (code == 0)
+					throw new TimeoutException("AIMPとの通信がタイムアウトしました");
+
+				throw new ApplicationException($"AIMPとの通信中に失敗しました。(原因不明, code={code})");
 			}
 
 			return output;
