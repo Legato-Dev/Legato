@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interop\Aimp\Enum\ChannelType.cs" />
     <Compile Include="Interop\Aimp\Exceptions\AIMPNotRunningException.cs" />
     <Compile Include="Interop\Aimp\CommunicationWindow.cs">
       <SubType>Form</SubType>
@@ -53,6 +54,8 @@
     <Compile Include="Interop\Aimp\Enum\PropertyAccessMode.cs" />
     <Compile Include="Interop\Aimp\Enum\PropertyType.cs" />
     <Compile Include="Interop\Aimp\RemoteHelper.cs" />
+    <Compile Include="Interop\Aimp\TrackInfo.cs" />
+    <Compile Include="Interop\Aimp\TrackInfoBase.cs" />
     <Compile Include="Interop\Win32\API.cs" />
     <Compile Include="Interop\Win32\Enum\SendMessageTimeoutType.cs" />
     <Compile Include="Interop\Win32\Enum\WindowMessage.cs" />
