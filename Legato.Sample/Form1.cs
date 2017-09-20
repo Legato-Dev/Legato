@@ -1,10 +1,9 @@
 using System;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
-
-using static System.Console;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Console;
 
 namespace Legato.Sample
 {
@@ -12,53 +11,53 @@ namespace Legato.Sample
 	{
 		#region Field
 
-		private System.Timers.Timer _timer;
-		private uint TimerCounter;
-		private uint MinuteCounter;
-		private uint SecondCounter;
-		private bool OnlyTimerStartFlg;
+		private System.Timers.Timer _Timer;
+		private uint _TimerCounter;
+		private uint _MinuteCounter;
+		private uint _SecondCounter;
+		private bool _TimerInitialized;
+		private Legato _Legato { get; set; }
 
-		#endregion
+		#endregion Field
 
 		#region Constants
 
-		const uint msConvertSec = 1000;
-		const uint betweenMin = 59;
+		private readonly uint _MsConvertSec = 1000;
+		private readonly uint _BetweenMin = 59;
 
-		#endregion
+		#endregion Constants
 
 		public Form1()
 		{
 			InitializeComponent();
-			Initialize();
+
+			Icon = Properties.Resources.legato;
+
+			_Legato = new Legato();
+			_Timer = new System.Timers.Timer();
+			_TimerCounter = 0;
+			_MinuteCounter = 0;
+			_SecondCounter = 0;
+			_TimerInitialized = false;
 		}
 
-		public void Initialize()
+		private void ResetCounter()
 		{
-			_timer = new System.Timers.Timer();
-			TimerCounter = 0;
-			MinuteCounter = 0;
-			SecondCounter = 0;
-			OnlyTimerStartFlg = false;
+			_TimerCounter = 0;
+			_MinuteCounter = 0;
+			_SecondCounter = 0;
 		}
 
-		private Legato _Legato { get; set; }
+		#region Procedures
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			_Legato = new Legato();
+			
 		}
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			_Legato = null;
-		}
-
-		private void DisSigneture()
-		{
-			TimerCounter = 0;
-			MinuteCounter = 0;
-			SecondCounter = 0;
 		}
 
 		private void buttonFetch_Click(object sender, EventArgs e)
@@ -97,7 +96,7 @@ namespace Legato.Sample
 				if (_Legato.State == Interop.Aimp.Enum.PlayerState.Playing)
 				{
 					_Legato.Pause();
-					_timer.Stop();
+					_Timer.Stop();
 				}
 				else
 				{
@@ -105,41 +104,42 @@ namespace Legato.Sample
 					{
 						_Legato.Play();
 
-						var time = _Legato.Position / msConvertSec;
-						var customize = _Legato.Position - (uint)time * msConvertSec;
+						var time = _Legato.Position / _MsConvertSec;
+						var customize = _Legato.Position - (uint)time * _MsConvertSec;
 
 						await Task.Delay(new TimeSpan(customize));
-						TimerCounter = (uint)time;
+						_TimerCounter = (uint)time;
 
 						CurrentPos.Invoke((Action)(() =>
 						{
-							CurrentPos.Text = $"Duration = {MinuteCounter} : {SecondCounter}";
+							CurrentPos.Text = $"Duration = {_MinuteCounter} : {_SecondCounter}";
 						}));
 
-						if (OnlyTimerStartFlg == false)
+						if (!_TimerInitialized)
 						{
-							_timer.Elapsed += (s, v) =>
+							_TimerInitialized = true;
+
+							_Timer.Elapsed += (s, v) =>
 							{
-								++TimerCounter;
+								++_TimerCounter;
 								CurrentPos.Invoke((Action)(() =>
 								{
-									if (SecondCounter == betweenMin)
+									if (_SecondCounter == _BetweenMin)
 									{
-										++MinuteCounter;
-										SecondCounter = 0;
+										++_MinuteCounter;
+										_SecondCounter = 0;
 									}
 									else
-										++SecondCounter;
+										++_SecondCounter;
 
-									CurrentPos.Text = $"Duration = {MinuteCounter} : {string.Format("{0:D2}", SecondCounter)}";
+									CurrentPos.Text = $"Duration = {_MinuteCounter} : {string.Format("{0:D2}", _SecondCounter)}";
 								}));
 							};
 
-							_timer.Interval = msConvertSec;
-							OnlyTimerStartFlg = true;
+							_Timer.Interval = _MsConvertSec;
 						}
 
-						_timer.Start();
+						_Timer.Start();
 					});
 				}
 			}
@@ -150,7 +150,7 @@ namespace Legato.Sample
 			if (_Legato?.IsRunning ?? false)
 			{
 				_Legato.Next();
-				DisSigneture();
+				ResetCounter();
 			}
 		}
 
@@ -159,8 +159,10 @@ namespace Legato.Sample
 			if (_Legato?.IsRunning ?? false)
 			{
 				_Legato.Prev();
-				DisSigneture();
+				ResetCounter();
 			}
 		}
+
+		#endregion Procedures
 	}
 }
