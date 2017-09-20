@@ -10,7 +10,7 @@ using System.Text;
 namespace Legato.Interop.AimpRemote
 {
 	/// <summary>
-	/// AIMPから提供されるリモートAPIに関するヘルパーを提供します
+	/// AIMPのリモートAPIに関するヘルパーを提供します
 	/// </summary>
 	public class Helper
 	{
