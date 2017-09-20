@@ -1,10 +1,8 @@
-﻿using AimpArtwork.Exception;
-using Legato.Interop.Aimp.Enum;
+﻿using Legato.Interop.Aimp.Enum;
 using Legato.Interop.Win32.Enum;
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
-using System.Runtime.InteropServices;
 
 namespace Legato.Interop.Aimp
 {
@@ -28,10 +26,49 @@ namespace Legato.Interop.Aimp
 				var handle = Win32.API.FindWindow(RemoteClassName, null);
 
 				if (handle == IntPtr.Zero)
-					throw new AIMPNotRunningException();
+					throw new Exception("remote window not found");
 
 				return handle;
 			}
+		}
+
+		/// <summary>
+		/// 4 byte 単位のメモリ読出し/値変換を行います。
+		/// </summary>
+		/// <param name="buf"></param>
+		/// <param name="stream"></param>
+		/// <returns></returns>
+		public static uint ReadToUint32(byte[] buf, Stream stream)
+		{
+			stream.Read(buf, 0, 4);
+			return BitConverter.ToUInt32(buf, 0);
+		}
+
+		/// <summary>
+		/// 8 byte 単位のメモリ読出し/値変換を行います。
+		/// </summary>
+		/// <param name="buf"></param>
+		/// <param name="stream"></param>
+		/// <returns></returns>
+		public static ulong ReadToUint64(byte[] buf, Stream stream)
+		{
+			stream.Read(buf, 0, 8);
+			return BitConverter.ToUInt64(buf, 0);
+		}
+
+		/// <summary>
+		/// メモリより読み出した文字列を文字数分返します。
+		/// </summary>
+		/// <param name="len"></param>
+		/// <param name="buf"></param>
+		/// <param name="sr"></param>
+		/// <returns></returns>
+		public static string ReadToString(int len, char[] buf, StringReader sr)
+		{
+			buf = new char[len];
+			sr.Read(buf, 0, len);
+
+			return new string(buf);
 		}
 
 		public static MemoryMappedViewStream RemoteMmfStream
@@ -51,11 +88,8 @@ namespace Legato.Interop.Aimp
 
 			if (result == IntPtr.Zero)
 			{
-				var code = Marshal.GetLastWin32Error();
-				if (code == 0)
-					throw new TimeoutException("AIMPとの通信がタイムアウトしました");
-
-				throw new ApplicationException($"AIMPとの通信中に失敗しました。(原因不明, code={code})");
+				// TODO 例外処理
+				throw new Exception("on SendMessageBase");
 			}
 
 			return output;
