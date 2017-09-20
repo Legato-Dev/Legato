@@ -77,7 +77,7 @@ namespace Legato
 				var result = Helper.SendPropertyMessage(PropertyType.Volume, PropertyAccessMode.Set, new IntPtr(volume));
 
 				if (result == IntPtr.Zero)
-					throw new Exception("AimpのVolumeプロパティの設定に失敗しました。");
+					throw new ApplicationException("AimpのVolumeプロパティの設定に失敗しました。");
 			}
 		}
 

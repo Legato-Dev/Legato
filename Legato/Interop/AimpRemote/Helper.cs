@@ -1,4 +1,5 @@
-﻿using Legato.Interop.AimpRemote.Entities;
+﻿using AimpArtwork.Exception;
+using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using Legato.Interop.Win32.Enum;
 using System;
@@ -28,7 +29,7 @@ namespace Legato.Interop.AimpRemote
 				var handle = Win32.API.FindWindow(RemoteClassName, null);
 
 				if (handle == IntPtr.Zero)
-					throw new Exception("remote window not found");
+					throw new AIMPNotRunningException();
 
 				return handle;
 			}
