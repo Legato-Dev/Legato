@@ -5,6 +5,7 @@ using Legato.Interop.Win32.Enum;
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Legato.Interop.AimpRemote
