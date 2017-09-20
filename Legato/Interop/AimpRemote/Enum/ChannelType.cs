@@ -1,4 +1,4 @@
-﻿namespace Legato.Interop.Aimp.Enum
+﻿namespace Legato.Interop.AimpRemote.Enum
 {
     public enum ChannelType : uint
     {

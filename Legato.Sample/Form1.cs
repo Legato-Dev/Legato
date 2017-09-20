@@ -94,7 +94,7 @@ namespace Legato.Sample
 		{
 			if (_Legato?.IsRunning ?? false)
 			{
-				if (_Legato.State == Interop.Aimp.Enum.PlayerState.Playing)
+				if (_Legato.State == Interop.AimpRemote.Enum.PlayerState.Playing)
 				{
 					_Legato.Pause();
 					_Timer.Stop();

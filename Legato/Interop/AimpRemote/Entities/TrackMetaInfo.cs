@@ -1,4 +1,4 @@
-﻿namespace Legato.Interop.Aimp
+﻿namespace Legato.Interop.AimpRemote.Entities
 {
     /// <summary>
     /// 再生中のトラック情報に関するメタ情報を表します

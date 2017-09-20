@@ -1,4 +1,4 @@
-﻿namespace Legato.Interop.Aimp.Enum
+﻿namespace Legato.Interop.AimpRemote.Enum
 {
 	/// <summary>
 	/// 通知の種類を表します

@@ -1,6 +1,6 @@
-﻿using Legato.Interop.Aimp.Enum;
+﻿using Legato.Interop.AimpRemote.Enum;
 
-namespace Legato.Interop.Aimp
+namespace Legato.Interop.AimpRemote.Entities
 {
     /// <summary>
     /// 再生中のトラック情報を扱います。
