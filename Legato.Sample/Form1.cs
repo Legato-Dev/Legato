@@ -12,9 +12,9 @@ namespace Legato.Sample
 		#region Field
 
 		private System.Timers.Timer _Timer;
-		private uint _TimerCounter;
-		private uint _MinuteCounter;
-		private uint _SecondCounter;
+		private int _TimerCounter;
+		private int _MinuteCounter;
+		private int _SecondCounter;
 		private bool _TimerInitialized;
 		private Legato _Legato { get; set; }
 
@@ -22,8 +22,8 @@ namespace Legato.Sample
 
 		#region Constants
 
-		private readonly uint _MsConvertSec = 1000;
-		private readonly uint _BetweenMin = 59;
+		private readonly int _MsConvertSec = 1000;
+		private readonly int _BetweenMin = 59;
 
 		#endregion Constants
 
@@ -48,17 +48,18 @@ namespace Legato.Sample
 			_SecondCounter = 0;
 		}
 
+		/// <summary>
+		/// 再生時間の表示を更新します(UIスレッドで実行されます)
+		/// </summary>
+		private void _UpdateCurrentPos()
+		{
+			CurrentPos.Invoke((Action)(() =>
+			{
+				CurrentPos.Text = $"Duration = {_MinuteCounter:D2} : {_SecondCounter:D2}";
+			}));
+		}
+
 		#region Procedures
-
-		private void Form1_Load(object sender, EventArgs e)
-		{
-			
-		}
-
-		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			_Legato = null;
-		}
 
 		private void buttonFetch_Click(object sender, EventArgs e)
 		{
@@ -105,16 +106,13 @@ namespace Legato.Sample
 					{
 						_Legato.Play();
 
-						var time = _Legato.Position / _MsConvertSec;
-						var customize = _Legato.Position - (uint)time * _MsConvertSec;
+						var timeSec = _Legato.Position / _MsConvertSec;
+						var customizeMs = _Legato.Position % _MsConvertSec;
 
-						await Task.Delay(new TimeSpan(customize));
-						_TimerCounter = (uint)time;
+						await Task.Delay(customizeMs);
+						_TimerCounter = timeSec;
 
-						CurrentPos.Invoke((Action)(() =>
-						{
-							CurrentPos.Text = $"Duration = {_MinuteCounter} : {_SecondCounter}";
-						}));
+						_UpdateCurrentPos();
 
 						if (!_TimerInitialized)
 						{
@@ -123,18 +121,18 @@ namespace Legato.Sample
 							_Timer.Elapsed += (s, v) =>
 							{
 								++_TimerCounter;
-								CurrentPos.Invoke((Action)(() =>
-								{
-									if (_SecondCounter == _BetweenMin)
-									{
-										++_MinuteCounter;
-										_SecondCounter = 0;
-									}
-									else
-										++_SecondCounter;
 
-									CurrentPos.Text = $"Duration = {_MinuteCounter} : {string.Format("{0:D2}", _SecondCounter)}";
-								}));
+								if (_SecondCounter == _BetweenMin)
+								{
+									++_MinuteCounter;
+									_SecondCounter = 0;
+								}
+								else
+								{
+									++_SecondCounter;
+								}
+
+								_UpdateCurrentPos();
 							};
 
 							_Timer.Interval = _MsConvertSec;
