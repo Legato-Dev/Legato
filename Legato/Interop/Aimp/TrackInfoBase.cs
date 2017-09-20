@@ -1,10 +1,10 @@
 ﻿namespace Legato.Interop.Aimp
 {
     /// <summary>
-    /// 再生中のトラック情報の基礎定義クラスです。
+    /// 再生中のトラック情報に関するメタ情報を表します
     /// </summary>
-    internal class TrackInfoBase
-    {
+    internal class TrackMetaInfo
+	{
         /// <summary>
         /// ヘッダサイズを取得・設定します。
         /// </summary>

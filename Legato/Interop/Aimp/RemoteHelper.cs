@@ -35,38 +35,40 @@ namespace Legato.Interop.Aimp
 		/// <summary>
 		/// 4 byte 単位のメモリ読出し/値変換を行います。
 		/// </summary>
-		/// <param name="buf"></param>
 		/// <param name="stream"></param>
 		/// <returns></returns>
-		public static uint ReadToUint32(byte[] buf, Stream stream)
+		public static uint ReadToUInt32(Stream stream)
 		{
+			var buf = new byte[4];
 			stream.Read(buf, 0, 4);
+
 			return BitConverter.ToUInt32(buf, 0);
 		}
 
 		/// <summary>
 		/// 8 byte 単位のメモリ読出し/値変換を行います。
 		/// </summary>
-		/// <param name="buf"></param>
 		/// <param name="stream"></param>
 		/// <returns></returns>
-		public static ulong ReadToUint64(byte[] buf, Stream stream)
+		public static ulong ReadToUInt64(Stream stream)
 		{
+			var buf = new byte[8];
 			stream.Read(buf, 0, 8);
+
 			return BitConverter.ToUInt64(buf, 0);
 		}
 
 		/// <summary>
 		/// メモリより読み出した文字列を文字数分返します。
 		/// </summary>
-		/// <param name="len"></param>
-		/// <param name="buf"></param>
-		/// <param name="sr"></param>
-		/// <returns></returns>
-		public static string ReadToString(int len, char[] buf, StringReader sr)
+		/// <param name="reader"></param>
+		/// <param name="count"></param>
+		public static string Read(StringReader reader, uint count)
 		{
-			buf = new char[len];
-			sr.Read(buf, 0, len);
+			const uint mask = 0x7FFFFFFF;
+			var maskedCount = (int)(count & mask);
+			var buf = new char[maskedCount];
+			reader.Read(buf, 0, maskedCount);
 
 			return new string(buf);
 		}
@@ -76,6 +78,7 @@ namespace Legato.Interop.Aimp
 			get
 			{
 				var mmf = MemoryMappedFile.OpenExisting(RemoteClassName, MemoryMappedFileRights.ReadWrite, HandleInheritability.Inheritable);
+
 				return mmf.CreateViewStream(0, RemoteMapFileSize);
 			}
 		}

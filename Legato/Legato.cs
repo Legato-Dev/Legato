@@ -113,63 +113,52 @@ namespace Legato
 		{
 			get
 			{
-				string CurrentTrackInfo;
-				var dataInfo = new TrackInfoBase();
 				var trackInfo = new TrackInfo();
+				var meta = new TrackMetaInfo();
 
 				using (var memory = RemoteHelper.RemoteMmfStream)
 				{
-					byte[] buf = new byte[8];
+					// 数値情報の読み取り
+					meta.HeaderSize = RemoteHelper.ReadToUInt32(memory);
 
-					dataInfo.HeaderSize = RemoteHelper.ReadToUint32(buf, memory);
-					trackInfo.IsActive = RemoteHelper.ReadToUint32(buf, memory) != 0;
-					trackInfo.BitRate = RemoteHelper.ReadToUint32(buf, memory);
-					trackInfo.channelType = (ChannelType)RemoteHelper.ReadToUint32(buf, memory);
-					trackInfo.Duration = RemoteHelper.ReadToUint32(buf, memory);
+					trackInfo.IsActive = RemoteHelper.ReadToUInt32(memory) != 0;
+					trackInfo.BitRate = RemoteHelper.ReadToUInt32(memory);
+					trackInfo.channelType = (ChannelType)RemoteHelper.ReadToUInt32(memory);
+					trackInfo.Duration = RemoteHelper.ReadToUInt32(memory);
+					trackInfo.FileSize = RemoteHelper.ReadToUInt64(memory);
 
-					trackInfo.FileSize = RemoteHelper.ReadToUint64(buf, memory);
+					meta.Mask = RemoteHelper.ReadToUInt32(memory);
 
-					dataInfo.Mask = RemoteHelper.ReadToUint32(buf, memory);
-					trackInfo.SampleRate = RemoteHelper.ReadToUint32(buf, memory);
-					trackInfo.TrackNumber = RemoteHelper.ReadToUint32(buf, memory);
-					dataInfo.AlbumStringLength = RemoteHelper.ReadToUint32(buf, memory);
-					dataInfo.ArtistStringLength = RemoteHelper.ReadToUint32(buf, memory);
-					dataInfo.YearStringLength = RemoteHelper.ReadToUint32(buf, memory);
-					dataInfo.FilePathStringLength = RemoteHelper.ReadToUint32(buf, memory);
-					dataInfo.GenreStringLength = RemoteHelper.ReadToUint32(buf, memory);
-					dataInfo.TitleStringLength = RemoteHelper.ReadToUint32(buf, memory);
+					trackInfo.SampleRate = RemoteHelper.ReadToUInt32(memory);
+					trackInfo.TrackNumber = RemoteHelper.ReadToUInt32(memory);
 
-					memory.Position = dataInfo.HeaderSize;
-					buf = new byte[RemoteHelper.RemoteMapFileSize - dataInfo.HeaderSize];
-					memory.Read(buf, 0, buf.Length);
-					CurrentTrackInfo = Encoding.Unicode.GetString(buf);
+					meta.AlbumStringLength = RemoteHelper.ReadToUInt32(memory);
+					meta.ArtistStringLength = RemoteHelper.ReadToUInt32(memory);
+					meta.YearStringLength = RemoteHelper.ReadToUInt32(memory);
+					meta.FilePathStringLength = RemoteHelper.ReadToUInt32(memory);
+					meta.GenreStringLength = RemoteHelper.ReadToUInt32(memory);
+					meta.TitleStringLength = RemoteHelper.ReadToUInt32(memory);
+
+					// ヘッダの終端まで移動
+					memory.Position = meta.HeaderSize;
+
+					// 文字列の読み取り
+					var buffer = new byte[RemoteHelper.RemoteMapFileSize - meta.HeaderSize];
+					memory.Read(buffer, 0, buffer.Length);
+					var trackInfoString = Encoding.Unicode.GetString(buffer);
+
+					using (var reader = new StringReader(trackInfoString))
+					{
+						trackInfo.Album = RemoteHelper.Read(reader, meta.AlbumStringLength);
+						trackInfo.Artist = RemoteHelper.Read(reader, meta.ArtistStringLength);
+						trackInfo.Year = RemoteHelper.Read(reader, meta.YearStringLength);
+						trackInfo.FilePath = RemoteHelper.Read(reader, meta.FilePathStringLength);
+						trackInfo.Genre = RemoteHelper.Read(reader, meta.GenreStringLength);
+						trackInfo.Title = RemoteHelper.Read(reader, meta.TitleStringLength);
+					}
 				}
 
-				using (StringReader sr = new StringReader(CurrentTrackInfo))
-				{
-					const uint maskVal = 0x7FFFFFFF;
-					int len;
-
-					len = (int)(dataInfo.AlbumStringLength & maskVal);
-					trackInfo.Album = RemoteHelper.ReadToString(len, new char[len], sr);
-
-					len = (int)(dataInfo.ArtistStringLength & maskVal);
-					trackInfo.Artist = RemoteHelper.ReadToString(len, new char[len], sr);
-
-					len = (int)(dataInfo.YearStringLength & maskVal);
-					trackInfo.Year = RemoteHelper.ReadToString(len, new char[len], sr);
-
-					len = (int)(dataInfo.FilePathStringLength & maskVal);
-					trackInfo.FilePath = RemoteHelper.ReadToString(len, new char[len], sr);
-
-					len = (int)(dataInfo.GenreStringLength & maskVal);
-					trackInfo.Genre = RemoteHelper.ReadToString(len, new char[len], sr);
-
-					len = (int)(dataInfo.TitleStringLength & maskVal);
-					trackInfo.Title = RemoteHelper.ReadToString(len, new char[len], sr);
-				}
-
-				return ( trackInfo );
+				return trackInfo;
 			}
 		}
 

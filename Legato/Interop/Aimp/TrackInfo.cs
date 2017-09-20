@@ -42,34 +42,34 @@ namespace Legato.Interop.Aimp
         /// </summary>
         public uint TrackNumber { get; set; }
 
-        /// <summary>
-        /// 再生中の曲名を取得・設定します。
-        /// </summary>
-        public string Title { get; set; }
+		/// <summary>
+		/// 再生中の曲のアルバム情報を取得・設定します。
+		/// </summary>
+		public string Album { get; set; }
 
-        /// <summary>
-        /// 再生中の曲のアーティスト名を取得・設定します。
-        /// </summary>
-        public string Artist { get; set; }
+		/// <summary>
+		/// 再生中の曲のアーティスト名を取得・設定します。
+		/// </summary>
+		public string Artist { get; set; }
 
-        /// <summary>
-        /// 再生中の曲のアルバム情報を取得・設定します。
-        /// </summary>
-        public string Album { get; set; }
+		/// <summary>
+		/// 再生中の曲のリリース年を取得・設定します。
+		/// </summary>
+		public string Year { get; set; }
 
-        /// <summary>
-        /// 再生中の曲のリリース年を取得・設定します。
-        /// </summary>
-        public string Year { get; set; }
+		/// <summary>
+		/// 再生中の曲のファイルパスを取得・設定します。
+		/// </summary>
+		public string FilePath { get; set; }
 
-        /// <summary>
-        /// 再生中の曲のファイルパスを取得・設定します。
-        /// </summary>
-        public string FilePath { get; set; }
+		/// <summary>
+		/// 再生中の曲のジャンルを取得・設定します。
+		/// </summary>
+		public string Genre { get; set; }
 
-        /// <summary>
-        /// 再生中の曲のジャンルを取得・設定します。
-        /// </summary>
-        public string Genre { get; set; }
+		/// <summary>
+		/// 再生中の曲名を取得・設定します。
+		/// </summary>
+		public string Title { get; set; }
     }
 }

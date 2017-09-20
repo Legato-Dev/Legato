@@ -74,9 +74,10 @@ namespace Legato.Sample
 				var albumArt = _Legato.AlbumArt;
 				WriteLine($"AlbumArt: {albumArt != null} {albumArt.Length}");
 
-				WriteLine($"Information:{_Legato.CurrentTrack.Title}");
-				WriteLine($"Information:{_Legato.CurrentTrack.Artist}");
-				WriteLine($"Information:{_Legato.CurrentTrack.Album}");
+				var track = _Legato.CurrentTrack;
+				WriteLine($"Title:{track.Title}");
+				WriteLine($"Artist:{track.Artist}");
+				WriteLine($"Album:{track.Album}");
 
 				if ((albumArt?.Length ?? 0) != 0)
 				{
