@@ -1,7 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Console;
@@ -33,6 +31,7 @@ namespace Legato.Sample
 			InitializeComponent();
 
 			Icon = Properties.Resources.legato;
+			pictureBox1.Image = Properties.Resources.logo;
 
 			_Legato = new Legato();
 			_Timer = new System.Timers.Timer();
@@ -44,6 +43,11 @@ namespace Legato.Sample
 			_Legato.PropertyNotify += (type) =>
 			{
 				Debug.WriteLine($"プロパティ変更通知: {type}");
+
+				if (type == Interop.AimpRemote.Enum.PropertyType.State)
+				{
+					pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
+				}
 			};
 
 			_Legato.TrackInfoNotify += () =>
@@ -88,22 +92,12 @@ namespace Legato.Sample
 				WriteLine($"Volume:{_Legato.Volume}");
 				WriteLine($"Position:{_Legato.Position} - {_Legato.Duration}");
 
-				var albumArt = _Legato.AlbumArt;
-				WriteLine($"AlbumArt: {albumArt != null} {albumArt.Length}");
-
 				var track = _Legato.CurrentTrack;
 				WriteLine($"Title:{track.Title}");
 				WriteLine($"Artist:{track.Artist}");
 				WriteLine($"Album:{track.Album}");
 
-				if ((albumArt?.Length ?? 0) != 0)
-				{
-					using (var memory = new MemoryStream())
-					{
-						memory.Write(albumArt, 0, albumArt.Length);
-						pictureBox1.Image = Image.FromStream(memory);
-					}
-				}
+				pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
 			}
 		}
 
