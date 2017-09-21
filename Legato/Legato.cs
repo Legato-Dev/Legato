@@ -3,6 +3,7 @@ using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using System;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Legato
 {
@@ -23,9 +24,19 @@ namespace Legato
 				}
 			};
 
-			_Communicator.NotifyMessageReceived += (notifyType) =>
+			_Communicator.PropertyNotifyReceived += (type) =>
 			{
-				// TODO: 通知
+				Debug.WriteLine($"プロパティ変更通知: {type}");
+			};
+
+			_Communicator.TrackInfoNotify += () =>
+			{
+				Debug.WriteLine($"現在のトラック情報が変更されました");
+			};
+
+			_Communicator.TrackStartNotify += () =>
+			{
+				Debug.WriteLine($"トラックがスタートされました");
 			};
 
 			if (IsRunning)

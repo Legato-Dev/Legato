@@ -18,8 +18,17 @@ namespace Legato.Interop.AimpRemote
 		public delegate void CopyDataMessageReceivedHandler(CopyDataStruct copyData);
 		public event CopyDataMessageReceivedHandler CopyDataMessageReceived;
 
-		public delegate void NotifyMessageReceivedHandler(NotifyType notifyType);
+		public delegate void NotifyMessageReceivedHandler(NotifyType notifyType, IntPtr value);
 		public event NotifyMessageReceivedHandler NotifyMessageReceived;
+
+		public delegate void PropertyNotifyReceivedHandler(PropertyType type);
+		public event PropertyNotifyReceivedHandler PropertyNotifyReceived;
+
+		public delegate void TrackInfoNotifyHandler();
+		public event TrackInfoNotifyHandler TrackInfoNotify;
+
+		public delegate void TrackStartNotifyHandler();
+		public event TrackStartNotifyHandler TrackStartNotify;
 
 		public CommunicationWindow()
 		{
@@ -42,7 +51,17 @@ namespace Legato.Interop.AimpRemote
 			// NotifyMessage
 			if ((AimpWindowMessage)message.Msg == AimpWindowMessage.Notify)
 			{
-				NotifyMessageReceived?.Invoke((NotifyType)message.WParam);
+				var type = (NotifyType)message.WParam;
+				NotifyMessageReceived?.Invoke(type, message.LParam);
+
+				if (type == NotifyType.Property)
+					PropertyNotifyReceived?.Invoke((PropertyType)message.LParam);
+				else if (type == NotifyType.TrackInfo && (int)message.LParam == 1)
+					TrackInfoNotify?.Invoke();
+				else if (type == NotifyType.TrackStart)
+					TrackStartNotify?.Invoke();
+				else if (type != NotifyType.TrackInfo)
+					throw new ApplicationException("NotifyType is unknown value.");
 			}
 
 			base.WndProc(ref message);
