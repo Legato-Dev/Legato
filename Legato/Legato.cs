@@ -3,7 +3,6 @@ using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using System;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 namespace Legato
 {
@@ -24,26 +23,27 @@ namespace Legato
 				}
 			};
 
-			_Communicator.PropertyNotifyReceived += (type) =>
-			{
-				Debug.WriteLine($"プロパティ変更通知: {type}");
-			};
-
-			_Communicator.TrackInfoNotify += () =>
-			{
-				Debug.WriteLine($"現在のトラック情報が変更されました");
-			};
-
-			_Communicator.TrackStartNotify += () =>
-			{
-				Debug.WriteLine($"トラックがスタートされました");
-			};
-
 			if (IsRunning)
 				Helper.RegisterNotify(_Communicator);
 		}
 
 		private CommunicationWindow _Communicator { get; set; }
+
+		public event AimpEventHandler<PropertyType> PropertyNotify
+		{
+			add { _Communicator.PropertyNotify += value; }
+			remove { _Communicator.PropertyNotify -= value; }
+		}
+		public event AimpEventHandler TrackInfoNotify
+		{
+			add { _Communicator.TrackInfoNotify += value; }
+			remove { _Communicator.TrackInfoNotify -= value; }
+		}
+		public event AimpEventHandler TrackStartNotify
+		{
+			add { _Communicator.TrackStartNotify += value; }
+			remove { _Communicator.TrackStartNotify -= value; }
+		}
 
 		/// <summary>
 		/// AIMPが起動しているかどうかを示す値を取得します

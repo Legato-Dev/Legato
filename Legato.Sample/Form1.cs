@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
@@ -39,6 +40,21 @@ namespace Legato.Sample
 			_MinuteCounter = 0;
 			_SecondCounter = 0;
 			_TimerInitialized = false;
+
+			_Legato.PropertyNotify += (type) =>
+			{
+				Debug.WriteLine($"プロパティ変更通知: {type}");
+			};
+
+			_Legato.TrackInfoNotify += () =>
+			{
+				Debug.WriteLine($"現在のトラック情報が変更されました");
+			};
+
+			_Legato.TrackStartNotify += () =>
+			{
+				Debug.WriteLine($"トラックがスタートされました");
+			};
 		}
 
 		private void ResetCounter()
