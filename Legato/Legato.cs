@@ -3,6 +3,8 @@ using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using System;
 using System.Runtime.InteropServices;
+using System.IO;
+using System.Drawing;
 
 namespace Legato
 {
@@ -127,14 +129,21 @@ namespace Legato
 		/// <summary>
 		/// 再生中のアルバムアートを取得します。
 		/// </summary>
-		public byte[] AlbumArt
+		public Image AlbumArt
 		{
 			get
 			{
 				if (!Helper.RequestAlbumArt(_Communicator))
 					return null;
 
-				return _AlbumArt;
+				Image resource;
+				using (var memory = new MemoryStream())
+				{
+					memory.Write(_AlbumArt, 0, _AlbumArt.Length);
+					resource = Image.FromStream(memory);
+				}
+
+				return resource;
 			}
 		}
 		private byte[] _AlbumArt { get; set; }
