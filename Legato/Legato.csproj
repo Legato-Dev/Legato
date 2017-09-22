@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interop\AimpRemote\Entities\AimpEventHandler.cs" />
     <Compile Include="Interop\AimpRemote\Enum\ChannelType.cs" />
     <Compile Include="Interop\AimpRemote\Exceptions\AIMPNotRunningException.cs" />
     <Compile Include="Interop\AimpRemote\CommunicationWindow.cs">

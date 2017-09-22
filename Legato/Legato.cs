@@ -1,10 +1,10 @@
+using System;
+using System.Drawing;
+using System.IO;
+using System.Runtime.InteropServices;
 using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
-using System;
-using System.Runtime.InteropServices;
-using System.IO;
-using System.Drawing;
 
 namespace Legato
 {
@@ -12,9 +12,9 @@ namespace Legato
 	{
 		public Legato()
 		{
-			_Communicator = new CommunicationWindow();
+			Communicator = new CommunicationWindow();
 
-			_Communicator.CopyDataMessageReceived += (copyData) =>
+			Communicator.CopyDataMessageReceived += (copyData) =>
 			{
 				// AlbumArtの更新
 				if (copyData.dwData == new IntPtr(Helper.CopyDataIdArtWork))
@@ -26,26 +26,10 @@ namespace Legato
 			};
 
 			if (IsRunning)
-				Helper.RegisterNotify(_Communicator);
+				Helper.RegisterNotify(Communicator);
 		}
 
-		private CommunicationWindow _Communicator { get; set; }
-
-		public event AimpEventHandler<PropertyType> PropertyNotify
-		{
-			add { _Communicator.PropertyNotify += value; }
-			remove { _Communicator.PropertyNotify -= value; }
-		}
-		public event AimpEventHandler TrackInfoNotify
-		{
-			add { _Communicator.TrackInfoNotify += value; }
-			remove { _Communicator.TrackInfoNotify -= value; }
-		}
-		public event AimpEventHandler TrackStartNotify
-		{
-			add { _Communicator.TrackStartNotify += value; }
-			remove { _Communicator.TrackStartNotify -= value; }
-		}
+		public CommunicationWindow Communicator { get; set; }
 
 		/// <summary>
 		/// AIMPが起動しているかどうかを示す値を取得します
@@ -133,7 +117,7 @@ namespace Legato
 		{
 			get
 			{
-				if (!Helper.RequestAlbumArt(_Communicator))
+				if (!Helper.RequestAlbumArt(Communicator))
 					return null;
 
 				Image resource;
