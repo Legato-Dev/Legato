@@ -37,7 +37,7 @@ namespace Legato.Sample
 			};
 
 			_Legato.Communicator.PositionPropertyChanged += (position) => {
-				_SongPosition = _Legato.Position;
+				_SongPosition = position;
 				_UpdateSongPosition();
 			};
 		}
