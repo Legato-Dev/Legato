@@ -61,9 +61,9 @@
 			// 
 			// pictureBox1
 			// 
-			this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-			| System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.pictureBox1.Location = new System.Drawing.Point(12, 12);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(391, 349);
@@ -100,9 +100,9 @@
 			this.CurrentPos.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.CurrentPos.Location = new System.Drawing.Point(98, 379);
 			this.CurrentPos.Name = "CurrentPos";
-			this.CurrentPos.Size = new System.Drawing.Size(43, 12);
+			this.CurrentPos.Size = new System.Drawing.Size(31, 12);
 			this.CurrentPos.TabIndex = 7;
-			this.CurrentPos.Text = "Positon";
+			this.CurrentPos.Text = "--:--";
 			// 
 			// Form1
 			// 
