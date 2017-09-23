@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using Legato.Interop.Win32.Enum;
 using static Legato.Interop.Win32.API;
@@ -19,9 +19,8 @@ namespace Legato.Interop.AimpRemote
 		public event Action<NotifyType, IntPtr> NotifyMessageReceived;
 
 		// Changed events
-		public event Action<PropertyType> PropertyChanged;
-		public event Action TrackInfoChanged;
-		public event Action CurrentTrackChanged;
+		public event Action<PlayerProperty> PropertyChanged;
+		public event Action<TrackInfo> CurrentTrackChanged;
 
 		// PropertyChanged events
 		public event Action<TimeSpan> DurationPropertyChanged;
@@ -31,6 +30,11 @@ namespace Legato.Interop.AimpRemote
 		public event Action<int> PositionPropertyChanged;
 		public event Action<PlayerState> StatePropertyChanged;
 		public event Action<int> VolumePropertyChanged;
+
+		public void OnPositionPropertyChanged(int position)
+		{
+			PositionPropertyChanged?.Invoke(position);
+		}
 
 		public CommunicationWindow()
 		{
@@ -53,22 +57,17 @@ namespace Legato.Interop.AimpRemote
 
 			NotifyMessageReceived += (type, lParam) =>
 			{
-				if (type != NotifyType.Property)
-					Debug.WriteLine($"[NotifyMessage] {type} 0x{lParam.ToString("X")}");
-
 				// PropertyChanged を発行
 				if (type == NotifyType.Property)
-					PropertyChanged?.Invoke((PropertyType)lParam);
+					PropertyChanged?.Invoke((PlayerProperty)lParam);
 
 				// CurrentTrackChanged を発行
 				else if (type == NotifyType.TrackStart)
-					CurrentTrackChanged?.Invoke();
+					CurrentTrackChanged?.Invoke(Helper.GetCurrentTrack());
 
-				// TrackInfoChanged を発行
-				else if (type == NotifyType.TrackInfo && (int)lParam == 1)
-					TrackInfoChanged?.Invoke();
+				else if (type == NotifyType.TrackInfo) { }
 
-				else if (type != NotifyType.TrackInfo)
+				else
 					throw new ApplicationException($"NotifyType '{type}' is undefined value");
 			};
 
@@ -77,31 +76,31 @@ namespace Legato.Interop.AimpRemote
 				var propertyValue = Helper.SendPropertyMessage(type, PropertyAccessMode.Get).ToInt32();
 
 				// DurationPropertyChanged を発行
-				if (type == PropertyType.Duration)
+				if (type == PlayerProperty.Duration)
 					DurationPropertyChanged?.Invoke(TimeSpan.FromMilliseconds(propertyValue));
 
 				// IsMutePropertyChanged を発行
-				else if (type == PropertyType.IsMute)
+				else if (type == PlayerProperty.IsMute)
 					IsMutePropertyChanged?.Invoke(propertyValue != 0);
 
 				// IsRepeatPropertyChanged を発行
-				else if (type == PropertyType.IsRepeat)
+				else if (type == PlayerProperty.IsRepeat)
 					IsRepeatPropertyChanged?.Invoke(propertyValue != 0);
 
 				// IsShufflePropertyChanged を発行
-				else if (type == PropertyType.IsShuffle)
+				else if (type == PlayerProperty.IsShuffle)
 					IsShufflePropertyChanged?.Invoke(propertyValue != 0);
 
 				// PositionPropertyChanged を発行
-				else if (type == PropertyType.Position)
-					PositionPropertyChanged?.Invoke(propertyValue);
+				else if (type == PlayerProperty.Position)
+					OnPositionPropertyChanged(propertyValue);
 
 				// StatePropertyChanged を発行
-				else if (type == PropertyType.State)
+				else if (type == PlayerProperty.State)
 					StatePropertyChanged?.Invoke((PlayerState)propertyValue);
 
 				// VolumePropertyChanged を発行
-				else if (type == PropertyType.Volume)
+				else if (type == PlayerProperty.Volume)
 					VolumePropertyChanged?.Invoke(propertyValue);
 
 				else

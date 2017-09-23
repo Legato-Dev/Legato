@@ -44,7 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interop\AimpRemote\Enum\ChannelType.cs" />
-    <Compile Include="Interop\AimpRemote\Exceptions\AIMPNotRunningException.cs" />
     <Compile Include="Interop\AimpRemote\CommunicationWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -53,7 +52,7 @@
     <Compile Include="Interop\AimpRemote\Enum\CommandType.cs" />
     <Compile Include="Interop\AimpRemote\Enum\PlayerState.cs" />
     <Compile Include="Interop\AimpRemote\Enum\PropertyAccessMode.cs" />
-    <Compile Include="Interop\AimpRemote\Enum\PropertyType.cs" />
+    <Compile Include="Interop\AimpRemote\Enum\PlayerProperty.cs" />
     <Compile Include="Interop\AimpRemote\Helper.cs" />
     <Compile Include="Interop\AimpRemote\Entities\TrackInfo.cs" />
     <Compile Include="Interop\AimpRemote\Entities\TrackMetaInfo.cs" />

@@ -8,11 +8,6 @@ namespace Legato.Interop.AimpRemote.Entities
     public class TrackInfo
     {
         /// <summary>
-        /// 現在の再生状況を取得・設定します。
-        /// </summary>
-        public bool IsActive { get; set; }
-
-        /// <summary>
         /// 再生中の曲のビットレートを取得・設定します。
         /// </summary>
         public uint BitRate { get; set; }
@@ -20,7 +15,7 @@ namespace Legato.Interop.AimpRemote.Entities
 		/// <summary>
 		/// 音源の出力タイプを取得・設定します。
 		/// </summary>
-		public ChannelType channelType { get; set; }
+		public ChannelType ChannelType { get; set; }
 
 		/// <summary>
 		/// 再生中の曲の長さを取得・設定します。

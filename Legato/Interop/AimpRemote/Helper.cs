@@ -1,5 +1,4 @@
-﻿using AimpArtwork.Exception;
-using Legato.Interop.AimpRemote.Entities;
+﻿using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using Legato.Interop.Win32.Enum;
 using System;
@@ -23,18 +22,7 @@ namespace Legato.Interop.AimpRemote
 		/// </summary>
 		public static readonly uint CopyDataIdArtWork = 0x41495043;
 
-		public static IntPtr AimpRemoteWindowHandle
-		{
-			get
-			{
-				var handle = Win32.API.FindWindow(RemoteClassName, null);
-
-				if (handle == IntPtr.Zero)
-					throw new AIMPNotRunningException();
-
-				return handle;
-			}
-		}
+		public static IntPtr AimpRemoteWindowHandle => Win32.API.FindWindow(RemoteClassName, null);
 
 		/// <summary>
 		/// 4 byte 単位のメモリ読出し/値変換を行います。
@@ -97,9 +85,9 @@ namespace Legato.Interop.AimpRemote
 				// 数値情報の読み取り
 				meta.HeaderSize = _ReadToUInt32(memory);
 
-				trackInfo.IsActive = _ReadToUInt32(memory) != 0;
+				_ReadToUInt32(memory);
 				trackInfo.BitRate = _ReadToUInt32(memory);
-				trackInfo.channelType = (ChannelType)_ReadToUInt32(memory);
+				trackInfo.ChannelType = (ChannelType)_ReadToUInt32(memory);
 				trackInfo.Duration = _ReadToUInt32(memory);
 				trackInfo.FileSize = _ReadToUInt64(memory);
 
@@ -156,14 +144,14 @@ namespace Legato.Interop.AimpRemote
 		}
 
 		// send Property Message
-		public static IntPtr SendPropertyMessage(PropertyType propertyType, PropertyAccessMode mode, IntPtr value)
+		public static IntPtr SendPropertyMessage(PlayerProperty property, PropertyAccessMode mode, IntPtr value)
 		{
-			return _SendMessageBase((WindowMessage)AimpWindowMessage.Property, new IntPtr((uint)propertyType | (uint)mode), value);
+			return _SendMessageBase((WindowMessage)AimpWindowMessage.Property, new IntPtr((uint)property | (uint)mode), value);
 		}
 
-		public static IntPtr SendPropertyMessage(PropertyType propertyType, PropertyAccessMode mode)
+		public static IntPtr SendPropertyMessage(PlayerProperty property, PropertyAccessMode mode)
 		{
-			return SendPropertyMessage(propertyType, mode, IntPtr.Zero);
+			return SendPropertyMessage(property, mode, IntPtr.Zero);
 		}
 
 		// send Command Message

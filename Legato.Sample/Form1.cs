@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Console;
 
@@ -8,50 +6,66 @@ namespace Legato.Sample
 {
 	public partial class Form1 : Form
 	{
-		#region Field
-
-		private Legato _Legato { get; set; }
-		private int _SongPosition;
-
-		#endregion Field
-
 		public Form1()
 		{
 			InitializeComponent();
+		}
 
-			_Legato = new Legato();
-			_SongPosition = 0;
+		#region Properties
 
-			Icon = Properties.Resources.legato;
+		private Legato _Legato { get; set; }
 
-			_UpdateAlbumArt();
+		#endregion Properties
 
-			_Legato.Communicator.CurrentTrackChanged += () =>
+		#region Methods
+
+		/// <summary>
+		/// Legatoに対するイベントリスナを追加します
+		/// </summary>
+		private void _AddLegatoEventListeners()
+		{
+			_Legato.Connected += () =>
 			{
+				WriteLine("接続されました");
+			};
+
+			_Legato.Disconnected += () =>
+			{
+				WriteLine("切断されました");
+			};
+
+			_Legato.Communicator.CurrentTrackChanged += (track) =>
+			{
+				WriteLine("CurrentTrackChanged:");
+				Write($"Title:{track.Title} ");
+				Write($"Artist:{track.Artist} ");
+				Write($"Album:{track.Album} ");
+				Write($"Genre:{track.Genre} ");
+				Write($"Duration:{track.Duration} ");
+				Write($"TrackNumber:{track.TrackNumber} ");
+				Write($"Year:{track.Year} ");
+				Write($"ChannelType:{track.ChannelType} ");
+				Write($"BitRate:{track.BitRate} ");
+				Write($"SampleRate:{track.SampleRate} ");
+				WriteLine();
+
 				_UpdateAlbumArt();
 			};
 
 			_Legato.Communicator.StatePropertyChanged += (state) =>
 			{
+				WriteLine($"StatePropertyChanged: {state}");
 				_UpdateAlbumArt();
 			};
 
-			_Legato.Communicator.PositionPropertyChanged += (position) => {
-				_SongPosition = position;
-				_UpdateSongPosition();
+			_Legato.Communicator.PositionPropertyChanged += (position) =>
+			{
+				var totalSec = position / 1000;
+				var min = totalSec / 60;
+				var sec = totalSec % 60;
+
+				CurrentPos.Text = $"{min:D2}:{sec:D2}";
 			};
-		}
-
-		/// <summary>
-		/// 再生時間の表示を更新します
-		/// </summary>
-		private void _UpdateSongPosition()
-		{
-			var totalSec = _SongPosition / 1000;
-			var min = totalSec / 60;
-			var sec = totalSec % 60;
-
-			CurrentPos.Text = $"{min:D2}:{sec:D2}";
 		}
 
 		/// <summary>
@@ -59,10 +73,29 @@ namespace Legato.Sample
 		/// </summary>
 		private void _UpdateAlbumArt()
 		{
-			pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
+			if (_Legato?.IsRunning ?? false)
+				pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
+			else
+				pictureBox1.Image = Properties.Resources.logo;
 		}
 
+		#endregion Methods
+
 		#region Procedures
+
+		private void Form1_Load(object sender, EventArgs e)
+		{
+			Icon = Properties.Resources.legato;
+
+			_Legato = new Legato();
+			_AddLegatoEventListeners();
+			_UpdateAlbumArt();
+		}
+
+		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			_Legato.Dispose();
+		}
 
 		private void buttonPlayPause_Click(object sender, EventArgs e)
 		{
@@ -88,24 +121,20 @@ namespace Legato.Sample
 			}
 		}
 
-		private void buttonFetch_Click(object sender, EventArgs e)
+		private void buttonPlayerInfo_Click(object sender, EventArgs e)
 		{
-			WriteLine($"IsRunning:{_Legato.IsRunning}");
+			Write($"IsRunning:{_Legato.IsRunning} ");
 
 			if (_Legato?.IsRunning ?? false)
 			{
-				WriteLine($"State:{_Legato.State}");
-				WriteLine($"IsShuffle:{_Legato.IsShuffle}");
-				WriteLine($"Volume:{_Legato.Volume}");
-				WriteLine($"Position:{_Legato.Position} - {_Legato.Duration}");
-
-				var track = _Legato.CurrentTrack;
-				WriteLine($"Title:{track.Title}");
-				WriteLine($"Artist:{track.Artist}");
-				WriteLine($"Album:{track.Album}");
-
-				pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
+				Write($"State:{_Legato.State} ");
+				Write($"Volume:{_Legato.Volume} ");
+				Write($"IsShuffle:{_Legato.IsShuffle} ");
+				Write($"IsRepeat:{_Legato.IsRepeat} ");
+				Write($"IsMute:{_Legato.IsMute} ");
+				Write($"Position:{_Legato.Position} ");
 			}
+			WriteLine();
 		}
 
 		#endregion Procedures

@@ -1,6 +1,6 @@
 ﻿namespace Legato.Interop.AimpRemote.Enum
 {
-	public enum PropertyType : uint
+	public enum PlayerProperty : uint
 	{
 		/* TODO
 		/// <summary>

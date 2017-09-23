@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.buttonFetch = new System.Windows.Forms.Button();
+			this.buttonPlayerInfo = new System.Windows.Forms.Button();
 			this.buttonPlayPause = new System.Windows.Forms.Button();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.buttonNext = new System.Windows.Forms.Button();
@@ -37,16 +37,16 @@
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// buttonFetch
+			// buttonPlayerInfo
 			// 
-			this.buttonFetch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.buttonFetch.Location = new System.Drawing.Point(12, 373);
-			this.buttonFetch.Name = "buttonFetch";
-			this.buttonFetch.Size = new System.Drawing.Size(80, 25);
-			this.buttonFetch.TabIndex = 2;
-			this.buttonFetch.Text = "Fetch info";
-			this.buttonFetch.UseVisualStyleBackColor = true;
-			this.buttonFetch.Click += new System.EventHandler(this.buttonFetch_Click);
+			this.buttonPlayerInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.buttonPlayerInfo.Location = new System.Drawing.Point(12, 373);
+			this.buttonPlayerInfo.Name = "buttonPlayerInfo";
+			this.buttonPlayerInfo.Size = new System.Drawing.Size(80, 25);
+			this.buttonPlayerInfo.TabIndex = 2;
+			this.buttonPlayerInfo.Text = "PlayerInfo";
+			this.buttonPlayerInfo.UseVisualStyleBackColor = true;
+			this.buttonPlayerInfo.Click += new System.EventHandler(this.buttonPlayerInfo_Click);
 			// 
 			// buttonPlayPause
 			// 
@@ -114,9 +114,11 @@
 			this.Controls.Add(this.buttonNext);
 			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this.buttonPlayPause);
-			this.Controls.Add(this.buttonFetch);
+			this.Controls.Add(this.buttonPlayerInfo);
 			this.Name = "Form1";
 			this.Text = "Legato.Sample";
+			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
+			this.Load += new System.EventHandler(this.Form1_Load);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -124,7 +126,7 @@
 		}
 
 		#endregion
-		private System.Windows.Forms.Button buttonFetch;
+		private System.Windows.Forms.Button buttonPlayerInfo;
 		private System.Windows.Forms.Button buttonPlayPause;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Button buttonNext;

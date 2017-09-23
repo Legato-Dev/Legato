@@ -20,46 +20,87 @@ namespace Legato
 				if (copyData.dwData == new IntPtr(Helper.CopyDataIdArtWork))
 				{
 					var dataLength = (int)copyData.cbData;
-					_AlbumArt = new byte[dataLength];
-					Marshal.Copy(copyData.lpData, _AlbumArt, 0, dataLength);
+					_AlbumArtSource = new byte[dataLength];
+					Marshal.Copy(copyData.lpData, _AlbumArtSource, 0, dataLength);
 				}
 			};
 
-			if (IsRunning)
-				Helper.RegisterNotify(Communicator);
+			// ポーリング
+			Polling.Elapsed += (s, e) =>
+			{
+				if (!IsConnected)
+				{
+					if (IsRunning)
+					{
+						// 通知を購読
+						IsConnected = true;
+						Communicator.Invoke((Action)(() => {
+							Helper.RegisterNotify(Communicator);
+						}));
+						Connected?.Invoke();
+					}
+				}
+				else
+				{
+					if (IsRunning)
+					{
+						// PositionProperty
+						Communicator.Invoke((Action)(() => {
+							Communicator.OnPositionPropertyChanged(Position);
+						}));
+					}
+					else
+					{
+						// AIMPが終了した
+						IsConnected = false;
+						Disconnected?.Invoke();
+					}
+				}
+			};
+			Polling.Start();
 		}
 
+		#region Events
+
+		/// <summary>
+		/// AIMPに接続した時に発生します
+		/// </summary>
+		public event Action Connected;
+
+		/// <summary>
+		/// AIMPから切断された時(AIMPが閉じられた時)に発生します
+		/// </summary>
+		public event Action Disconnected;
+
+		#endregion Events
+
+		#region Properties
+
 		public CommunicationWindow Communicator { get; set; }
+		private System.Timers.Timer Polling { get; } = new System.Timers.Timer(100);
+
+		/// <summary>
+		/// AIMPと接続されているかどうかを示す値を取得します
+		/// </summary>	
+		public bool IsConnected { get; private set; } = false;
 
 		/// <summary>
 		/// AIMPが起動しているかどうかを示す値を取得します
 		/// </summary>
-		public bool IsRunning
-		{
-			get
-			{
-				try { var remote = Helper.AimpRemoteWindowHandle; return true; }
-				catch { return false; }
-			}
-		}
+		public bool IsRunning => Helper.AimpRemoteWindowHandle != IntPtr.Zero;
 
 		/// <summary>
 		/// AIMPの再生状態を示す値を取得します
 		/// </summary>
-		public PlayerState State => (PlayerState)Helper.SendPropertyMessage(PropertyType.State, PropertyAccessMode.Get).ToInt32();
-
-		/// <summary>
-		/// 曲の長さを示す値を取得します(単位は[ms]です)
-		/// </summary>
-		public int Duration => Helper.SendPropertyMessage(PropertyType.Duration, PropertyAccessMode.Get).ToInt32();
+		public PlayerState State => (PlayerState)Helper.SendPropertyMessage(PlayerProperty.State, PropertyAccessMode.Get).ToInt32();
 
 		/// <summary>
 		/// 曲の再生位置を取得または設定します(単位は[ms]です)
 		/// </summary>
 		public int Position
 		{
-			get { return Helper.SendPropertyMessage(PropertyType.Position, PropertyAccessMode.Get).ToInt32(); }
-			set { Helper.SendPropertyMessage(PropertyType.Position, PropertyAccessMode.Set, new IntPtr(value)); }
+			get { return Helper.SendPropertyMessage(PlayerProperty.Position, PropertyAccessMode.Get).ToInt32(); }
+			set { Helper.SendPropertyMessage(PlayerProperty.Position, PropertyAccessMode.Set, new IntPtr(value)); }
 		}
 
 		/// <summary>
@@ -67,11 +108,11 @@ namespace Legato
 		/// </summary>
 		public int Volume
 		{
-			get { return Helper.SendPropertyMessage(PropertyType.Volume, PropertyAccessMode.Get).ToInt32(); }
+			get { return Helper.SendPropertyMessage(PlayerProperty.Volume, PropertyAccessMode.Get).ToInt32(); }
 			set
 			{
 				var volume = Math.Max(0, Math.Min(value, 100));
-				var result = Helper.SendPropertyMessage(PropertyType.Volume, PropertyAccessMode.Set, new IntPtr(volume));
+				var result = Helper.SendPropertyMessage(PlayerProperty.Volume, PropertyAccessMode.Set, new IntPtr(volume));
 
 				if (result == IntPtr.Zero)
 					throw new ApplicationException("AimpのVolumeプロパティの設定に失敗しました。");
@@ -83,8 +124,8 @@ namespace Legato
 		/// </summary>
 		public bool IsMute
 		{
-			get { return Helper.SendPropertyMessage(PropertyType.IsMute, PropertyAccessMode.Get) != IntPtr.Zero; }
-			set { Helper.SendPropertyMessage(PropertyType.IsMute, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
+			get { return Helper.SendPropertyMessage(PlayerProperty.IsMute, PropertyAccessMode.Get) != IntPtr.Zero; }
+			set { Helper.SendPropertyMessage(PlayerProperty.IsMute, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
 		}
 
 		/// <summary>
@@ -92,8 +133,8 @@ namespace Legato
 		/// </summary>
 		public bool IsRepeat
 		{
-			get { return Helper.SendPropertyMessage(PropertyType.IsRepeat, PropertyAccessMode.Get) != IntPtr.Zero; }
-			set { Helper.SendPropertyMessage(PropertyType.IsRepeat, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
+			get { return Helper.SendPropertyMessage(PlayerProperty.IsRepeat, PropertyAccessMode.Get) != IntPtr.Zero; }
+			set { Helper.SendPropertyMessage(PlayerProperty.IsRepeat, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
 		}
 
 		/// <summary>
@@ -101,8 +142,8 @@ namespace Legato
 		/// </summary>
 		public bool IsShuffle
 		{
-			get { return Helper.SendPropertyMessage(PropertyType.IsShuffle, PropertyAccessMode.Get) != IntPtr.Zero; }
-			set { Helper.SendPropertyMessage(PropertyType.IsShuffle, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
+			get { return Helper.SendPropertyMessage(PlayerProperty.IsShuffle, PropertyAccessMode.Get) != IntPtr.Zero; }
+			set { Helper.SendPropertyMessage(PlayerProperty.IsShuffle, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
 		}
 
 		/// <summary>
@@ -123,14 +164,27 @@ namespace Legato
 				Image resource;
 				using (var memory = new MemoryStream())
 				{
-					memory.Write(_AlbumArt, 0, _AlbumArt.Length);
+					memory.Write(_AlbumArtSource, 0, _AlbumArtSource.Length);
 					resource = Image.FromStream(memory);
 				}
 
 				return resource;
 			}
 		}
-		private byte[] _AlbumArt { get; set; }
+		private byte[] _AlbumArtSource { get; set; }
+
+		#endregion Properties
+
+		#region Methods
+
+		public void Dispose()
+		{
+			Polling.Stop();
+
+			// 通知の購読解除
+			if (IsConnected)
+				Helper.UnregisterNotify(Communicator);
+		}
 
 		#region Commands
 
@@ -194,11 +248,8 @@ namespace Legato
 			Helper.SendCommandMessage(CommandType.Quit);
 		}
 
-		#endregion
+		#endregion Commands
 
-		public void Dispose()
-		{
-
-		}
+		#endregion Methods
 	}
 }
