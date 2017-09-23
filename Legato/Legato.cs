@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
+using System.Diagnostics;
 
 namespace Legato
 {
@@ -88,6 +89,30 @@ namespace Legato
 		/// AIMPが起動しているかどうかを示す値を取得します
 		/// </summary>
 		public bool IsRunning => Helper.AimpRemoteWindowHandle != IntPtr.Zero;
+
+		/// <summary>
+		/// AIMP の非同期処理に必要なパスを取得します
+		/// </summary>
+		public string AimpProcessPath
+		{
+			get
+			{
+				var processPath = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\\Clients\\Media\\AIMP\\shell\\open\\command")?.GetValue(null)?.ToString();
+				if (processPath == null)
+					throw new ApplicationException();
+
+				var fileInfo = new FileInfo(processPath);
+				if (!fileInfo.Exists)
+					throw new FileNotFoundException("AIMP4.exeが見つかりませんでした。ファイルが移動したか、削除された可能性があります");
+
+				return processPath;
+			}
+		}
+
+		/// <summary>
+		/// AIMP の非同期処理を実行します
+		/// </summary>
+		public Process Run() => Process.Start(AimpProcessPath);
 
 		/// <summary>
 		/// AIMPの再生状態を示す値を取得します
