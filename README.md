@@ -10,8 +10,13 @@ Let's get your track information and your album art from AIMP4!
 
 AIMP4からトラック情報やアルバムアートを取得しましょう！
 
+## License for Legato
+MIT
+
 ## Sample
 ![LegatoSample](LegatoSample.png)
 
-## License
-MIT
+### Legato.TwitterSampleで利用しているライブラリとそのライセンス
+- CoreTweet : MIT License
+	- Newtonsoft.Json : MIT License
+- JsonFx : MIT License
