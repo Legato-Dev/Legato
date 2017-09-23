@@ -46,13 +46,17 @@ namespace Legato.TwitterSample
 			};
 
 			{
-				var track = _Legato.CurrentTrack;
+				if (_Legato?.IsRunning ?? false)
+				{
+					var track = _Legato.CurrentTrack;
+					labelTrackNumber.Text = $"{track.TrackNumber:D2}.";
+					labelTitle.Text = track.Title;
+					labelArtist.Text = track.Artist;
+					labelAlbum.Text = track.Album;
+				}
 
-				pictureBox1.Image = _Legato.AlbumArt;
-				labelTrackNumber.Text = $"{track.TrackNumber:D2}.";
-				labelTitle.Text = track.Title;
-				labelArtist.Text = track.Artist;
-				labelAlbum.Text = track.Album;
+				if (_Legato?.IsRunning ?? false)
+					pictureBox1.Image = _Legato.AlbumArt;
 			}
 		}
 
