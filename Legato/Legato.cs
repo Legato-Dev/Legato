@@ -35,7 +35,8 @@ namespace Legato
 					{
 						// 通知を購読
 						IsSubscribed = true;
-						Communicator.Invoke((Action)(() => {
+						Communicator.Invoke((Action)(() =>
+						{
 							Helper.RegisterNotify(Communicator);
 						}));
 						Connected?.Invoke();
@@ -46,7 +47,8 @@ namespace Legato
 					if (IsRunning)
 					{
 						// PositionProperty
-						Communicator.Invoke((Action)(() => {
+						Communicator.Invoke((Action)(() =>
+						{
 							Communicator.OnPositionPropertyChanged(Position);
 						}));
 					}
