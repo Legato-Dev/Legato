@@ -115,6 +115,7 @@
 			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this.buttonPlayPause);
 			this.Controls.Add(this.buttonPlayerInfo);
+			this.MinimumSize = new System.Drawing.Size(353, 85);
 			this.Name = "Form1";
 			this.Text = "Legato.Sample";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
