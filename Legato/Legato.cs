@@ -149,7 +149,7 @@ namespace Legato
 		/// <summary>
 		/// 再生中の曲の情報を取得します
 		/// </summary>
-		public TrackInfo CurrentTrack => Helper.GetCurrentTrack();
+		public TrackInfo CurrentTrack => Helper.CurrentTrack;
 
 		/// <summary>
 		/// 再生中のアルバムアートを取得します。
@@ -189,64 +189,39 @@ namespace Legato
 		#region Commands
 
 		/// <summary>
-		/// 曲を再生します。
+		/// 曲を再生します
 		/// </summary>
-		public void Play()
-		{
-			Helper.SendCommandMessage(CommandType.Playing);
-		}
+		public void Play() => Helper.SendCommandMessage(CommandType.Playing);
 
 		/// <summary>
-		/// <para>再生中の曲の再生状態を切り替えます。</para>
-		/// <para>【現状態】⇒【次状態】</para>
-		/// <para>再生中⇒一時停止</para>
-		/// <para>一時停止中⇒再生</para>
-		/// <para>停止中⇒再生</para>
+		/// 再生中の曲の再生状態を切り替えます
 		/// </summary>
-		public void PlayPause()
-		{
-			Helper.SendCommandMessage(CommandType.PlayPause);
-		}
+		public void PlayPause() => Helper.SendCommandMessage(CommandType.PlayPause);
 
 		/// <summary>
-		/// 再生中の曲を一時停止します。
+		/// 再生中の曲を一時停止します
 		/// </summary>
-		public void Pause()
-		{
-			Helper.SendCommandMessage(CommandType.Pausing);
-		}
+		public void Pause() => Helper.SendCommandMessage(CommandType.Pausing);
 
 		/// <summary>
-		/// 再生中の曲を停止します。
+		/// 再生中の曲を停止します
 		/// </summary>
-		public void Stop()
-		{
-			Helper.SendCommandMessage(CommandType.Stopped);
-		}
+		public void Stop() => Helper.SendCommandMessage(CommandType.Stopped);
 
 		/// <summary>
-		/// 次の曲へ移動します。
+		/// 次の曲へ移動します
 		/// </summary>
-		public void Next()
-		{
-			Helper.SendCommandMessage(CommandType.Next);
-		}
+		public void Next() => Helper.SendCommandMessage(CommandType.Next);
 
 		/// <summary>
-		/// 前の曲へ移動します。
+		/// 前の曲へ移動します
 		/// </summary>
-		public void Prev()
-		{
-			Helper.SendCommandMessage(CommandType.Previous);
-		}
+		public void Prev() => Helper.SendCommandMessage(CommandType.Previous);
 
 		/// <summary>
-		/// AIMP を終了します。
+		/// AIMP を終了します
 		/// </summary>
-		public void Close()
-		{
-			Helper.SendCommandMessage(CommandType.Quit);
-		}
+		public void Close() => Helper.SendCommandMessage(CommandType.Quit);
 
 		#endregion Commands
 
