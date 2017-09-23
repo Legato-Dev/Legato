@@ -28,12 +28,12 @@ namespace Legato
 			// ポーリング
 			Polling.Elapsed += (s, e) =>
 			{
-				if (!IsConnected)
+				if (!IsSubscribed)
 				{
 					if (IsRunning)
 					{
 						// 通知を購読
-						IsConnected = true;
+						IsSubscribed = true;
 						Communicator.Invoke((Action)(() => {
 							Helper.RegisterNotify(Communicator);
 						}));
@@ -52,7 +52,7 @@ namespace Legato
 					else
 					{
 						// AIMPが終了した
-						IsConnected = false;
+						IsSubscribed = false;
 						Disconnected?.Invoke();
 					}
 				}
@@ -82,7 +82,7 @@ namespace Legato
 		/// <summary>
 		/// AIMPと接続されているかどうかを示す値を取得します
 		/// </summary>	
-		public bool IsConnected { get; private set; } = false;
+		public bool IsSubscribed { get; private set; } = false;
 
 		/// <summary>
 		/// AIMPが起動しているかどうかを示す値を取得します
@@ -182,7 +182,7 @@ namespace Legato
 			Polling.Stop();
 
 			// 通知の購読解除
-			if (IsConnected)
+			if (IsSubscribed)
 				Helper.UnregisterNotify(Communicator);
 		}
 
