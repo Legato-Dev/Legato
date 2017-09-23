@@ -99,7 +99,7 @@ namespace Legato
 		{
 			get
 			{
-				var processPath = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\\Clients\\Media\\AIMP\\shell\\open\\command")?.GetValue(null)?.ToString();
+				var processPath = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Clients\Media\AIMP\shell\open\command")?.GetValue(null)?.ToString();
 				if (processPath == null)
 					throw new ApplicationException();
 
