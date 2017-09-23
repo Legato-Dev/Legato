@@ -72,7 +72,15 @@ namespace Legato.Interop.AimpRemote
 				var trackInfo = new TrackInfo();
 				var meta = new TrackMetaInfo();
 
-				var mmf = MemoryMappedFile.OpenExisting(RemoteClassName, MemoryMappedFileRights.ReadWrite, HandleInheritability.Inheritable);
+				MemoryMappedFile mmf = null;
+				try
+				{
+					mmf = MemoryMappedFile.OpenExisting(RemoteClassName, MemoryMappedFileRights.ReadWrite, HandleInheritability.Inheritable);
+				}
+				catch (FileNotFoundException)
+				{
+					throw new ApplicationException("CurrentTrackの取得に失敗しました。AIMPが起動されているかを確認してください。");
+				}
 
 				using (var memory = mmf.CreateViewStream(0, RemoteMapFileSize))
 				{
