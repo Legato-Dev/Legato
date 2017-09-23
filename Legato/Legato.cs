@@ -185,6 +185,9 @@ namespace Legato
 		{
 			get
 			{
+				if (!IsRunning)
+					throw new ApplicationException("AlbumArtの取得に失敗しました。AIMPが起動されているかを確認してください。");
+
 				if (!Helper.RequestAlbumArt(Communicator))
 					return null;
 
