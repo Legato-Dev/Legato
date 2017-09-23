@@ -63,7 +63,7 @@ namespace Legato.Interop.AimpRemote
 
 				// CurrentTrackChanged を発行
 				else if (type == NotifyType.TrackStart)
-					CurrentTrackChanged?.Invoke(Helper.GetCurrentTrack());
+					CurrentTrackChanged?.Invoke(Helper.CurrentTrack);
 
 				else if (type == NotifyType.TrackInfo) { }
 
