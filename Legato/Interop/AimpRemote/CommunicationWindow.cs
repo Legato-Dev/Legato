@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
@@ -31,6 +32,8 @@ namespace Legato.Interop.AimpRemote
 		public event Action<PlayerState> StatePropertyChanged;
 		public event Action<int> VolumePropertyChanged;
 
+		public TimeSpan CurrentTrackChangedDelayTime { get; set; } = TimeSpan.FromMilliseconds(20);
+
 		public void OnPositionPropertyChanged(int position)
 		{
 			PositionPropertyChanged?.Invoke(position);
@@ -55,7 +58,7 @@ namespace Legato.Interop.AimpRemote
 					NotifyMessageReceived?.Invoke((NotifyType)wParam, lParam);
 			};
 
-			NotifyMessageReceived += (type, lParam) =>
+			NotifyMessageReceived += async (type, lParam) =>
 			{
 				// PropertyChanged を発行
 				if (type == NotifyType.Property)
@@ -63,7 +66,10 @@ namespace Legato.Interop.AimpRemote
 
 				// CurrentTrackChanged を発行
 				else if (type == NotifyType.TrackStart)
+				{
+					await Task.Delay(CurrentTrackChangedDelayTime);
 					CurrentTrackChanged?.Invoke(Helper.CurrentTrack);
+				}
 
 				else if (type == NotifyType.TrackInfo) { }
 
