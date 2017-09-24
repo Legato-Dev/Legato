@@ -63,7 +63,7 @@ namespace Legato
 		public bool IsRunning => Helper.AimpRemoteWindowHandle != IntPtr.Zero;
 
 		/// <summary>
-		/// AIMP の非同期処理に必要なパスを取得します
+		/// AIMP の実行ファイルのパスを取得します
 		/// </summary>
 		public string AimpProcessPath
 		{
@@ -82,9 +82,9 @@ namespace Legato
 		}
 
 		/// <summary>
-		/// AIMP の非同期処理を実行します
+		/// AIMP を起動します
 		/// </summary>
-		public Process Run() => Process.Start(AimpProcessPath);
+		public Process StartAimp() => Process.Start(AimpProcessPath);
 
 		/// <summary>
 		/// AIMPの再生状態を示す値を取得します
