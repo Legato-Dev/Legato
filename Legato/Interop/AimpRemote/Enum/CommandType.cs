@@ -6,12 +6,12 @@
 	public enum CommandType
 	{
 		/// <summary>
-		/// 通知の登録(valueにwindowHandleを与えてください)
+		/// 通知の登録( value に windowHandle を与えてください)
 		/// </summary>
 		RegisterNotify = 11,
 
 		/// <summary>
-		/// 通知の登録解除(valueにwindowHandleを与えてください)
+		/// 通知の登録解除( value に windowHandle を与えてください)
 		/// </summary>
 		UnregisterNotify = 12,
 
@@ -51,7 +51,7 @@
 		Quit = 21,
 
 		/// <summary>
-		/// アルバムアートの取得(このコマンドは32bitアプリケーションでのみ動作します)
+		/// アルバムアートの取得(このコマンドは 32bit アプリケーションでのみ動作します)
 		/// </summary>
 		RequestAlbumArt = 29,
 	}

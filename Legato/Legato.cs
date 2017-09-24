@@ -24,12 +24,12 @@ namespace Legato
 		#region Events
 
 		/// <summary>
-		/// AIMPの通知を購読した時に発生します
+		/// AIMP の通知を購読した時に発生します
 		/// </summary>
 		public event Action Subscribed;
 
 		/// <summary>
-		/// AIMPの通知を購読解除した時(AIMPが終了した時)に発生します
+		/// AIMP の通知を購読解除した時(AIMP が終了した時)に発生します
 		/// </summary>
 		public event Action Unsubscribed;
 
@@ -48,17 +48,17 @@ namespace Legato
 		private System.Timers.Timer _Polling { get; set; }
 
 		/// <summary>
-		/// AIMPのイベント通知の購読を自動的に行うかどうかを示す値を取得または設定します
+		/// AIMP のイベント通知の購読を自動的に行うかどうかを示す値を取得または設定します
 		/// </summary>
 		public bool IsAutoSubscribing { get; set; }
 
 		/// <summary>
-		/// AIMPのイベント通知を購読しているかどうか(受信可能であるかどうか)を示す値を取得します
+		/// AIMP のイベント通知を購読しているかどうか(受信可能であるかどうか)を示す値を取得します
 		/// </summary>	
 		public bool IsSubscribed { get; private set; } = false;
 
 		/// <summary>
-		/// AIMPが起動しているかどうかを示す値を取得します
+		/// AIMP が起動しているかどうかを示す値を取得します
 		/// </summary>
 		public bool IsRunning => Helper.AimpRemoteWindowHandle != IntPtr.Zero;
 
@@ -87,7 +87,7 @@ namespace Legato
 		public Process StartAimp() => Process.Start(AimpProcessPath);
 
 		/// <summary>
-		/// AIMPの再生状態を示す値を取得します
+		/// AIMP の再生状態を示す値を取得します
 		/// </summary>
 		public PlayerState State => (PlayerState)Helper.SendPropertyMessage(PlayerProperty.State, PropertyAccessMode.Get).ToInt32();
 
@@ -126,7 +126,7 @@ namespace Legato
 		}
 
 		/// <summary>
-		/// リピート再生中であるかどうかを示す値を取得または設定します
+		/// 一曲リピート再生中であるかどうかを示す値を取得または設定します
 		/// </summary>
 		public bool IsRepeat
 		{
@@ -149,7 +149,7 @@ namespace Legato
 		public TrackInfo CurrentTrack => Helper.CurrentTrack;
 
 		/// <summary>
-		/// 再生中のアルバムアートを取得します。
+		/// 再生中のアルバムアートを取得します
 		/// </summary>
 		public Image AlbumArt
 		{
@@ -230,7 +230,7 @@ namespace Legato
 		}
 
 		/// <summary>
-		/// AIMPのイベント通知を購読します
+		/// AIMP のイベント通知を購読します
 		/// </summary>
 		public void Subscribe()
 		{
@@ -249,7 +249,7 @@ namespace Legato
 		}
 
 		/// <summary>
-		/// AIMPのイベント通知の購読を解除します
+		/// AIMP のイベント通知の購読を解除します
 		/// </summary>
 		public void Unsubscribe()
 		{

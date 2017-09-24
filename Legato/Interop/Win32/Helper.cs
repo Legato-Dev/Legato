@@ -3,7 +3,7 @@
 namespace Legato.Interop.Win32
 {
 	/// <summary>
-	/// Win32APIに関するヘルパーを提供します
+	/// Win32API に関するヘルパーを提供します
 	/// </summary>
 	public static class Helper
 	{

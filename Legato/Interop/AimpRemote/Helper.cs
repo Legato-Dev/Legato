@@ -10,7 +10,7 @@ using System.Text;
 namespace Legato.Interop.AimpRemote
 {
 	/// <summary>
-	/// AIMPのリモートAPIに関するヘルパーを提供します
+	/// AIMP のリモート API に関するヘルパーを提供します
 	/// </summary>
 	public class Helper
 	{
@@ -18,7 +18,7 @@ namespace Legato.Interop.AimpRemote
 		public static readonly int RemoteMapFileSize = 2048;
 
 		/// <summary>
-		/// アートワークのCopyDataIdを示します
+		/// アートワークの CopyDataId を示します
 		/// </summary>
 		public static readonly uint CopyDataIdArtWork = 0x41495043;
 
@@ -129,6 +129,7 @@ namespace Legato.Interop.AimpRemote
 		}
 
 		// send Message (base)
+
 		private static IntPtr _SendMessageBase(WindowMessage windowMessage, IntPtr param, IntPtr value)
 		{
 			IntPtr output;
@@ -165,13 +166,21 @@ namespace Legato.Interop.AimpRemote
 		/// <summary>
 		/// アルバムアートをリクエストします
 		/// </summary>
-		/// <param name="communicationWindow">ArtWorkを受け取る通信ウィンドウ</param>
+		/// <param name="communicationWindow">ArtWork を受け取る通信ウィンドウ</param>
 		public static bool RequestAlbumArt(CommunicationWindow communicationWindow) =>
 			SendCommandMessage(CommandType.RequestAlbumArt, communicationWindow.Handle) != IntPtr.Zero;
 
+		/// <summary>
+		/// イベント通知を行うウィンドウを AIMP に登録します
+		/// </summary>
+		/// <param name="communicationWindow">イベント通知を受け取る通信ウィンドウ</param>
 		public static bool RegisterNotify(CommunicationWindow communicationWindow) =>
 			SendCommandMessage(CommandType.RegisterNotify, communicationWindow.Handle) != IntPtr.Zero;
 
+		/// <summary>
+		/// イベント通知を行うウィンドウを AIMP から登録解除します
+		/// </summary>
+		/// <param name="communicationWindow">イベント通知を受け取る通信ウィンドウ</param>
 		public static bool UnregisterNotify(CommunicationWindow communicationWindow) =>
 			SendCommandMessage(CommandType.UnregisterNotify, communicationWindow.Handle) != IntPtr.Zero;
 	}

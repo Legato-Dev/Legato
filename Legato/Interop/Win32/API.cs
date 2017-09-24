@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace Legato.Interop.Win32
 {
 	/// <summary>
-	/// Win32APIをサポートします
+	/// Win32API をサポートします
 	/// </summary>
 	public static class API
 	{
@@ -21,7 +21,7 @@ namespace Legato.Interop.Win32
 		#region Structs
 
 		/// <summary>
-		/// コピーデータ構造体。
+		/// コピーデータ構造体
 		/// </summary>
 		[StructLayout(LayoutKind.Sequential)]
 		public struct CopyDataStruct

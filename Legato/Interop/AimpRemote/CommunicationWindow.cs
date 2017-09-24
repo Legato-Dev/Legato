@@ -10,7 +10,7 @@ using static Legato.Interop.Win32.API;
 namespace Legato.Interop.AimpRemote
 {
 	/// <summary>
-	/// Aimpと通信するためのメッセージ専用ウィンドウ
+	/// AIMP と通信するためのメッセージ専用ウィンドウ
 	/// </summary>
 	public class CommunicationWindow : Form
 	{
