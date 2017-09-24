@@ -152,9 +152,10 @@ namespace Legato.TwitterSample
 			if (_Legato.AlbumArt == null)
 				Process.Start("tempDefault.png");
 			else
+			{
 				_Legato.AlbumArt.Save("temp.png", ImageFormat.Png);
-
-			Process.Start("temp.png");
+				Process.Start("temp.png");
+			}
 		}
 
 		private void checkBoxAutoPosting_CheckedChanged(object sender, EventArgs e)
