@@ -24,12 +24,12 @@ namespace Legato.Sample
 		/// </summary>
 		private void _AddLegatoEventListeners()
 		{
-			_Legato.Connected += () =>
+			_Legato.Subscribed += () =>
 			{
 				WriteLine("接続されました");
 			};
 
-			_Legato.Disconnected += () =>
+			_Legato.Unsubscribed += () =>
 			{
 				WriteLine("切断されました");
 			};
