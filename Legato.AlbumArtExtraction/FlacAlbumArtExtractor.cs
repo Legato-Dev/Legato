@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using Legato.AlbumArtExtraction.Flac;
 
 namespace Legato.AlbumArtExtraction
 {
@@ -17,99 +18,111 @@ namespace Legato.AlbumArtExtraction
 		}
 
 		public string FilePath { get; set; }
-		private Stream _Stream { get; set; }
+
+		private Stream _FileStream { get; set; }
 
 		/// <summary>
 		/// ASCII文字列として指定されたカウント数だけ読み取ります
 		/// </summary>
-		/// <param name="stream"></param>
-		/// <param name="count"></param>
-		private string _ReadAsAsciiString(int count)
+		private string _ReadAsAsciiString(Stream stream, int count)
 		{
 			var buf = new byte[count];
-			_Stream.Read(buf, 0, count);
+			stream.Read(buf, 0, count);
 
 			return new string(Encoding.ASCII.GetChars(buf));
 		}
 
-		private uint _ReadAsUInt()
-		{
-			var buf = new byte[4];
-			_Stream.Read(buf, 0, 4);
-
-			return BitConverter.ToUInt32(buf, 0);
-		}
-
-		private List<byte> _ReadAsByteList(int count)
+		private List<byte> _ReadAsByteList(Stream stream, int count)
 		{
 			var buf = new byte[count];
-			_Stream.Read(buf, 0, count);
+			stream.Read(buf, 0, count);
 
 			return new List<byte>(buf);
 		}
 
-		public enum FlacMetaDataType
+		private uint _ReadAsUInt(Stream stream)
 		{
-			STREAMINFO = 0,
-			PADDING = 1,
-			APPLICATION = 2,
-			SEEKTABLE = 3,
-			VORBIS_COMMENT = 4,
-			CUESHEET = 5,
-			PICTURE = 6
+			var buf = new byte[4];
+			stream.Read(buf, 0, 4);
+
+			return BitConverter.ToUInt32(buf, 0);
 		}
 
-		public class FlacMetaData
+		private MetaData _ReadMetaDataBlock()
 		{
-			public FlacMetaData(FlacMetaDataType type, bool isLast, List<byte> data)
-			{
-				Type = type;
-				IsLast = isLast;
-				Data = data;
-			}
-
-			public FlacMetaDataType Type { get; set; }
-			public bool IsLast { get; set; }
-			public List<byte> Data { get; set; }
-
-			public override string ToString() => $"FlacMetaData {{ Type = {Type}, IsLast = {IsLast}, DataSize = {Data.Count} }}";
-		}
-
-		private FlacMetaData _ReadMetaDataBlock()
-		{
-			var isLastAndMetaDataType = _ReadAsByteList(1)[0];
+			var isLastAndMetaDataType = _ReadAsByteList(_FileStream, 1)[0];
 			var isLast = (isLastAndMetaDataType & 0x01U) == 1;
-			var metaDataType = (FlacMetaDataType)(isLastAndMetaDataType & 0x7FU);
-			var metaDataLengthSource = _ReadAsByteList(3);
+			var metaDataType = (MetaDataType)(isLastAndMetaDataType & 0x7FU);
+			var metaDataLengthSource = _ReadAsByteList(_FileStream, 3);
 			metaDataLengthSource.Insert(0, 0);
 			metaDataLengthSource.Reverse();
 			var metaDataLength = BitConverter.ToUInt32(metaDataLengthSource.ToArray(), 0);
-			var metaData = _ReadAsByteList((int)metaDataLength);
+			var metaData = _ReadAsByteList(_FileStream, (int)metaDataLength);
 
-			var flacMetaData = new FlacMetaData(metaDataType, isLast, metaData);
+			return new MetaData(metaDataType, isLast, metaData);
+		}
 
-			return flacMetaData;
+		private Image _ParsePictureMetaData(MetaData pictureMetaData)
+		{
+			Image result = null;
+
+			using (var image = new MemoryStream())
+			using (var memory = new MemoryStream())
+			{
+				var initialPos = memory.Position;
+				memory.Write(pictureMetaData.Data.ToArray(), 0, pictureMetaData.Data.Count);
+				memory.Position = initialPos;
+
+				var imageType = _ReadAsByteList(memory, 4);
+				var mimeTypeLengthSource = _ReadAsByteList(memory, 4);
+				mimeTypeLengthSource.Reverse();
+				var mimeTypeLength = BitConverter.ToUInt32(mimeTypeLengthSource.ToArray(), 0);
+				var mimeType = _ReadAsAsciiString(memory, (int)mimeTypeLength);
+				var explanationLengthSource = _ReadAsByteList(memory, 4);
+				explanationLengthSource.Reverse();
+				var explanationLength = BitConverter.ToUInt32(explanationLengthSource.ToArray(), 0);
+				_ReadAsByteList(memory, (int)explanationLength);
+				var a = _ReadAsByteList(memory, 4);
+				var b = _ReadAsByteList(memory, 4);
+				var c = _ReadAsByteList(memory, 4);
+				var d = _ReadAsByteList(memory, 4);
+				var sizeSource = _ReadAsByteList(memory, 4);
+				sizeSource.Reverse();
+				var size = BitConverter.ToUInt32(sizeSource.ToArray(), 0);
+
+				var buf = new byte[size];
+				memory.Read(buf, 0, (int)size);
+				image.Write(buf, 0, buf.Length);
+
+				result = Image.FromStream(image);
+			}
+
+			return result;
 		}
 
 		public Image Extract()
 		{
-			using (_Stream = new FileStream(FilePath, FileMode.Open))
+			using (_FileStream = new FileStream(FilePath, FileMode.Open))
 			{
-				var fileType = _ReadAsAsciiString(4);
+				var fileType = _ReadAsAsciiString(_FileStream, 4);
 
 				if (fileType != "fLaC")
 					throw new InvalidDataException("このファイルはFLAC形式ではありません");
 
-				var metaDataList = new List<FlacMetaData>();
-				FlacMetaData metaData = null;
+				var metaDataList = new List<MetaData>();
+				MetaData metaData = null;
 				do
 				{
 					metaDataList.Add(metaData = _ReadMetaDataBlock());
-					Console.WriteLine(metaData);
 				} while (!metaData.IsLast);
-			}
 
-			return null;
+				var picture = metaDataList.Find(i => i.Type == MetaDataType.PICTURE);
+
+				if (picture == null)
+					return null;
+
+				return _ParsePictureMetaData(picture);
+			}
 		}
 	}
 }
