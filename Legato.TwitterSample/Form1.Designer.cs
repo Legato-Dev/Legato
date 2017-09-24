@@ -172,7 +172,7 @@
 			this.Controls.Add(this.nowPlaying);
 			this.MinimumSize = new System.Drawing.Size(375, 210);
 			this.Name = "Form1";
-			this.Text = "AIMP NowPlaying";
+			this.Text = "Legato NowPlaying";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
 			this.Load += new System.EventHandler(this.Form1_Load);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
