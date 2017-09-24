@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using CoreTweet;
 using JsonFx.Json;
-using System.Drawing;
 
 namespace Legato.TwitterSample
 {
@@ -95,11 +94,11 @@ namespace Legato.TwitterSample
 					using (var memory = new MemoryStream())
 						_Legato.AlbumArt.Save("temp.png", ImageFormat.Png);
 
-					await _Twitter.Statuses.UpdateWithMediaAsync(status: text, media: new FileInfo("temp.png"));
+					await _Twitter.Statuses.UpdateWithMediaAsync(text, new FileInfo("temp.png"));
 				}
 				else
 				{
-					_Twitter.Statuses.Update(status: text);
+					_Twitter.Statuses.Update(text);
 				}
 
 				Console.WriteLine("Twitter への投稿が完了しました");
