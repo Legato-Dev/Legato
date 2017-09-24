@@ -7,6 +7,6 @@ namespace Legato.AlbumArtExtraction
 	/// </summary>
 	public interface IAlbumArtExtractor
 	{
-		Image Extract(string filePath);
+		Image Extract();
 	}
 }
