@@ -11,14 +11,17 @@ namespace Legato
 {
 	public class Legato : IDisposable
 	{
-		public Legato()
+		public Legato(int pollingIntervalMilliseconds = 100, bool isAutoSubscribing = true)
 		{
-			_Initialize();
+			_Initialize(pollingIntervalMilliseconds, isAutoSubscribing);
 		}
 
-		public Legato(int pollingIntervalMilliseconds)
+		public Legato(TimeSpan pollingInterval, bool isAutoSubscribing = true)
 		{
-			_Initialize(pollingIntervalMilliseconds);
+			if (pollingInterval.TotalMilliseconds > int.MaxValue)
+				throw new ArgumentOutOfRangeException("pollingInterval");
+
+			_Initialize((int)pollingInterval.TotalMilliseconds, isAutoSubscribing);
 		}
 
 		#region Events
@@ -29,7 +32,7 @@ namespace Legato
 		public event Action Subscribed;
 
 		/// <summary>
-		/// AIMP の通知を購読解除した時(AIMP が終了した時)に発生します
+		/// AIMP の通知を購読解除した時(または AIMP が終了した時)に発生します
 		/// </summary>
 		public event Action Unsubscribed;
 
@@ -177,10 +180,11 @@ namespace Legato
 
 		#region Methods
 
-		private void _Initialize(int pollingInterval = 100)
+		private void _Initialize(int pollingIntervalMilliseconds, bool isAutoSubscribing)
 		{
 			Communicator = new CommunicationWindow();
-			_Polling = new System.Timers.Timer(pollingInterval);
+			_Polling = new System.Timers.Timer(pollingIntervalMilliseconds);
+			IsAutoSubscribing = isAutoSubscribing;
 
 			Communicator.CopyDataMessageReceived += (copyData) =>
 			{
