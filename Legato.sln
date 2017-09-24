@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Legato.Sample", "Legato.Sam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Legato.TwitterSample", "Legato.TwitterSample\Legato.TwitterSample.csproj", "{F1DECE08-9BF8-4F19-B79D-3B89A569A752}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Legato.AlbumArtExtraction", "Legato.AlbumArtExtraction\Legato.AlbumArtExtraction.csproj", "{89BD928A-0196-47D5-BE87-9DEB0947B9A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{F1DECE08-9BF8-4F19-B79D-3B89A569A752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1DECE08-9BF8-4F19-B79D-3B89A569A752}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1DECE08-9BF8-4F19-B79D-3B89A569A752}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89BD928A-0196-47D5-BE87-9DEB0947B9A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89BD928A-0196-47D5-BE87-9DEB0947B9A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89BD928A-0196-47D5-BE87-9DEB0947B9A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89BD928A-0196-47D5-BE87-9DEB0947B9A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
