@@ -40,16 +40,20 @@ namespace Legato
 		public CommunicationWindow Communicator { get; set; }
 
 		/// <summary>
-		/// ポーリングの間隔を取得または設定します。
-		/// <para>この間隔が長くなると、Communicator.PositionPropertyChangedの発生が減少します</para>
+		/// ポーリングの間隔を取得または設定します
+		/// <para>この値が大きいと、ポーリングを伴う処理が遅延する可能性があります</para>
 		/// </summary>
 		public int PollingIntervalMilliseconds { get; set; }
 
 		private System.Timers.Timer _Polling { get; set; }
 
 		/// <summary>
-		/// AIMPの通知を購読しているかどうかを示す値を取得します
-		/// <para>これはAIMPの各種変更イベントを受信可能であるかどうかについても示します</para>
+		/// AIMPのイベント通知の購読を自動的に行うかどうかを示す値を取得または設定します
+		/// </summary>
+		public bool IsAutoSubscribing { get; set; }
+
+		/// <summary>
+		/// AIMPのイベント通知を購読しているかどうか(受信可能であるかどうか)を示す値を取得します
 		/// </summary>	
 		public bool IsSubscribed { get; private set; } = false;
 
@@ -192,19 +196,17 @@ namespace Legato
 			// ポーリング
 			_Polling.Elapsed += (s, e) =>
 			{
+				// 通知が購読されていない
 				if (!IsSubscribed)
 				{
-					if (IsRunning)
+					if (IsRunning && IsAutoSubscribing)
 					{
 						// 通知を購読
-						IsSubscribed = true;
-						Communicator.Invoke((Action)(() =>
-						{
-							Helper.RegisterNotify(Communicator);
-						}));
-						Subscribed?.Invoke();
+						Subscribe();
 					}
 				}
+
+				// 通知が購読されている
 				else
 				{
 					if (IsRunning)
@@ -223,12 +225,50 @@ namespace Legato
 					}
 				}
 			};
+
+
+
 			_Polling.Start();
 		}
 
 		public void StartPolling() => _Polling.Start();
 
 		public void StopPolling() => _Polling.Stop();
+
+		/// <summary>
+		/// AIMPのイベント通知を購読します
+		/// </summary>
+		public void Subscribe()
+		{
+			if (IsSubscribed)
+				throw new ApplicationException("既に通知を購読しています");
+
+			if (!IsRunning)
+				throw new ApplicationException("AIMPが起動していないため、購読に失敗しました");
+
+			IsSubscribed = true;
+			Communicator.Invoke((Action)(() =>
+			{
+				Helper.RegisterNotify(Communicator);
+			}));
+			Subscribed?.Invoke();
+		}
+
+		/// <summary>
+		/// AIMPのイベント通知の購読を解除します
+		/// </summary>
+		public void Unsubscribe()
+		{
+			if (!IsSubscribed)
+				throw new ApplicationException("通知を購読していません");
+
+			IsSubscribed = false;
+			Communicator.Invoke((Action)(() =>
+			{
+				Helper.UnregisterNotify(Communicator);
+			}));
+			Unsubscribed?.Invoke();
+		}
 
 		public void Dispose()
 		{
