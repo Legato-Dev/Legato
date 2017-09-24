@@ -39,7 +39,7 @@ namespace Legato.TwitterSample
 				labelArtist.Text = track.Artist;
 				labelAlbum.Text = track.Album;
 
-				pictureBox1.Image = _Legato.AlbumArt;
+				pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
 
 				if (checkBoxAutoPosting.Checked)
 				{
