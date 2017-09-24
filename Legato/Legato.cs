@@ -39,6 +39,10 @@ namespace Legato
 
 		public CommunicationWindow Communicator { get; set; }
 
+		/// <summary>
+		/// ポーリングの間隔を取得または設定します。
+		/// <para>この間隔が長くなると、Communicator.PositionPropertyChangedの発生が減少します</para>
+		/// </summary>
 		public int PollingIntervalMilliseconds { get; set; }
 
 		private System.Timers.Timer _Polling { get; set; }
