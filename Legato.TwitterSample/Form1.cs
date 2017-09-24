@@ -41,33 +41,22 @@ namespace Legato.TwitterSample
 				pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
 
 				if (checkBoxAutoPosting.Checked)
-				{
 					await _PostAsync();
-				}
 			};
 
+			if (_Legato?.IsRunning ?? false)
 			{
-				if (_Legato?.IsRunning ?? false)
-				{
-					var track = _Legato.CurrentTrack;
-					labelTrackNumber.Text = $"{track.TrackNumber:D2}.";
-					labelTitle.Text = track.Title;
-					labelArtist.Text = track.Artist;
-					labelAlbum.Text = track.Album;
-				}
+				var track = _Legato.CurrentTrack;
 
-				if (_Legato?.IsRunning ?? false)
-				{
-					if (_Legato.AlbumArt == null)
-					{
-						pictureBox1.Image = Properties.Resources.logo;
+				labelTrackNumber.Text = $"{track.TrackNumber:D2}.";
+				labelTitle.Text = track.Title;
+				labelArtist.Text = track.Artist;
+				labelAlbum.Text = track.Album;
 
-						var defaultArt = Properties.Resources.logo;
-						defaultArt.Save("tempDefault.png", ImageFormat.Png);
-					}
-					else
-						pictureBox1.Image = _Legato.AlbumArt;
-				}
+				if (_Legato.AlbumArt == null)
+					pictureBox1.Image = Properties.Resources.logo;
+				else
+					pictureBox1.Image = _Legato.AlbumArt;
 			}
 		}
 
@@ -85,11 +74,7 @@ namespace Legato.TwitterSample
 				stringBuilder = stringBuilder.Replace("{TrackNum}", "{3:D2}");
 				var text = string.Format(stringBuilder.ToString(), track.Title, track.Artist, track.Album, track.TrackNumber);
 
-				if (checkBoxNeedAlbumArt.Checked && _Legato.AlbumArt == null)
-				{
-					await _Twitter.Statuses.UpdateWithMediaAsync(status: text, media: new FileInfo("tempDefault.png"));
-				}
-				else if (checkBoxNeedAlbumArt.Checked && _Legato.AlbumArt != null)
+				if (checkBoxNeedAlbumArt.Checked && _Legato.AlbumArt != null)
 				{
 					using (var memory = new MemoryStream())
 						_Legato.AlbumArt.Save("temp.png", ImageFormat.Png);
@@ -97,9 +82,7 @@ namespace Legato.TwitterSample
 					await _Twitter.Statuses.UpdateWithMediaAsync(text, new FileInfo("temp.png"));
 				}
 				else
-				{
-					_Twitter.Statuses.Update(text);
-				}
+					await _Twitter.Statuses.UpdateAsync(text);
 
 				Console.WriteLine("Twitter への投稿が完了しました");
 			}
