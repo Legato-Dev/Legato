@@ -13,77 +13,39 @@ namespace Legato
 	{
 		public Legato()
 		{
-			Communicator = new CommunicationWindow();
+			_Initialize();
+		}
 
-			Communicator.CopyDataMessageReceived += (copyData) =>
-			{
-				// AlbumArtの更新
-				if (copyData.dwData == new IntPtr(Helper.CopyDataIdArtWork))
-				{
-					var dataLength = (int)copyData.cbData;
-					_AlbumArtSource = new byte[dataLength];
-					Marshal.Copy(copyData.lpData, _AlbumArtSource, 0, dataLength);
-				}
-			};
-
-			// ポーリング
-			Polling.Elapsed += (s, e) =>
-			{
-				if (!IsSubscribed)
-				{
-					if (IsRunning)
-					{
-						// 通知を購読
-						IsSubscribed = true;
-						Communicator.Invoke((Action)(() =>
-						{
-							Helper.RegisterNotify(Communicator);
-						}));
-						Connected?.Invoke();
-					}
-				}
-				else
-				{
-					if (IsRunning)
-					{
-						// PositionProperty
-						Communicator.Invoke((Action)(() =>
-						{
-							Communicator.OnPositionPropertyChanged(Position);
-						}));
-					}
-					else
-					{
-						// AIMPが終了した
-						IsSubscribed = false;
-						Disconnected?.Invoke();
-					}
-				}
-			};
-			Polling.Start();
+		public Legato(int pollingIntervalMilliseconds)
+		{
+			_Initialize(pollingIntervalMilliseconds);
 		}
 
 		#region Events
 
 		/// <summary>
-		/// AIMPに接続した時に発生します
+		/// AIMPの通知を購読した時に発生します
 		/// </summary>
-		public event Action Connected;
+		public event Action Subscribed;
 
 		/// <summary>
-		/// AIMPから切断された時(AIMPが閉じられた時)に発生します
+		/// AIMPの通知を購読解除した時(AIMPが終了した時)に発生します
 		/// </summary>
-		public event Action Disconnected;
+		public event Action Unsubscribed;
 
 		#endregion Events
 
 		#region Properties
 
 		public CommunicationWindow Communicator { get; set; }
-		private System.Timers.Timer Polling { get; } = new System.Timers.Timer(100);
+
+		public int PollingIntervalMilliseconds { get; set; }
+
+		private System.Timers.Timer _Polling { get; set; }
 
 		/// <summary>
-		/// AIMPと接続されているかどうかを示す値を取得します
+		/// AIMPの通知を購読しているかどうかを示す値を取得します
+		/// <para>これはAIMPの各種変更イベントを受信可能であるかどうかについても示します</para>
 		/// </summary>	
 		public bool IsSubscribed { get; private set; } = false;
 
@@ -207,16 +169,73 @@ namespace Legato
 
 		#region Methods
 
+		private void _Initialize(int pollingInterval = 100)
+		{
+			Communicator = new CommunicationWindow();
+			_Polling = new System.Timers.Timer(pollingInterval);
+
+			Communicator.CopyDataMessageReceived += (copyData) =>
+			{
+				// AlbumArtの更新
+				if (copyData.dwData == new IntPtr(Helper.CopyDataIdArtWork))
+				{
+					var dataLength = (int)copyData.cbData;
+					_AlbumArtSource = new byte[dataLength];
+					Marshal.Copy(copyData.lpData, _AlbumArtSource, 0, dataLength);
+				}
+			};
+
+			// ポーリング
+			_Polling.Elapsed += (s, e) =>
+			{
+				if (!IsSubscribed)
+				{
+					if (IsRunning)
+					{
+						// 通知を購読
+						IsSubscribed = true;
+						Communicator.Invoke((Action)(() =>
+						{
+							Helper.RegisterNotify(Communicator);
+						}));
+						Subscribed?.Invoke();
+					}
+				}
+				else
+				{
+					if (IsRunning)
+					{
+						// PositionProperty
+						Communicator.Invoke((Action)(() =>
+						{
+							Communicator.OnPositionPropertyChanged(Position);
+						}));
+					}
+					else
+					{
+						// AIMPが終了した
+						IsSubscribed = false;
+						Unsubscribed?.Invoke();
+					}
+				}
+			};
+			_Polling.Start();
+		}
+
+		public void StartPolling() => _Polling.Start();
+
+		public void StopPolling() => _Polling.Stop();
+
 		public void Dispose()
 		{
-			Polling.Stop();
+			_Polling.Stop();
 
 			// 通知の購読解除
 			if (IsSubscribed)
 				Helper.UnregisterNotify(Communicator);
 		}
 
-		#region Commands
+		#region AIMPCommands
 
 		/// <summary>
 		/// 曲を再生します
@@ -253,7 +272,7 @@ namespace Legato
 		/// </summary>
 		public void Close() => Helper.SendCommandMessage(CommandType.Quit);
 
-		#endregion Commands
+		#endregion AIMPCommands
 
 		#endregion Methods
 	}
