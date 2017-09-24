@@ -245,10 +245,7 @@ namespace Legato
 				throw new ApplicationException("AIMPが起動していないため、購読に失敗しました");
 
 			IsSubscribed = true;
-			Communicator.Invoke((Action)(() =>
-			{
-				Helper.RegisterNotify(Communicator);
-			}));
+			Helper.RegisterNotify(Communicator);
 			Subscribed?.Invoke();
 		}
 
@@ -261,10 +258,7 @@ namespace Legato
 				throw new ApplicationException("通知を購読していません");
 
 			IsSubscribed = false;
-			Communicator.Invoke((Action)(() =>
-			{
-				Helper.UnregisterNotify(Communicator);
-			}));
+			Helper.UnregisterNotify(Communicator);
 			Unsubscribed?.Invoke();
 		}
 
@@ -274,7 +268,7 @@ namespace Legato
 
 			// 通知の購読解除
 			if (IsSubscribed)
-				Helper.UnregisterNotify(Communicator);
+				Unsubscribe();
 		}
 
 		#region AIMPCommands

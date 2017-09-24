@@ -165,23 +165,50 @@ namespace Legato.Interop.AimpRemote
 
 		/// <summary>
 		/// アルバムアートをリクエストします
+		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
 		/// <param name="communicationWindow">ArtWork を受け取る通信ウィンドウ</param>
-		public static bool RequestAlbumArt(CommunicationWindow communicationWindow) =>
-			SendCommandMessage(CommandType.RequestAlbumArt, communicationWindow.Handle) != IntPtr.Zero;
+		public static bool RequestAlbumArt(CommunicationWindow communicationWindow)
+		{
+			bool result = false;
+			communicationWindow.Invoke((Action)(() =>
+			{
+				result = SendCommandMessage(CommandType.RequestAlbumArt, communicationWindow.Handle) != IntPtr.Zero;
+			}));
+
+			return result;
+		}
 
 		/// <summary>
 		/// イベント通知を行うウィンドウを AIMP に登録します
+		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
 		/// <param name="communicationWindow">イベント通知を受け取る通信ウィンドウ</param>
-		public static bool RegisterNotify(CommunicationWindow communicationWindow) =>
-			SendCommandMessage(CommandType.RegisterNotify, communicationWindow.Handle) != IntPtr.Zero;
+		public static bool RegisterNotify(CommunicationWindow communicationWindow)
+		{
+			bool result = false;
+			communicationWindow.Invoke((Action)(() =>
+			{
+				result = SendCommandMessage(CommandType.RegisterNotify, communicationWindow.Handle) != IntPtr.Zero;
+			}));
+
+			return result;
+		}
+			
 
 		/// <summary>
 		/// イベント通知を行うウィンドウを AIMP から登録解除します
+		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
 		/// <param name="communicationWindow">イベント通知を受け取る通信ウィンドウ</param>
-		public static bool UnregisterNotify(CommunicationWindow communicationWindow) =>
-			SendCommandMessage(CommandType.UnregisterNotify, communicationWindow.Handle) != IntPtr.Zero;
+		public static bool UnregisterNotify(CommunicationWindow communicationWindow) {
+			bool result = false;
+			communicationWindow.Invoke((Action)(() =>
+			{
+				result = SendCommandMessage(CommandType.UnregisterNotify, communicationWindow.Handle) != IntPtr.Zero;
+			}));
+
+			return result;
+		}
 	}
 }
