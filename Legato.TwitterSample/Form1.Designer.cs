@@ -28,8 +28,8 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.nowPlaying = new System.Windows.Forms.Button();
-			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this.buttonPostNowPlaying = new System.Windows.Forms.Button();
+			this.pictureBoxAlbumArt = new System.Windows.Forms.PictureBox();
 			this.labelTrackNumber = new System.Windows.Forms.Label();
 			this.labelTitle = new System.Windows.Forms.Label();
 			this.labelArtist = new System.Windows.Forms.Label();
@@ -38,32 +38,32 @@
 			this.checkBoxAutoPosting = new System.Windows.Forms.CheckBox();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.buttonShowSettingWindow = new System.Windows.Forms.Button();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBoxAlbumArt)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// nowPlaying
+			// buttonPostNowPlaying
 			// 
-			this.nowPlaying.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.nowPlaying.Location = new System.Drawing.Point(169, 138);
-			this.nowPlaying.Name = "nowPlaying";
-			this.nowPlaying.Size = new System.Drawing.Size(107, 25);
-			this.nowPlaying.TabIndex = 0;
-			this.nowPlaying.Text = "NowPlaying";
-			this.nowPlaying.UseVisualStyleBackColor = true;
-			this.nowPlaying.Click += new System.EventHandler(this.nowPlaying_Click);
+			this.buttonPostNowPlaying.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.buttonPostNowPlaying.Location = new System.Drawing.Point(169, 138);
+			this.buttonPostNowPlaying.Name = "buttonPostNowPlaying";
+			this.buttonPostNowPlaying.Size = new System.Drawing.Size(107, 25);
+			this.buttonPostNowPlaying.TabIndex = 0;
+			this.buttonPostNowPlaying.Text = "NowPlaying";
+			this.buttonPostNowPlaying.UseVisualStyleBackColor = true;
+			this.buttonPostNowPlaying.Click += new System.EventHandler(this.buttonPostNowPlaying_Click);
 			// 
-			// pictureBox1
+			// pictureBoxAlbumArt
 			// 
-			this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.pictureBoxAlbumArt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-			this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.pictureBox1.Location = new System.Drawing.Point(12, 12);
-			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(151, 151);
-			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this.pictureBox1.TabIndex = 1;
-			this.pictureBox1.TabStop = false;
-			this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+			this.pictureBoxAlbumArt.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.pictureBoxAlbumArt.Location = new System.Drawing.Point(12, 12);
+			this.pictureBoxAlbumArt.Name = "pictureBoxAlbumArt";
+			this.pictureBoxAlbumArt.Size = new System.Drawing.Size(151, 151);
+			this.pictureBoxAlbumArt.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.pictureBoxAlbumArt.TabIndex = 1;
+			this.pictureBoxAlbumArt.TabStop = false;
+			this.pictureBoxAlbumArt.Click += new System.EventHandler(this.pictureBoxAlbumArt_Click);
 			// 
 			// labelTrackNumber
 			// 
@@ -168,14 +168,14 @@
 			this.Controls.Add(this.labelArtist);
 			this.Controls.Add(this.labelTitle);
 			this.Controls.Add(this.labelTrackNumber);
-			this.Controls.Add(this.pictureBox1);
-			this.Controls.Add(this.nowPlaying);
+			this.Controls.Add(this.pictureBoxAlbumArt);
+			this.Controls.Add(this.buttonPostNowPlaying);
 			this.MinimumSize = new System.Drawing.Size(375, 210);
 			this.Name = "Form1";
 			this.Text = "Legato NowPlaying";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
 			this.Load += new System.EventHandler(this.Form1_Load);
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBoxAlbumArt)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -183,8 +183,8 @@
 
 		#endregion
 
-		private System.Windows.Forms.Button nowPlaying;
-		private System.Windows.Forms.PictureBox pictureBox1;
+		private System.Windows.Forms.Button buttonPostNowPlaying;
+		private System.Windows.Forms.PictureBox pictureBoxAlbumArt;
 		private System.Windows.Forms.Label labelTrackNumber;
 		private System.Windows.Forms.Label labelTitle;
 		private System.Windows.Forms.Label labelArtist;
