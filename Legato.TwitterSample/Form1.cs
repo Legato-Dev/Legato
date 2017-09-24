@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using CoreTweet;
 using JsonFx.Json;
+using System.Drawing;
 
 namespace Legato.TwitterSample
 {
@@ -29,6 +30,7 @@ namespace Legato.TwitterSample
 
 			_Legato = new Legato();
 			_Twitter = Tokens.Create(_ConsumerKey, _ConsumerSecret, _AccessToken, _AccessTokenSecret);
+			pictureBox1.Image = _Legato.AlbumArt;
 
 			_Legato.Communicator.CurrentTrackChanged += async (track) =>
 			{
@@ -56,7 +58,17 @@ namespace Legato.TwitterSample
 				}
 
 				if (_Legato?.IsRunning ?? false)
-					pictureBox1.Image = _Legato.AlbumArt;
+				{
+					if (_Legato.AlbumArt == null)
+					{
+						pictureBox1.Image = Properties.Resources.logo;
+
+						var defaultArt = Properties.Resources.logo;
+						defaultArt.Save("tempDefault.png", ImageFormat.Png);
+					}
+					else
+						pictureBox1.Image = _Legato.AlbumArt;
+				}
 			}
 		}
 
@@ -74,21 +86,23 @@ namespace Legato.TwitterSample
 				stringBuilder = stringBuilder.Replace("{TrackNum}", "{3:D2}");
 				var text = string.Format(stringBuilder.ToString(), track.Title, track.Artist, track.Album, track.TrackNumber);
 
-				if (checkBoxNeedAlbumArt.Checked)
+				if (checkBoxNeedAlbumArt.Checked && _Legato.AlbumArt == null)
+				{
+					await _Twitter.Statuses.UpdateWithMediaAsync(status: text, media: new FileInfo("tempDefault.png"));
+				}
+				else if (checkBoxNeedAlbumArt.Checked && _Legato.AlbumArt != null)
 				{
 					using (var memory = new MemoryStream())
 						_Legato.AlbumArt.Save("temp.png", ImageFormat.Png);
 
-					await _Twitter.Statuses.UpdateWithMediaAsync(
-						status: text,
-						media: new FileInfo("temp.png"));
+					await _Twitter.Statuses.UpdateWithMediaAsync(status: text, media: new FileInfo("temp.png"));
 				}
 				else
 				{
 					_Twitter.Statuses.Update(status: text);
 				}
 
-				Console.WriteLine("投稿が完了しました");
+				Console.WriteLine("Twitter への投稿が完了しました");
 			}
 			catch (Exception ex)
 			{
@@ -103,6 +117,9 @@ namespace Legato.TwitterSample
 			try
 			{
 				string jsonString = null;
+
+				Icon = Properties.Resources.legato;
+
 				using (var streamReader = new StreamReader("settings.json", Encoding.UTF8))
 					jsonString = await streamReader.ReadToEndAsync();
 
@@ -125,7 +142,7 @@ namespace Legato.TwitterSample
 				streamWriter.WriteAsync(jsonString);
 		}
 
-		private async void button1_Click(object sender, EventArgs e)
+		private async void nowPlaying_Click(object sender, EventArgs e)
 		{
 			await _PostAsync();
 		}
@@ -140,7 +157,7 @@ namespace Legato.TwitterSample
 
 		private void checkBoxAutoPosting_CheckedChanged(object sender, EventArgs e)
 		{
-			button1.Enabled = !checkBoxAutoPosting.Checked;
+			nowPlaying.Enabled = !checkBoxAutoPosting.Checked;
 		}
 
 		private void buttonShowSettingWindow_Click(object sender, EventArgs e)

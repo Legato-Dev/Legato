@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.button1 = new System.Windows.Forms.Button();
+			this.nowPlaying = new System.Windows.Forms.Button();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.labelTrackNumber = new System.Windows.Forms.Label();
 			this.labelTitle = new System.Windows.Forms.Label();
@@ -41,16 +41,16 @@
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// button1
+			// nowPlaying
 			// 
-			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.button1.Location = new System.Drawing.Point(169, 138);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(107, 25);
-			this.button1.TabIndex = 0;
-			this.button1.Text = "NowPlaying";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
+			this.nowPlaying.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.nowPlaying.Location = new System.Drawing.Point(169, 138);
+			this.nowPlaying.Name = "nowPlaying";
+			this.nowPlaying.Size = new System.Drawing.Size(107, 25);
+			this.nowPlaying.TabIndex = 0;
+			this.nowPlaying.Text = "NowPlaying";
+			this.nowPlaying.UseVisualStyleBackColor = true;
+			this.nowPlaying.Click += new System.EventHandler(this.nowPlaying_Click);
 			// 
 			// pictureBox1
 			// 
@@ -169,7 +169,7 @@
 			this.Controls.Add(this.labelTitle);
 			this.Controls.Add(this.labelTrackNumber);
 			this.Controls.Add(this.pictureBox1);
-			this.Controls.Add(this.button1);
+			this.Controls.Add(this.nowPlaying);
 			this.MinimumSize = new System.Drawing.Size(375, 210);
 			this.Name = "Form1";
 			this.Text = "AIMP NowPlaying";
@@ -183,7 +183,7 @@
 
 		#endregion
 
-		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.Button nowPlaying;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Label labelTrackNumber;
 		private System.Windows.Forms.Label labelTitle;
