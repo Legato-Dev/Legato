@@ -226,14 +226,8 @@ namespace Legato
 				}
 			};
 
-
-
 			_Polling.Start();
 		}
-
-		public void StartPolling() => _Polling.Start();
-
-		public void StopPolling() => _Polling.Stop();
 
 		/// <summary>
 		/// AIMPのイベント通知を購読します
