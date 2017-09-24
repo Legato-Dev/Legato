@@ -44,7 +44,8 @@
 			// buttonPostNowPlaying
 			// 
 			this.buttonPostNowPlaying.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.buttonPostNowPlaying.Location = new System.Drawing.Point(169, 138);
+			this.buttonPostNowPlaying.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.buttonPostNowPlaying.Location = new System.Drawing.Point(187, 156);
 			this.buttonPostNowPlaying.Name = "buttonPostNowPlaying";
 			this.buttonPostNowPlaying.Size = new System.Drawing.Size(107, 25);
 			this.buttonPostNowPlaying.TabIndex = 0;
@@ -59,7 +60,7 @@
 			this.pictureBoxAlbumArt.Cursor = System.Windows.Forms.Cursors.Hand;
 			this.pictureBoxAlbumArt.Location = new System.Drawing.Point(12, 12);
 			this.pictureBoxAlbumArt.Name = "pictureBoxAlbumArt";
-			this.pictureBoxAlbumArt.Size = new System.Drawing.Size(151, 151);
+			this.pictureBoxAlbumArt.Size = new System.Drawing.Size(169, 169);
 			this.pictureBoxAlbumArt.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.pictureBoxAlbumArt.TabIndex = 1;
 			this.pictureBoxAlbumArt.TabStop = false;
@@ -69,7 +70,7 @@
 			// 
 			this.labelTrackNumber.AutoSize = true;
 			this.labelTrackNumber.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.labelTrackNumber.Location = new System.Drawing.Point(169, 12);
+			this.labelTrackNumber.Location = new System.Drawing.Point(187, 9);
 			this.labelTrackNumber.Name = "labelTrackNumber";
 			this.labelTrackNumber.Size = new System.Drawing.Size(29, 23);
 			this.labelTrackNumber.TabIndex = 2;
@@ -81,11 +82,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelTitle.AutoEllipsis = true;
 			this.labelTitle.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.labelTitle.Location = new System.Drawing.Point(194, 12);
+			this.labelTitle.Location = new System.Drawing.Point(212, 9);
 			this.labelTitle.Name = "labelTitle";
-			this.labelTitle.Size = new System.Drawing.Size(153, 23);
+			this.labelTitle.Size = new System.Drawing.Size(210, 23);
 			this.labelTitle.TabIndex = 3;
-			this.labelTitle.Text = "title";
+			this.labelTitle.Text = "Title";
 			// 
 			// labelArtist
 			// 
@@ -93,11 +94,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelArtist.AutoEllipsis = true;
 			this.labelArtist.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.labelArtist.Location = new System.Drawing.Point(169, 35);
+			this.labelArtist.Location = new System.Drawing.Point(187, 32);
 			this.labelArtist.Name = "labelArtist";
-			this.labelArtist.Size = new System.Drawing.Size(178, 23);
+			this.labelArtist.Size = new System.Drawing.Size(235, 23);
 			this.labelArtist.TabIndex = 4;
-			this.labelArtist.Text = "artist";
+			this.labelArtist.Text = "Artist";
 			// 
 			// labelAlbum
 			// 
@@ -105,32 +106,34 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelAlbum.AutoEllipsis = true;
 			this.labelAlbum.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.labelAlbum.Location = new System.Drawing.Point(169, 58);
+			this.labelAlbum.Location = new System.Drawing.Point(187, 55);
 			this.labelAlbum.Name = "labelAlbum";
-			this.labelAlbum.Size = new System.Drawing.Size(178, 23);
+			this.labelAlbum.Size = new System.Drawing.Size(235, 23);
 			this.labelAlbum.TabIndex = 5;
-			this.labelAlbum.Text = "album";
+			this.labelAlbum.Text = "Album";
 			// 
 			// checkBoxNeedAlbumArt
 			// 
 			this.checkBoxNeedAlbumArt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.checkBoxNeedAlbumArt.AutoSize = true;
-			this.checkBoxNeedAlbumArt.Location = new System.Drawing.Point(173, 116);
+			this.checkBoxNeedAlbumArt.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.checkBoxNeedAlbumArt.Location = new System.Drawing.Point(187, 126);
 			this.checkBoxNeedAlbumArt.Name = "checkBoxNeedAlbumArt";
-			this.checkBoxNeedAlbumArt.Size = new System.Drawing.Size(123, 16);
+			this.checkBoxNeedAlbumArt.Size = new System.Drawing.Size(149, 24);
 			this.checkBoxNeedAlbumArt.TabIndex = 6;
-			this.checkBoxNeedAlbumArt.Text = "アルバムアートも投稿";
+			this.checkBoxNeedAlbumArt.Text = "Post with AlbumArt";
 			this.checkBoxNeedAlbumArt.UseVisualStyleBackColor = true;
 			// 
 			// checkBoxAutoPosting
 			// 
 			this.checkBoxAutoPosting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.checkBoxAutoPosting.AutoSize = true;
-			this.checkBoxAutoPosting.Location = new System.Drawing.Point(173, 94);
+			this.checkBoxAutoPosting.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.checkBoxAutoPosting.Location = new System.Drawing.Point(187, 96);
 			this.checkBoxAutoPosting.Name = "checkBoxAutoPosting";
-			this.checkBoxAutoPosting.Size = new System.Drawing.Size(72, 16);
+			this.checkBoxAutoPosting.Size = new System.Drawing.Size(88, 24);
 			this.checkBoxAutoPosting.TabIndex = 7;
-			this.checkBoxAutoPosting.Text = "自動投稿";
+			this.checkBoxAutoPosting.Text = "Post auto";
 			this.checkBoxAutoPosting.UseVisualStyleBackColor = true;
 			this.checkBoxAutoPosting.CheckedChanged += new System.EventHandler(this.checkBoxAutoPosting_CheckedChanged);
 			// 
@@ -140,16 +143,19 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panel1.Cursor = System.Windows.Forms.Cursors.Default;
-			this.panel1.Location = new System.Drawing.Point(174, 87);
+			this.panel1.Location = new System.Drawing.Point(187, 87);
+			this.panel1.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(174, 1);
+			this.panel1.Size = new System.Drawing.Size(235, 1);
 			this.panel1.TabIndex = 8;
 			// 
 			// buttonShowSettingWindow
 			// 
-			this.buttonShowSettingWindow.Location = new System.Drawing.Point(282, 138);
+			this.buttonShowSettingWindow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.buttonShowSettingWindow.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.buttonShowSettingWindow.Location = new System.Drawing.Point(300, 156);
 			this.buttonShowSettingWindow.Name = "buttonShowSettingWindow";
-			this.buttonShowSettingWindow.Size = new System.Drawing.Size(66, 25);
+			this.buttonShowSettingWindow.Size = new System.Drawing.Size(75, 25);
 			this.buttonShowSettingWindow.TabIndex = 9;
 			this.buttonShowSettingWindow.Text = "Settings...";
 			this.buttonShowSettingWindow.UseVisualStyleBackColor = true;
@@ -159,7 +165,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(359, 172);
+			this.ClientSize = new System.Drawing.Size(434, 193);
 			this.Controls.Add(this.buttonShowSettingWindow);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.checkBoxAutoPosting);
@@ -170,7 +176,7 @@
 			this.Controls.Add(this.labelTrackNumber);
 			this.Controls.Add(this.pictureBoxAlbumArt);
 			this.Controls.Add(this.buttonPostNowPlaying);
-			this.MinimumSize = new System.Drawing.Size(375, 210);
+			this.MinimumSize = new System.Drawing.Size(393, 231);
 			this.Name = "Form1";
 			this.Text = "Legato NowPlaying";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);

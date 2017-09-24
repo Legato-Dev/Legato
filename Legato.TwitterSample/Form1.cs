@@ -92,7 +92,6 @@ namespace Legato.TwitterSample
 		/// settings.json から設定を読み込みます
 		/// <para>settings.json が存在しないときは新規に生成します</para>
 		/// </summary>
-		/// <returns></returns>
 		private async Task _LoadSettingsAsync()
 		{
 			try
@@ -115,7 +114,6 @@ namespace Legato.TwitterSample
 		/// <summary>
 		/// settings.json に設定を保存します
 		/// </summary>
-		/// <returns></returns>
 		private async Task _SaveSettingsAsync()
 		{
 			// 設定ファイルに保存すべき情報がある場合

@@ -39,10 +39,11 @@
 			// 
 			this.textBoxPostingFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxPostingFormat.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.textBoxPostingFormat.Location = new System.Drawing.Point(12, 32);
 			this.textBoxPostingFormat.Multiline = true;
 			this.textBoxPostingFormat.Name = "textBoxPostingFormat";
-			this.textBoxPostingFormat.Size = new System.Drawing.Size(307, 70);
+			this.textBoxPostingFormat.Size = new System.Drawing.Size(282, 96);
 			this.textBoxPostingFormat.TabIndex = 0;
 			// 
 			// label1
@@ -58,7 +59,8 @@
 			// buttonOk
 			// 
 			this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonOk.Location = new System.Drawing.Point(244, 222);
+			this.buttonOk.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+			this.buttonOk.Location = new System.Drawing.Point(219, 251);
 			this.buttonOk.Name = "buttonOk";
 			this.buttonOk.Size = new System.Drawing.Size(75, 23);
 			this.buttonOk.TabIndex = 2;
@@ -70,7 +72,7 @@
 			// 
 			this.label2.AutoSize = true;
 			this.label2.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-			this.label2.Location = new System.Drawing.Point(12, 105);
+			this.label2.Location = new System.Drawing.Point(12, 131);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(236, 100);
 			this.label2.TabIndex = 3;
@@ -83,21 +85,22 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panel1.Cursor = System.Windows.Forms.Cursors.Default;
-			this.panel1.Location = new System.Drawing.Point(12, 211);
+			this.panel1.Location = new System.Drawing.Point(12, 240);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(307, 1);
+			this.panel1.Size = new System.Drawing.Size(282, 1);
 			this.panel1.TabIndex = 9;
 			// 
 			// SettingWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(331, 257);
+			this.ClientSize = new System.Drawing.Size(306, 286);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.buttonOk);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textBoxPostingFormat);
+			this.MinimumSize = new System.Drawing.Size(322, 324);
 			this.Name = "SettingWindow";
 			this.Text = "Settings";
 			this.Load += new System.EventHandler(this.SettingWindow_Load);
