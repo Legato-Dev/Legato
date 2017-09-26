@@ -17,11 +17,11 @@ namespace Legato.AlbumArtExtraction
 		/// <param name="stream">対象の Stream</param>
 		private MetaData _ReadMetaDataBlock(Stream stream)
 		{
-			var isLastAndMetaDataType = Helper._ReadAsByteList(stream, 1)[0];
+			var isLastAndMetaDataType = Helper.ReadAsByteList(stream, 1)[0];
 			var isLast = (isLastAndMetaDataType & 0x80U) != 0;
 			var metaDataType = (MetaDataType)(isLastAndMetaDataType & 0x7FU);
-			var metaDataLength = Helper._ReadAsUInt(stream, 3);
-			var metaData = Helper._ReadAsByteList(stream, (int)metaDataLength);
+			var metaDataLength = Helper.ReadAsUInt(stream, 3);
+			var metaData = Helper.ReadAsByteList(stream, (int)metaDataLength);
 
 			return new MetaData(metaDataType, isLast, metaData);
 		}
@@ -39,13 +39,10 @@ namespace Legato.AlbumArtExtraction
 				memory.Write(pictureMetaData.Data.ToArray(), 0, pictureMetaData.Data.Count);
 				memory.Seek(0, SeekOrigin.Begin);
 
-				memory.Seek(4, SeekOrigin.Current);
-				var mimeTypeLength = Helper._ReadAsUInt(memory, 4);
-				memory.Seek((int)mimeTypeLength, SeekOrigin.Current);
-				var explanationLength = Helper._ReadAsUInt(memory, 4);
-				memory.Seek((int)explanationLength + 4 * 4, SeekOrigin.Current);
-				var imageSourceSize = Helper._ReadAsUInt(memory, 4);
-				var imageSource = Helper._ReadAsByteList(memory, (int)imageSourceSize);
+				var mimeTypeLength = Helper.ReadAsUInt(memory, 4, 4);
+				var explanationLength = Helper.ReadAsUInt(memory, 4, (int)mimeTypeLength);
+				var imageSourceSize = Helper.ReadAsUInt(memory, 4, (int)explanationLength + 4 * 4);
+				var imageSource = Helper.ReadAsByteList(memory, (int)imageSourceSize);
 
 				using (var image = new MemoryStream())
 				{
@@ -62,7 +59,7 @@ namespace Legato.AlbumArtExtraction
 		{
 			using (var file = new FileStream(filePath, FileMode.Open))
 			{
-				var fileType = Helper._ReadAsAsciiString(file, 4);
+				var fileType = Helper.ReadAsAsciiString(file, 4);
 				return fileType == "fLaC";
 			}
 		}
