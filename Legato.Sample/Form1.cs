@@ -135,9 +135,6 @@ namespace Legato.Sample
 				Write($"Position:{_Legato.Position} ");
 			}
 			WriteLine();
-
-			var ext = new FlacAlbumArtExtractor(@"D:\Users\Marihachi\Music\小倉唯\ハイタッチ☆メモリー\01. ハイタッチ☆メモリー_test.flac");
-			pictureBox1.Image = ext.Extract();
 		}
 
 		#endregion Procedures
