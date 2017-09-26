@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using Legato.AlbumArtExtraction.Flac;
 
 namespace Legato.AlbumArtExtraction
@@ -12,108 +11,73 @@ namespace Legato.AlbumArtExtraction
 	/// </summary>
 	public class FlacAlbumArtExtractor : IAlbumArtExtractor
 	{
-		public FlacAlbumArtExtractor(string filePath)
-		{
-			FilePath = filePath;
-		}
-
-		public string FilePath { get; set; }
-
-		private Stream _FileStream { get; set; }
-
 		/// <summary>
-		/// ASCII文字列として指定されたカウント数だけ読み取ります
+		/// メタデータブロックを読み取ります
 		/// </summary>
-		private string _ReadAsAsciiString(Stream stream, int count)
+		/// <param name="stream">対象の Stream</param>
+		private MetaData _ReadMetaDataBlock(Stream stream)
 		{
-			var buf = new byte[count];
-			stream.Read(buf, 0, count);
-
-			return new string(Encoding.ASCII.GetChars(buf));
-		}
-
-		private List<byte> _ReadAsByteList(Stream stream, int count)
-		{
-			var buf = new byte[count];
-			stream.Read(buf, 0, count);
-
-			return new List<byte>(buf);
-		}
-
-		private uint _ReadAsUInt(Stream stream)
-		{
-			var buf = new byte[4];
-			stream.Read(buf, 0, 4);
-
-			return BitConverter.ToUInt32(buf, 0);
-		}
-
-		private MetaData _ReadMetaDataBlock()
-		{
-			var isLastAndMetaDataType = _ReadAsByteList(_FileStream, 1)[0];
-			var isLast = (isLastAndMetaDataType & 0x01U) == 1;
+			var isLastAndMetaDataType = Helper._ReadAsByteList(stream, 1)[0];
+			var isLast = (isLastAndMetaDataType & 0x80U) != 0;
 			var metaDataType = (MetaDataType)(isLastAndMetaDataType & 0x7FU);
-			var metaDataLengthSource = _ReadAsByteList(_FileStream, 3);
-			metaDataLengthSource.Insert(0, 0);
-			metaDataLengthSource.Reverse();
-			var metaDataLength = BitConverter.ToUInt32(metaDataLengthSource.ToArray(), 0);
-			var metaData = _ReadAsByteList(_FileStream, (int)metaDataLength);
+			var metaDataLength = Helper._ReadAsUInt(stream, 3);
+			var metaData = Helper._ReadAsByteList(stream, (int)metaDataLength);
 
 			return new MetaData(metaDataType, isLast, metaData);
 		}
 
+		/// <summary>
+		/// PICTUREタイプのメタデータから Image を取り出します
+		/// </summary>
 		private Image _ParsePictureMetaData(MetaData pictureMetaData)
 		{
-			Image result = null;
+			if (pictureMetaData.Type != MetaDataType.PICTURE)
+				throw new ArgumentException("このメタデータはPICTUREタイプではありません");
 
-			using (var image = new MemoryStream())
 			using (var memory = new MemoryStream())
 			{
-				var initialPos = memory.Position;
 				memory.Write(pictureMetaData.Data.ToArray(), 0, pictureMetaData.Data.Count);
-				memory.Position = initialPos;
+				memory.Seek(0, SeekOrigin.Begin);
 
-				var imageType = _ReadAsByteList(memory, 4);
-				var mimeTypeLengthSource = _ReadAsByteList(memory, 4);
-				mimeTypeLengthSource.Reverse();
-				var mimeTypeLength = BitConverter.ToUInt32(mimeTypeLengthSource.ToArray(), 0);
-				var mimeType = _ReadAsAsciiString(memory, (int)mimeTypeLength);
-				var explanationLengthSource = _ReadAsByteList(memory, 4);
-				explanationLengthSource.Reverse();
-				var explanationLength = BitConverter.ToUInt32(explanationLengthSource.ToArray(), 0);
-				_ReadAsByteList(memory, (int)explanationLength);
-				var a = _ReadAsByteList(memory, 4);
-				var b = _ReadAsByteList(memory, 4);
-				var c = _ReadAsByteList(memory, 4);
-				var d = _ReadAsByteList(memory, 4);
-				var sizeSource = _ReadAsByteList(memory, 4);
-				sizeSource.Reverse();
-				var size = BitConverter.ToUInt32(sizeSource.ToArray(), 0);
+				var mimeTypeLength = Helper._ReadAsUInt(memory, 4, 4);
+				var explanationLength = Helper._ReadAsUInt(memory, 4, (int)mimeTypeLength);
+				var imageSourceSize = Helper._ReadAsUInt(memory, 4, (int)explanationLength + 4 * 4);
+				var imageSource = Helper._ReadAsByteList(memory, (int)imageSourceSize);
 
-				var buf = new byte[size];
-				memory.Read(buf, 0, (int)size);
-				image.Write(buf, 0, buf.Length);
-
-				result = Image.FromStream(image);
+				using (var image = new MemoryStream())
+				{
+					image.Write(imageSource.ToArray(), 0, imageSource.Count);
+					return Image.FromStream(image);
+				}
 			}
-
-			return result;
 		}
 
-		public Image Extract()
+		/// <summary>
+		/// 対象のファイルが形式と一致しているかを判別します
+		/// </summary>
+		public bool CheckType(string filePath)
 		{
-			using (_FileStream = new FileStream(FilePath, FileMode.Open))
+			using (var file = new FileStream(filePath, FileMode.Open))
 			{
-				var fileType = _ReadAsAsciiString(_FileStream, 4);
+				var fileType = Helper._ReadAsAsciiString(file, 4);
+				return fileType != "fLaC";
+			}
+		}
 
-				if (fileType != "fLaC")
-					throw new InvalidDataException("このファイルはFLAC形式ではありません");
+		/// <summary>
+		/// アルバムアートを抽出します
+		/// </summary>
+		public Image Extract(string filePath)
+		{
+			using (var file = new FileStream(filePath, FileMode.Open))
+			{
+				file.Seek(4, SeekOrigin.Begin);
 
 				var metaDataList = new List<MetaData>();
 				MetaData metaData = null;
 				do
 				{
-					metaDataList.Add(metaData = _ReadMetaDataBlock());
+					metaDataList.Add(metaData = _ReadMetaDataBlock(file));
 				} while (!metaData.IsLast);
 
 				var picture = metaDataList.Find(i => i.Type == MetaDataType.PICTURE);
