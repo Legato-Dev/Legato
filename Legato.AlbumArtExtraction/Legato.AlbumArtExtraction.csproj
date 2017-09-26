@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Flac\MetaData.cs" />
     <Compile Include="Flac\MetaDataType.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="IAlbumArtExtractor.cs" />
     <Compile Include="FlacAlbumArtExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

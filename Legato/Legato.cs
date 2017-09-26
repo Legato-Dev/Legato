@@ -6,6 +6,8 @@ using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using System.Diagnostics;
+using Legato.AlbumArtExtraction;
+using System.Collections.Generic;
 
 namespace Legato
 {
@@ -63,7 +65,7 @@ namespace Legato
 		/// <summary>
 		/// AIMP が起動しているかどうかを示す値を取得します
 		/// </summary>
-		public bool IsRunning => Helper.AimpRemoteWindowHandle != IntPtr.Zero;
+		public bool IsRunning => Interop.AimpRemote.Helper.AimpRemoteWindowHandle != IntPtr.Zero;
 
 		/// <summary>
 		/// AIMP の実行ファイルのパスを取得します
@@ -92,15 +94,15 @@ namespace Legato
 		/// <summary>
 		/// AIMP の再生状態を示す値を取得します
 		/// </summary>
-		public PlayerState State => (PlayerState)Helper.SendPropertyMessage(PlayerProperty.State, PropertyAccessMode.Get).ToInt32();
+		public PlayerState State => (PlayerState)Interop.AimpRemote.Helper.SendPropertyMessage(PlayerProperty.State, PropertyAccessMode.Get).ToInt32();
 
 		/// <summary>
 		/// 曲の再生位置を取得または設定します(単位は[ms]です)
 		/// </summary>
 		public int Position
 		{
-			get { return Helper.SendPropertyMessage(PlayerProperty.Position, PropertyAccessMode.Get).ToInt32(); }
-			set { Helper.SendPropertyMessage(PlayerProperty.Position, PropertyAccessMode.Set, new IntPtr(value)); }
+			get { return Interop.AimpRemote.Helper.SendPropertyMessage(PlayerProperty.Position, PropertyAccessMode.Get).ToInt32(); }
+			set { Interop.AimpRemote.Helper.SendPropertyMessage(PlayerProperty.Position, PropertyAccessMode.Set, new IntPtr(value)); }
 		}
 
 		/// <summary>
@@ -108,11 +110,11 @@ namespace Legato
 		/// </summary>
 		public int Volume
 		{
-			get { return Helper.SendPropertyMessage(PlayerProperty.Volume, PropertyAccessMode.Get).ToInt32(); }
+			get { return Interop.AimpRemote.Helper.SendPropertyMessage(PlayerProperty.Volume, PropertyAccessMode.Get).ToInt32(); }
 			set
 			{
 				var volume = Math.Max(0, Math.Min(value, 100));
-				var result = Helper.SendPropertyMessage(PlayerProperty.Volume, PropertyAccessMode.Set, new IntPtr(volume));
+				var result = Interop.AimpRemote.Helper.SendPropertyMessage(PlayerProperty.Volume, PropertyAccessMode.Set, new IntPtr(volume));
 
 				if (result == IntPtr.Zero)
 					throw new ApplicationException("AimpのVolumeプロパティの設定に失敗しました。");
@@ -124,8 +126,8 @@ namespace Legato
 		/// </summary>
 		public bool IsMute
 		{
-			get { return Helper.SendPropertyMessage(PlayerProperty.IsMute, PropertyAccessMode.Get) != IntPtr.Zero; }
-			set { Helper.SendPropertyMessage(PlayerProperty.IsMute, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
+			get { return Interop.AimpRemote.Helper.SendPropertyMessage(PlayerProperty.IsMute, PropertyAccessMode.Get) != IntPtr.Zero; }
+			set { Interop.AimpRemote.Helper.SendPropertyMessage(PlayerProperty.IsMute, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
 		}
 
 		/// <summary>
@@ -133,8 +135,8 @@ namespace Legato
 		/// </summary>
 		public bool IsRepeat
 		{
-			get { return Helper.SendPropertyMessage(PlayerProperty.IsRepeat, PropertyAccessMode.Get) != IntPtr.Zero; }
-			set { Helper.SendPropertyMessage(PlayerProperty.IsRepeat, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
+			get { return Interop.AimpRemote.Helper.SendPropertyMessage(PlayerProperty.IsRepeat, PropertyAccessMode.Get) != IntPtr.Zero; }
+			set { Interop.AimpRemote.Helper.SendPropertyMessage(PlayerProperty.IsRepeat, PropertyAccessMode.Set, new IntPtr(value ? 1 : 0)); }
 		}
 
 		/// <summary>
@@ -149,7 +151,7 @@ namespace Legato
 		/// <summary>
 		/// 再生中の曲の情報を取得します
 		/// </summary>
-		public TrackInfo CurrentTrack => Helper.CurrentTrack;
+		public TrackInfo CurrentTrack => Interop.AimpRemote.Helper.CurrentTrack;
 
 		/// <summary>
 		/// 再生中のアルバムアートを取得します
@@ -161,7 +163,7 @@ namespace Legato
 				if (!IsRunning)
 					throw new ApplicationException("AlbumArtの取得に失敗しました。AIMPが起動されているかを確認してください。");
 
-				if (!Helper.RequestAlbumArt(Communicator))
+				/*if (!Helper.RequestAlbumArt(Communicator))
 					return null;
 
 				Image resource;
@@ -171,7 +173,16 @@ namespace Legato
 					resource = Image.FromStream(memory);
 				}
 
-				return resource;
+				return resource;*/
+
+				var filePath = CurrentTrack.FilePath;
+				var extractors = new List<IAlbumArtExtractor> { new FlacAlbumArtExtractor() };
+				var extractor = extractors.Find(i => i.CheckType(filePath));
+
+				if (extractor == null)
+					throw new ApplicationException("CurrentTrackからAlbumArtを抽出する方法が定義されていません");
+
+				return extractor.Extract(filePath);
 			}
 		}
 		private byte[] _AlbumArtSource { get; set; }
@@ -189,7 +200,7 @@ namespace Legato
 			Communicator.CopyDataMessageReceived += (copyData) =>
 			{
 				// AlbumArtの更新
-				if (copyData.dwData == new IntPtr(Helper.CopyDataIdArtWork))
+				if (copyData.dwData == new IntPtr(Interop.AimpRemote.Helper.CopyDataIdArtWork))
 				{
 					var dataLength = (int)copyData.cbData;
 					_AlbumArtSource = new byte[dataLength];
@@ -245,7 +256,7 @@ namespace Legato
 				throw new ApplicationException("AIMPが起動していないため、購読に失敗しました");
 
 			IsSubscribed = true;
-			Helper.RegisterNotify(Communicator);
+			Interop.AimpRemote.Helper.RegisterNotify(Communicator);
 			Subscribed?.Invoke();
 		}
 
@@ -258,7 +269,7 @@ namespace Legato
 				throw new ApplicationException("通知を購読していません");
 
 			IsSubscribed = false;
-			Helper.UnregisterNotify(Communicator);
+			Interop.AimpRemote.Helper.UnregisterNotify(Communicator);
 			Unsubscribed?.Invoke();
 		}
 
@@ -276,37 +287,37 @@ namespace Legato
 		/// <summary>
 		/// 曲を再生します
 		/// </summary>
-		public void Play() => Helper.SendCommandMessage(CommandType.Playing);
+		public void Play() => Interop.AimpRemote.Helper.SendCommandMessage(CommandType.Playing);
 
 		/// <summary>
 		/// 再生中の曲の再生状態を切り替えます
 		/// </summary>
-		public void PlayPause() => Helper.SendCommandMessage(CommandType.PlayPause);
+		public void PlayPause() => Interop.AimpRemote.Helper.SendCommandMessage(CommandType.PlayPause);
 
 		/// <summary>
 		/// 再生中の曲を一時停止します
 		/// </summary>
-		public void Pause() => Helper.SendCommandMessage(CommandType.Pausing);
+		public void Pause() => Interop.AimpRemote.Helper.SendCommandMessage(CommandType.Pausing);
 
 		/// <summary>
 		/// 再生中の曲を停止します
 		/// </summary>
-		public void Stop() => Helper.SendCommandMessage(CommandType.Stopped);
+		public void Stop() => Interop.AimpRemote.Helper.SendCommandMessage(CommandType.Stopped);
 
 		/// <summary>
 		/// 次の曲へ移動します
 		/// </summary>
-		public void Next() => Helper.SendCommandMessage(CommandType.Next);
+		public void Next() => Interop.AimpRemote.Helper.SendCommandMessage(CommandType.Next);
 
 		/// <summary>
 		/// 前の曲へ移動します
 		/// </summary>
-		public void Prev() => Helper.SendCommandMessage(CommandType.Previous);
+		public void Prev() => Interop.AimpRemote.Helper.SendCommandMessage(CommandType.Previous);
 
 		/// <summary>
 		/// AIMP を終了します
 		/// </summary>
-		public void Close() => Helper.SendCommandMessage(CommandType.Quit);
+		public void Close() => Interop.AimpRemote.Helper.SendCommandMessage(CommandType.Quit);
 
 		#endregion AIMPCommands
 
