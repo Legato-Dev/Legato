@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using Legato.AlbumArtExtraction;
-using static System.Console;
 
 namespace Legato.Sample
 {
@@ -27,35 +25,35 @@ namespace Legato.Sample
 		{
 			_Legato.Subscribed += () =>
 			{
-				WriteLine("接続されました");
+				Console.WriteLine("接続されました");
 			};
 
 			_Legato.Unsubscribed += () =>
 			{
-				WriteLine("切断されました");
+				Console.WriteLine("切断されました");
 			};
 
 			_Legato.Communicator.CurrentTrackChanged += (track) =>
 			{
-				WriteLine("CurrentTrackChanged:");
-				Write($"Title:{track.Title} ");
-				Write($"Artist:{track.Artist} ");
-				Write($"Album:{track.Album} ");
-				Write($"Genre:{track.Genre} ");
-				Write($"Duration:{track.Duration} ");
-				Write($"TrackNumber:{track.TrackNumber} ");
-				Write($"Year:{track.Year} ");
-				Write($"ChannelType:{track.ChannelType} ");
-				Write($"BitRate:{track.BitRate} ");
-				Write($"SampleRate:{track.SampleRate} ");
-				WriteLine();
+				Console.WriteLine("CurrentTrackChanged:");
+				Console.Write($"Title:{track.Title} ");
+				Console.Write($"Artist:{track.Artist} ");
+				Console.Write($"Album:{track.Album} ");
+				Console.Write($"Genre:{track.Genre} ");
+				Console.Write($"Duration:{track.Duration} ");
+				Console.Write($"TrackNumber:{track.TrackNumber} ");
+				Console.Write($"Year:{track.Year} ");
+				Console.Write($"ChannelType:{track.ChannelType} ");
+				Console.Write($"BitRate:{track.BitRate} ");
+				Console.Write($"SampleRate:{track.SampleRate} ");
+				Console.WriteLine();
 
 				_UpdateAlbumArt();
 			};
 
 			_Legato.Communicator.StatePropertyChanged += (state) =>
 			{
-				WriteLine($"StatePropertyChanged: {state}");
+				Console.WriteLine($"StatePropertyChanged: {state}");
 			};
 
 			_Legato.Communicator.PositionPropertyChanged += (position) =>
@@ -74,9 +72,24 @@ namespace Legato.Sample
 		private void _UpdateAlbumArt()
 		{
 			if (_Legato?.IsRunning ?? false)
-				pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
+			{
+				try
+				{
+					pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
+				}
+				catch(Exception ex) when (ex is ApplicationException || ex is NotSupportedException)
+				{
+					Console.WriteLine(ex.Message);
+				}
+				catch(Exception ex)
+				{
+					Console.WriteLine("unknown exception: " + ex.Message);
+				}
+			}
 			else
+			{
 				pictureBox1.Image = Properties.Resources.logo;
+			}
 		}
 
 		#endregion Methods
@@ -123,18 +136,18 @@ namespace Legato.Sample
 
 		private void buttonPlayerInfo_Click(object sender, EventArgs e)
 		{
-			Write($"IsRunning:{_Legato.IsRunning} ");
+			Console.Write($"IsRunning:{_Legato.IsRunning} ");
 
 			if (_Legato?.IsRunning ?? false)
 			{
-				Write($"State:{_Legato.State} ");
-				Write($"Volume:{_Legato.Volume} ");
-				Write($"IsShuffle:{_Legato.IsShuffle} ");
-				Write($"IsRepeat:{_Legato.IsRepeat} ");
-				Write($"IsMute:{_Legato.IsMute} ");
-				Write($"Position:{_Legato.Position} ");
+				Console.Write($"State:{_Legato.State} ");
+				Console.Write($"Volume:{_Legato.Volume} ");
+				Console.Write($"IsShuffle:{_Legato.IsShuffle} ");
+				Console.Write($"IsRepeat:{_Legato.IsRepeat} ");
+				Console.Write($"IsMute:{_Legato.IsMute} ");
+				Console.Write($"Position:{_Legato.Position} ");
 			}
-			WriteLine();
+			Console.WriteLine();
 		}
 
 		#endregion Procedures

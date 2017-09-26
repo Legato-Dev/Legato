@@ -70,6 +70,8 @@ namespace Legato
 		/// <summary>
 		/// AIMP の実行ファイルのパスを取得します
 		/// </summary>
+		/// <exception cref="ApplicationException" />
+		/// <exception cref="FileNotFoundException" />
 		public string AimpProcessPath
 		{
 			get
@@ -156,6 +158,8 @@ namespace Legato
 		/// <summary>
 		/// 再生中のアルバムアートを取得します
 		/// </summary>
+		/// <exception cref="ApplicationException" />
+		/// <exception cref="NotSupportedException" />
 		public Image AlbumArt
 		{
 			get
@@ -176,11 +180,14 @@ namespace Legato
 				return resource;*/
 
 				var filePath = CurrentTrack.FilePath;
-				var extractors = new List<IAlbumArtExtractor> { new FlacAlbumArtExtractor() };
+				var extractors = new List<IAlbumArtExtractor> {
+					new FlacAlbumArtExtractor(),
+					// new ID3v23AlbumArtExtractor(),
+				};
 				var extractor = extractors.Find(i => i.CheckType(filePath));
 
 				if (extractor == null)
-					throw new ApplicationException("CurrentTrackからAlbumArtを抽出する方法が定義されていません");
+					throw new NotSupportedException("CurrentTrackからAlbumArtを抽出する方法が定義されていません");
 
 				return extractor.Extract(filePath);
 			}
@@ -247,6 +254,7 @@ namespace Legato
 		/// <summary>
 		/// AIMP のイベント通知を購読します
 		/// </summary>
+		/// <exception cref="ApplicationException" />
 		public void Subscribe()
 		{
 			if (IsSubscribed)
@@ -263,6 +271,7 @@ namespace Legato
 		/// <summary>
 		/// AIMP のイベント通知の購読を解除します
 		/// </summary>
+		/// <exception cref="ApplicationException" />
 		public void Unsubscribe()
 		{
 			if (!IsSubscribed)
