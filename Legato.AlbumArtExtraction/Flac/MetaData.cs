@@ -12,7 +12,9 @@ namespace Legato.AlbumArtExtraction.Flac
 		}
 
 		public MetaDataType Type { get; set; }
+
 		public bool IsLast { get; set; }
+
 		public List<byte> Data { get; set; }
 
 		public override string ToString() => $"FlacMetaData {{ Type = {Type}, IsLast = {IsLast}, DataSize = {Data.Count} }}";

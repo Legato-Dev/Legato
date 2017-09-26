@@ -17,7 +17,7 @@ namespace Legato.AlbumArtExtraction
 		/// <param name="stream">対象の Stream</param>
 		private MetaData _ReadMetaDataBlock(Stream stream)
 		{
-			var isLastAndMetaDataType = Helper.ReadAsByteList(stream, 1)[0];
+			var isLastAndMetaDataType = Helper.ReadAsByte(stream);
 			var isLast = (isLastAndMetaDataType & 0x80U) != 0;
 			var metaDataType = (MetaDataType)(isLastAndMetaDataType & 0x7FU);
 			var metaDataLength = Helper.ReadAsUInt(stream, 3);
@@ -39,9 +39,9 @@ namespace Legato.AlbumArtExtraction
 				memory.Write(pictureMetaData.Data.ToArray(), 0, pictureMetaData.Data.Count);
 				memory.Seek(0, SeekOrigin.Begin);
 
-				var mimeTypeLength = Helper.ReadAsUInt(memory, 4, 4);
-				var explanationLength = Helper.ReadAsUInt(memory, 4, (int)mimeTypeLength);
-				var imageSourceSize = Helper.ReadAsUInt(memory, 4, (int)explanationLength + 4 * 4);
+				var mimeTypeLength = Helper.ReadAsUInt(memory, skip: 4);
+				var explanationLength = Helper.ReadAsUInt(memory, skip: (int)mimeTypeLength);
+				var imageSourceSize = Helper.ReadAsUInt(memory, skip: (int)explanationLength + 4 * 4);
 				var imageSource = Helper.ReadAsByteList(memory, (int)imageSourceSize);
 
 				using (var image = new MemoryStream())
@@ -57,7 +57,7 @@ namespace Legato.AlbumArtExtraction
 		/// </summary>
 		public bool CheckType(string filePath)
 		{
-			using (var file = new FileStream(filePath, FileMode.Open))
+			using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
 			{
 				var fileType = Helper.ReadAsAsciiString(file, 4);
 				return fileType == "fLaC";
@@ -69,7 +69,7 @@ namespace Legato.AlbumArtExtraction
 		/// </summary>
 		public Image Extract(string filePath)
 		{
-			using (var file = new FileStream(filePath, FileMode.Open))
+			using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
 			{
 				file.Seek(4, SeekOrigin.Begin);
 
