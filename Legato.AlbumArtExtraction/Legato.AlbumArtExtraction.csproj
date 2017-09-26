@@ -47,6 +47,7 @@
     <Compile Include="Helper.cs" />
     <Compile Include="IAlbumArtExtractor.cs" />
     <Compile Include="FlacAlbumArtExtractor.cs" />
+    <Compile Include="Mp3\MetaDataType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
