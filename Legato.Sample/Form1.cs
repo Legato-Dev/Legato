@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Legato.AlbumArtExtraction;
 using static System.Console;
 
 namespace Legato.Sample
@@ -55,7 +56,6 @@ namespace Legato.Sample
 			_Legato.Communicator.StatePropertyChanged += (state) =>
 			{
 				WriteLine($"StatePropertyChanged: {state}");
-				_UpdateAlbumArt();
 			};
 
 			_Legato.Communicator.PositionPropertyChanged += (position) =>
@@ -135,6 +135,9 @@ namespace Legato.Sample
 				Write($"Position:{_Legato.Position} ");
 			}
 			WriteLine();
+
+			var ext = new FlacAlbumArtExtractor(@"D:\Users\Marihachi\Music\小倉唯\ハイタッチ☆メモリー\01. ハイタッチ☆メモリー_test.flac");
+			pictureBox1.Image = ext.Extract();
 		}
 
 		#endregion Procedures
