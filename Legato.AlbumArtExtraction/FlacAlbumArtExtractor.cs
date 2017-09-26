@@ -39,9 +39,12 @@ namespace Legato.AlbumArtExtraction
 				memory.Write(pictureMetaData.Data.ToArray(), 0, pictureMetaData.Data.Count);
 				memory.Seek(0, SeekOrigin.Begin);
 
-				var mimeTypeLength = Helper._ReadAsUInt(memory, 4, 4);
-				var explanationLength = Helper._ReadAsUInt(memory, 4, (int)mimeTypeLength);
-				var imageSourceSize = Helper._ReadAsUInt(memory, 4, (int)explanationLength + 4 * 4);
+				memory.Seek(4, SeekOrigin.Current);
+				var mimeTypeLength = Helper._ReadAsUInt(memory, 4);
+				memory.Seek((int)mimeTypeLength, SeekOrigin.Current);
+				var explanationLength = Helper._ReadAsUInt(memory, 4);
+				memory.Seek((int)explanationLength + 4 * 4, SeekOrigin.Current);
+				var imageSourceSize = Helper._ReadAsUInt(memory, 4);
 				var imageSource = Helper._ReadAsByteList(memory, (int)imageSourceSize);
 
 				using (var image = new MemoryStream())
@@ -60,7 +63,7 @@ namespace Legato.AlbumArtExtraction
 			using (var file = new FileStream(filePath, FileMode.Open))
 			{
 				var fileType = Helper._ReadAsAsciiString(file, 4);
-				return fileType != "fLaC";
+				return fileType == "fLaC";
 			}
 		}
 
@@ -82,10 +85,7 @@ namespace Legato.AlbumArtExtraction
 
 				var picture = metaDataList.Find(i => i.Type == MetaDataType.PICTURE);
 
-				if (picture == null)
-					return null;
-
-				return _ParsePictureMetaData(picture);
+				return (picture != null) ? _ParsePictureMetaData(picture) : null;
 			}
 		}
 	}
