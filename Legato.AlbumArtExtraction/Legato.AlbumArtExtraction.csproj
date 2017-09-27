@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DirectoryAlbumArtExtractor.cs" />
     <Compile Include="Flac\MetaData.cs" />
     <Compile Include="Flac\MetaDataType.cs" />
     <Compile Include="Helper.cs" />

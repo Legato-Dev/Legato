@@ -183,11 +183,14 @@ namespace Legato
 				var extractors = new List<IAlbumArtExtractor> {
 					new FlacAlbumArtExtractor(),
 					// new ID3v23AlbumArtExtractor(),
+					new DirectoryAlbumArtExtractor()
 				};
 				var extractor = extractors.Find(i => i.CheckType(filePath));
 
 				if (extractor == null)
 					throw new NotSupportedException("CurrentTrackからAlbumArtを抽出する方法が定義されていません");
+
+				Debug.WriteLine(extractor.ToString());
 
 				return extractor.Extract(filePath);
 			}
