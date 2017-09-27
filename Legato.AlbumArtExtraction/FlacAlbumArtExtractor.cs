@@ -21,6 +21,8 @@ namespace Legato.AlbumArtExtraction
 			var isLast = (isLastAndMetaDataType & 0x80U) != 0;
 			var metaDataType = (MetaDataType)(isLastAndMetaDataType & 0x7FU);
 			var metaDataLength = Helper.ReadAsUInt(stream, 3);
+			if (metaDataLength == 0)
+				throw new ApplicationException("this MetaDataBlock is invalid");
 			var metaData = Helper.ReadAsByteList(stream, (int)metaDataLength);
 
 			return new MetaData(metaDataType, isLast, metaData);
@@ -60,8 +62,19 @@ namespace Legato.AlbumArtExtraction
 			using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
 			{
 				var fileType = Helper.ReadAsAsciiString(file, 4);
-				return fileType == "fLaC";
+
+				if (fileType != "fLaC")
+					return false;
 			}
+
+			try
+			{
+				if (Extract(filePath) != null)
+					return true;
+			}
+			catch (ApplicationException ex) { }
+
+			return false;
 		}
 
 		/// <summary>
@@ -69,20 +82,31 @@ namespace Legato.AlbumArtExtraction
 		/// </summary>
 		public Image Extract(string filePath)
 		{
-			using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+			try
 			{
-				file.Seek(4, SeekOrigin.Begin);
-
-				var metaDataList = new List<MetaData>();
-				MetaData metaData = null;
-				do
+				using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
 				{
-					metaDataList.Add(metaData = _ReadMetaDataBlock(file));
-				} while (!metaData.IsLast);
+					Helper.Skip(file, 4);
 
-				var picture = metaDataList.Find(i => i.Type == MetaDataType.PICTURE);
+					var metaDataList = new List<MetaData>();
+					MetaData metaData = null;
+					do
+					{
+						metaDataList.Add(metaData = _ReadMetaDataBlock(file));
+					}
+					while (!metaData.IsLast && metaDataList.Count < 64);
 
-				return (picture != null) ? _ParsePictureMetaData(picture) : null;
+					if (metaDataList.Count >= 64)
+						throw new InvalidDataException("メタデータの個数が異常です");
+
+					var picture = metaDataList.Find(i => i.Type == MetaDataType.PICTURE);
+
+					return (picture != null) ? _ParsePictureMetaData(picture) : null;
+				}
+			}
+			catch(Exception ex)
+			{
+				throw new ApplicationException("アルバムアートの抽出に失敗しました", ex);
 			}
 		}
 	}
