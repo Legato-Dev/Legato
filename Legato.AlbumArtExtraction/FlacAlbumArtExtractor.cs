@@ -19,13 +19,15 @@ namespace Legato.AlbumArtExtraction
 		{
 			var isLastAndMetaDataType = Helper.ReadAsByte(stream);
 			var isLast = (isLastAndMetaDataType & 0x80U) != 0;
-			var metaDataType = (MetaDataType)(isLastAndMetaDataType & 0x7FU);
+			var metaDataType = (isLastAndMetaDataType & 0x7FU);
+			if (metaDataType > 6)
+				throw new InvalidDataException("metaDataType is invalid");
 			var metaDataLength = Helper.ReadAsUInt(stream, 3);
 			if (metaDataLength == 0)
-				throw new ApplicationException("this MetaDataBlock is invalid");
+				throw new InvalidDataException("metaDataLength is invalid");
 			var metaData = Helper.ReadAsByteList(stream, (int)metaDataLength);
 
-			return new MetaData(metaDataType, isLast, metaData);
+			return new MetaData((MetaDataType)metaDataType, isLast, metaData);
 		}
 
 		/// <summary>
@@ -39,9 +41,11 @@ namespace Legato.AlbumArtExtraction
 			using (var memory = new MemoryStream())
 			{
 				memory.Write(pictureMetaData.Data.ToArray(), 0, pictureMetaData.Data.Count);
-				memory.Seek(0, SeekOrigin.Begin);
+				memory.Seek(4, SeekOrigin.Begin);
 
-				var mimeTypeLength = Helper.ReadAsUInt(memory, skip: 4);
+				var mimeTypeLength = Helper.ReadAsUInt(memory);
+				if (mimeTypeLength > 128)
+					throw new InvalidDataException("mimeTypeLength is invalid value");
 				var explanationLength = Helper.ReadAsUInt(memory, skip: (int)mimeTypeLength);
 				var imageSourceSize = Helper.ReadAsUInt(memory, skip: (int)explanationLength + 4 * 4);
 				var imageSource = Helper.ReadAsByteList(memory, (int)imageSourceSize);
@@ -72,7 +76,7 @@ namespace Legato.AlbumArtExtraction
 				if (Extract(filePath) != null)
 					return true;
 			}
-			catch (ApplicationException ex) { }
+			catch (Exception ex) { }
 
 			return false;
 		}
@@ -82,31 +86,24 @@ namespace Legato.AlbumArtExtraction
 		/// </summary>
 		public Image Extract(string filePath)
 		{
-			try
+			using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
 			{
-				using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+				Helper.Skip(file, 4);
+
+				var metaDataList = new List<MetaData>();
+				MetaData metaData = null;
+				do
 				{
-					Helper.Skip(file, 4);
-
-					var metaDataList = new List<MetaData>();
-					MetaData metaData = null;
-					do
-					{
-						metaDataList.Add(metaData = _ReadMetaDataBlock(file));
-					}
-					while (!metaData.IsLast && metaDataList.Count < 64);
-
-					if (metaDataList.Count >= 64)
-						throw new InvalidDataException("メタデータの個数が異常です");
-
-					var picture = metaDataList.Find(i => i.Type == MetaDataType.PICTURE);
-
-					return (picture != null) ? _ParsePictureMetaData(picture) : null;
+					metaDataList.Add(metaData = _ReadMetaDataBlock(file));
 				}
-			}
-			catch(Exception ex)
-			{
-				throw new ApplicationException("アルバムアートの抽出に失敗しました", ex);
+				while (!metaData.IsLast && metaDataList.Count < 64);
+
+				if (metaDataList.Count >= 64)
+					throw new InvalidDataException("メタデータの個数が異常です");
+
+				var picture = metaDataList.Find(i => i.Type == MetaDataType.PICTURE);
+
+				return (picture != null) ? _ParsePictureMetaData(picture) : null;
 			}
 		}
 	}
