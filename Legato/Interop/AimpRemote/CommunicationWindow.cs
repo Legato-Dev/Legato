@@ -58,7 +58,7 @@ namespace Legato.Interop.AimpRemote
 					NotifyMessageReceived?.Invoke((NotifyType)wParam, lParam);
 			};
 
-			NotifyMessageReceived += async (type, lParam) =>
+			NotifyMessageReceived += /*async*/ (type, lParam) =>
 			{
 				// PropertyChanged を発行
 				if (type == NotifyType.Property)
@@ -67,7 +67,7 @@ namespace Legato.Interop.AimpRemote
 				// CurrentTrackChanged を発行
 				else if (type == NotifyType.TrackStart)
 				{
-					await Task.Delay(CurrentTrackChangedDelayTime);
+					// await Task.Delay(CurrentTrackChangedDelayTime);
 					CurrentTrackChanged?.Invoke(Helper.CurrentTrack);
 				}
 
