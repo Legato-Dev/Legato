@@ -84,6 +84,11 @@ namespace Legato.TwitterSample
 			labelTitle.Text = track.Title;
 			labelArtist.Text = track.Artist;
 			labelAlbum.Text = track.Album;
+
+			// バルーン&トースト通知
+			notifyIcon.BalloonTipTitle = $"Legato NowPlaying\r\n{track.Title} - {track.Artist}";
+			notifyIcon.BalloonTipText = $"Album : {track.Album}";
+			notifyIcon.ShowBalloonTip(10000);
 		}
 
 		#region File IO Methods
@@ -121,7 +126,8 @@ namespace Legato.TwitterSample
 			{
 				var data = new { format = _PostingFormat };
 
-				var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings {
+				var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings
+				{
 					StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
 				});
 
@@ -182,7 +188,8 @@ namespace Legato.TwitterSample
 				AccessTokenSecret = _DefaultTokensKey
 			};
 
-			var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings {
+			var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings
+			{
 				StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
 			});
 

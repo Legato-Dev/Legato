@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.buttonPostNowPlaying = new System.Windows.Forms.Button();
 			this.pictureBoxAlbumArt = new System.Windows.Forms.PictureBox();
 			this.labelTrackNumber = new System.Windows.Forms.Label();
@@ -38,6 +39,7 @@
 			this.checkBoxAutoPosting = new System.Windows.Forms.CheckBox();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.buttonShowSettingWindow = new System.Windows.Forms.Button();
+			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxAlbumArt)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -55,8 +57,8 @@
 			// 
 			// pictureBoxAlbumArt
 			// 
-			this.pictureBoxAlbumArt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+			this.pictureBoxAlbumArt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			| System.Windows.Forms.AnchorStyles.Left)));
 			this.pictureBoxAlbumArt.Cursor = System.Windows.Forms.Cursors.Hand;
 			this.pictureBoxAlbumArt.Location = new System.Drawing.Point(12, 12);
 			this.pictureBoxAlbumArt.Name = "pictureBoxAlbumArt";
@@ -78,8 +80,8 @@
 			// 
 			// labelTitle
 			// 
-			this.labelTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.labelTitle.AutoEllipsis = true;
 			this.labelTitle.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.labelTitle.Location = new System.Drawing.Point(212, 9);
@@ -90,8 +92,8 @@
 			// 
 			// labelArtist
 			// 
-			this.labelArtist.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelArtist.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.labelArtist.AutoEllipsis = true;
 			this.labelArtist.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.labelArtist.Location = new System.Drawing.Point(187, 32);
@@ -102,8 +104,8 @@
 			// 
 			// labelAlbum
 			// 
-			this.labelAlbum.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelAlbum.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.labelAlbum.AutoEllipsis = true;
 			this.labelAlbum.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.labelAlbum.Location = new System.Drawing.Point(187, 55);
@@ -139,8 +141,8 @@
 			// 
 			// panel1
 			// 
-			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panel1.Cursor = System.Windows.Forms.Cursors.Default;
 			this.panel1.Location = new System.Drawing.Point(187, 87);
@@ -160,6 +162,11 @@
 			this.buttonShowSettingWindow.Text = "Settings...";
 			this.buttonShowSettingWindow.UseVisualStyleBackColor = true;
 			this.buttonShowSettingWindow.Click += new System.EventHandler(this.buttonShowSettingWindow_Click);
+			// 
+			// notifyIcon
+			// 
+			this.notifyIcon.Text = "notifyIcon1";
+			this.notifyIcon.Visible = true;
 			// 
 			// Form1
 			// 
@@ -199,6 +206,7 @@
 		private System.Windows.Forms.CheckBox checkBoxAutoPosting;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Button buttonShowSettingWindow;
+		private System.Windows.Forms.NotifyIcon notifyIcon;
 	}
 }
 

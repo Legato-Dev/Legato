@@ -164,34 +164,49 @@ namespace Legato
 		{
 			get
 			{
-				if (!IsRunning)
-					throw new ApplicationException("AlbumArtの取得に失敗しました。AIMPが起動されているかを確認してください。");
+				string filePath = "";
+				IAlbumArtExtractor extractor = null;
 
-				/*if (!Helper.RequestAlbumArt(Communicator))
-					return null;
-
-				Image resource;
-				using (var memory = new MemoryStream())
+				try
 				{
-					memory.Write(_AlbumArtSource, 0, _AlbumArtSource.Length);
-					resource = Image.FromStream(memory);
+					if (!IsRunning)
+						throw new ApplicationException("AlbumArtの取得に失敗しました。AIMPが起動されているかを確認してください。");
+
+					// MemoryStream はcatch に移動><
+
+					filePath = CurrentTrack.FilePath;
+					var extractors = new List<IAlbumArtExtractor> {
+						new FlacAlbumArtExtractor(),
+						// new ID3v23AlbumArtExtractor(),
+						new DirectoryAlbumArtExtractor()
+					};
+					extractor = extractors.Find(i => i.CheckType(filePath));
+
+					if (extractor == null)
+						throw new NotSupportedException("CurrentTrackからAlbumArtを抽出する方法が定義されていません");
+
+					Debug.WriteLine(extractor.ToString());
+
+				}
+				catch (ApplicationException ae)
+				{
+					Console.WriteLine(ae.StackTrace);
 				}
 
-				return resource;*/
+				// ♰最後の砦♰ メモリ読出しにて AlbumArt を取得。
+				catch (NotSupportedException ne)
+				{
+					Console.WriteLine(ne.StackTrace);
 
-				var filePath = CurrentTrack.FilePath;
-				var extractors = new List<IAlbumArtExtractor> {
-					new FlacAlbumArtExtractor(),
-					// new ID3v23AlbumArtExtractor(),
-					new DirectoryAlbumArtExtractor()
-				};
-				var extractor = extractors.Find(i => i.CheckType(filePath));
+					if (!Interop.AimpRemote.Helper.RequestAlbumArt(Communicator))
+						return null;
 
-				if (extractor == null)
-					throw new NotSupportedException("CurrentTrackからAlbumArtを抽出する方法が定義されていません");
-
-				Debug.WriteLine(extractor.ToString());
-
+					using (var memory = new MemoryStream())
+					{
+						memory.Write(_AlbumArtSource, 0, _AlbumArtSource.Length);
+						return Image.FromStream(memory);
+					}
+				}
 				return extractor.Extract(filePath);
 			}
 		}

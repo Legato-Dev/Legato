@@ -28,12 +28,15 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
 			this.buttonPlayerInfo = new System.Windows.Forms.Button();
 			this.buttonPlayPause = new System.Windows.Forms.Button();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.buttonNext = new System.Windows.Forms.Button();
 			this.buttonPrev = new System.Windows.Forms.Button();
 			this.CurrentPos = new System.Windows.Forms.Label();
+			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -61,9 +64,9 @@
 			// 
 			// pictureBox1
 			// 
-			this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.pictureBox1.Location = new System.Drawing.Point(12, 12);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(391, 349);
@@ -104,6 +107,12 @@
 			this.CurrentPos.TabIndex = 7;
 			this.CurrentPos.Text = "--:--";
 			// 
+			// notifyIcon
+			// 
+			this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+			this.notifyIcon.Text = "notifyIcon1";
+			this.notifyIcon.Visible = true;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -133,6 +142,7 @@
 		private System.Windows.Forms.Button buttonNext;
 		private System.Windows.Forms.Button buttonPrev;
 		private System.Windows.Forms.Label CurrentPos;
+		private System.Windows.Forms.NotifyIcon notifyIcon;
 	}
 }
 

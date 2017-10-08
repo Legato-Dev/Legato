@@ -35,6 +35,11 @@ namespace Legato.Sample
 
 			_Legato.Communicator.CurrentTrackChanged += (track) =>
 			{
+				// バルーン&トースト通知
+				notifyIcon.BalloonTipTitle = $"Legato NowPlaying\r\n{track.Title} - {track.Artist}";
+				notifyIcon.BalloonTipText = $"Album : {track.Album}";
+				notifyIcon.ShowBalloonTip(10000);
+
 				Console.WriteLine("CurrentTrackChanged:");
 				Console.Write($"Title:{track.Title} ");
 				Console.Write($"Artist:{track.Artist} ");
@@ -77,11 +82,11 @@ namespace Legato.Sample
 				{
 					pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
 				}
-				catch(Exception ex) when (ex is ApplicationException || ex is NotSupportedException)
+				catch (Exception ex) when (ex is ApplicationException || ex is NotSupportedException)
 				{
 					Console.WriteLine(ex.Message);
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Console.WriteLine("unknown exception: " + ex.Message);
 				}
