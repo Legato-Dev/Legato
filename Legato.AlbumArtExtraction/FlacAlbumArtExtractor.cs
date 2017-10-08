@@ -76,7 +76,7 @@ namespace Legato.AlbumArtExtraction
 				if (Extract(filePath) != null)
 					return true;
 			}
-			catch (Exception ex) { }
+			catch { }
 
 			return false;
 		}
