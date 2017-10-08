@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CoreTweet;
-using JsonFx.Json;
 using Legato.Interop.AimpRemote.Entities;
+using Newtonsoft.Json;
 
 namespace Legato.TwitterSample
 {
@@ -99,8 +99,8 @@ namespace Legato.TwitterSample
 				string jsonString = null;
 				using (var reader = new StreamReader("settings.json", Encoding.UTF8))
 					jsonString = await reader.ReadToEndAsync();
-				var jReader = new JsonReader();
-				dynamic json = jReader.Read(jsonString);
+
+				dynamic json = JsonConvert.DeserializeObject(jsonString);
 
 				_PostingFormat = json.format ?? _DefaultPostingFormat;
 			}
@@ -119,48 +119,29 @@ namespace Legato.TwitterSample
 			// 設定ファイルに保存すべき情報がある場合
 			if (_PostingFormat != null)
 			{
-				var jsonWriter = new JsonWriter();
-				var jsonString = jsonWriter.Write(new { format = _PostingFormat });
+				var data = new { format = _PostingFormat };
+
+				var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings {
+					StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+				});
+
 				using (var writer = new StreamWriter("settings.json", false, Encoding.UTF8))
 					await writer.WriteAsync(jsonString);
 			}
 		}
 
 		/// <summary>
-		/// tokens.json を生成します
+		/// tokens.json からアカウント情報を読み込みます
 		/// </summary>
-		private async Task _CreateTokensFileAsync()
+		private async Task _LoadTokensFileAsync()
 		{
-			var jsonWriter = new JsonWriter();
-			var data = new
-			{
-				ConsumerKey = _DefaultTokensKey,
-				ConsumerSecret = _DefaultTokensKey,
-				AccessToken = _DefaultTokensKey,
-				AccessTokenSecret = _DefaultTokensKey
-			};
-			var jsonString = jsonWriter.Write(data);
-			using (var writer = new StreamWriter("tokens.json", false, Encoding.UTF8))
-				await writer.WriteAsync(jsonString);
-		}
-
-		#endregion File IO Methods
-
-		#endregion Methods
-
-		#region Procedures
-
-		private async void Form1_Load(object sender, EventArgs e)
-		{
-			Icon = Properties.Resources.legato;
-
 			try
 			{
 				string jsonString = null;
 				using (var reader = new StreamReader("tokens.json", Encoding.UTF8))
 					jsonString = await reader.ReadToEndAsync();
-				var jReader = new JsonReader();
-				dynamic json = jReader.Read(jsonString);
+
+				dynamic json = JsonConvert.DeserializeObject(jsonString);
 
 				var ck = (string)json.ConsumerKey;
 				var cs = (string)json.ConsumerSecret;
@@ -186,6 +167,40 @@ namespace Legato.TwitterSample
 				// JSONの構造が間違っている、もしくは存在しなかった場合
 				await _CreateTokensFileAsync();
 			}
+		}
+
+		/// <summary>
+		/// tokens.json を生成します
+		/// </summary>
+		private async Task _CreateTokensFileAsync()
+		{
+			var data = new
+			{
+				ConsumerKey = _DefaultTokensKey,
+				ConsumerSecret = _DefaultTokensKey,
+				AccessToken = _DefaultTokensKey,
+				AccessTokenSecret = _DefaultTokensKey
+			};
+
+			var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings {
+				StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+			});
+
+			using (var writer = new StreamWriter("tokens.json", false, Encoding.UTF8))
+				await writer.WriteAsync(jsonString);
+		}
+
+		#endregion File IO Methods
+
+		#endregion Methods
+
+		#region Procedures
+
+		private async void Form1_Load(object sender, EventArgs e)
+		{
+			Icon = Properties.Resources.legato;
+
+			await _LoadTokensFileAsync();
 
 			if (_Twitter == null)
 			{
@@ -198,6 +213,8 @@ namespace Legato.TwitterSample
 				Close();
 				return;
 			}
+
+			await _LoadSettingsAsync();
 
 			_Legato = new Legato();
 
@@ -216,8 +233,6 @@ namespace Legato.TwitterSample
 				_UpdateFormTrackInfo(_Legato.CurrentTrack);
 				_UpdateAlbumArt();
 			}
-
-			await _LoadSettingsAsync();
 		}
 
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
