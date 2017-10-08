@@ -18,5 +18,4 @@ MIT
 
 ### Legato.TwitterSampleで利用しているライブラリとそのライセンス
 - CoreTweet : MIT License
-	- Newtonsoft.Json : MIT License
-- JsonFx : MIT License
+- Json.NET(Newtonsoft.Json) : MIT License
