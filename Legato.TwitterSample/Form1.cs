@@ -85,9 +85,23 @@ namespace Legato.TwitterSample
 			labelArtist.Text = track.Artist;
 			labelAlbum.Text = track.Album;
 
-			// バルーン&トースト通知
-			notifyIcon.BalloonTipTitle = $"Legato NowPlaying\r\n{track.Title} - {track.Artist}";
-			notifyIcon.BalloonTipText = $"Album : {track.Album}";
+			var os = Environment.OSVersion;
+			notifyIcon.Icon = Properties.Resources.legato;
+
+			// トースト通知
+			if (os.Version.Major >= 6 && os.Version.Minor >= 2)
+			{
+				notifyIcon.BalloonTipTitle = $"Legato NowPlaying\r\n{track.Title} - {track.Artist}";
+				notifyIcon.BalloonTipText = $"Album : {track.Album}";
+				Debug.WriteLine("トースト通知が表示されました。");
+			}
+			// バルーン通知
+			else
+			{
+				notifyIcon.BalloonTipTitle = $"Legato NowPlaying";
+				notifyIcon.BalloonTipText = $"{track.Title} - {track.Artist}\r\nAlbum : {track.Album}";
+				Debug.WriteLine("バルーン通知が表示されました。");
+			}
 			notifyIcon.ShowBalloonTip(10000);
 		}
 
