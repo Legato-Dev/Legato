@@ -13,7 +13,7 @@ namespace Legato.Sample
 
 		#region Properties
 
-		private Legato _Legato { get; set; }
+		private Aimp _Aimp { get; set; }
 
 		#endregion Properties
 
@@ -24,17 +24,17 @@ namespace Legato.Sample
 		/// </summary>
 		private void _AddLegatoEventListeners()
 		{
-			_Legato.Subscribed += () =>
+			_Aimp.Subscribed += () =>
 			{
 				Console.WriteLine("接続されました");
 			};
 
-			_Legato.Unsubscribed += () =>
+			_Aimp.Unsubscribed += () =>
 			{
 				Console.WriteLine("切断されました");
 			};
 
-			_Legato.Communicator.CurrentTrackChanged += (track) =>
+			_Aimp.Communicator.CurrentTrackChanged += (track) =>
 			{
 				
 				var os = Environment.OSVersion;
@@ -72,12 +72,12 @@ namespace Legato.Sample
 				_UpdateAlbumArt();
 			};
 
-			_Legato.Communicator.StatePropertyChanged += (state) =>
+			_Aimp.Communicator.StatePropertyChanged += (state) =>
 			{
 				Console.WriteLine($"StatePropertyChanged: {state}");
 			};
 
-			_Legato.Communicator.PositionPropertyChanged += (position) =>
+			_Aimp.Communicator.PositionPropertyChanged += (position) =>
 			{
 				var totalSec = position / 1000;
 				var min = totalSec / 60;
@@ -92,11 +92,11 @@ namespace Legato.Sample
 		/// </summary>
 		private void _UpdateAlbumArt()
 		{
-			if (_Legato?.IsRunning ?? false)
+			if (_Aimp?.IsRunning ?? false)
 			{
 				try
 				{
-					pictureBox1.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
+					pictureBox1.Image = _Aimp.AlbumArt ?? Properties.Resources.logo;
 				}
 				catch (Exception ex) when (ex is ApplicationException || ex is NotSupportedException)
 				{
@@ -121,52 +121,52 @@ namespace Legato.Sample
 		{
 			Icon = Properties.Resources.legato;
 
-			_Legato = new Legato();
+			_Aimp = new Aimp();
 			_AddLegatoEventListeners();
 			_UpdateAlbumArt();
 		}
 
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			_Legato.Dispose();
+			_Aimp.Dispose();
 		}
 
 		private void buttonPlayPause_Click(object sender, EventArgs e)
 		{
-			if (_Legato?.IsRunning ?? false)
+			if (_Aimp?.IsRunning ?? false)
 			{
-				_Legato.PlayPause();
+				_Aimp.PlayPause();
 			}
 		}
 
 		private void buttonNext_Click(object sender, EventArgs e)
 		{
-			if (_Legato?.IsRunning ?? false)
+			if (_Aimp?.IsRunning ?? false)
 			{
-				_Legato.Next();
+				_Aimp.Next();
 			}
 		}
 
 		private void buttonPrev_Click(object sender, EventArgs e)
 		{
-			if (_Legato?.IsRunning ?? false)
+			if (_Aimp?.IsRunning ?? false)
 			{
-				_Legato.Prev();
+				_Aimp.Prev();
 			}
 		}
 
 		private void buttonPlayerInfo_Click(object sender, EventArgs e)
 		{
-			Console.Write($"IsRunning:{_Legato.IsRunning} ");
+			Console.Write($"IsRunning:{_Aimp.IsRunning} ");
 
-			if (_Legato?.IsRunning ?? false)
+			if (_Aimp?.IsRunning ?? false)
 			{
-				Console.Write($"State:{_Legato.State} ");
-				Console.Write($"Volume:{_Legato.Volume} ");
-				Console.Write($"IsShuffle:{_Legato.IsShuffle} ");
-				Console.Write($"IsRepeat:{_Legato.IsRepeat} ");
-				Console.Write($"IsMute:{_Legato.IsMute} ");
-				Console.Write($"Position:{_Legato.Position} ");
+				Console.Write($"State:{_Aimp.State} ");
+				Console.Write($"Volume:{_Aimp.Volume} ");
+				Console.Write($"IsShuffle:{_Aimp.IsShuffle} ");
+				Console.Write($"IsRepeat:{_Aimp.IsRepeat} ");
+				Console.Write($"IsMute:{_Aimp.IsMute} ");
+				Console.Write($"Position:{_Aimp.Position} ");
 			}
 			Console.WriteLine();
 		}

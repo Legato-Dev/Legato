@@ -11,14 +11,14 @@ using System.Collections.Generic;
 
 namespace Legato
 {
-	public class Legato : IDisposable
+	public class Aimp : IDisposable
 	{
-		public Legato(int pollingIntervalMilliseconds = 100, bool isAutoSubscribing = true)
+		public Aimp(int pollingIntervalMilliseconds = 100, bool isAutoSubscribing = true)
 		{
 			_Initialize(pollingIntervalMilliseconds, isAutoSubscribing);
 		}
 
-		public Legato(TimeSpan pollingInterval, bool isAutoSubscribing = true)
+		public Aimp(TimeSpan pollingInterval, bool isAutoSubscribing = true)
 		{
 			if (pollingInterval.TotalMilliseconds > int.MaxValue)
 				throw new ArgumentOutOfRangeException("pollingInterval");

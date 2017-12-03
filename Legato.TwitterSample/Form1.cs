@@ -27,7 +27,7 @@ namespace Legato.TwitterSample
 
 		#region Properties
 
-		private Legato _Legato { get; set; }
+		private Aimp _Aimp { get; set; }
 		private Tokens _Twitter { get; set; }
 		private string _PostingFormat { get; set; }
 
@@ -39,7 +39,7 @@ namespace Legato.TwitterSample
 		{
 			try
 			{
-				var track = _Legato.CurrentTrack;
+				var track = _Aimp.CurrentTrack;
 
 				// 投稿内容を構築
 				var stringBuilder = new StringBuilder(_PostingFormat);
@@ -49,10 +49,10 @@ namespace Legato.TwitterSample
 				stringBuilder = stringBuilder.Replace("{TrackNum}", "{3:D2}");
 				var text = string.Format(stringBuilder.ToString(), track.Title, track.Artist, track.Album, track.TrackNumber);
 
-				if (checkBoxNeedAlbumArt.Checked && _Legato.AlbumArt != null)
+				if (checkBoxNeedAlbumArt.Checked && _Aimp.AlbumArt != null)
 				{
 					using (var memory = new MemoryStream())
-						_Legato.AlbumArt.Save("temp.png", ImageFormat.Png);
+						_Aimp.AlbumArt.Save("temp.png", ImageFormat.Png);
 
 					await _Twitter.Statuses.UpdateWithMediaAsync(text, new FileInfo("temp.png"));
 				}
@@ -72,8 +72,8 @@ namespace Legato.TwitterSample
 		/// </summary>
 		private void _UpdateAlbumArt()
 		{
-			if (_Legato?.IsRunning ?? false)
-				pictureBoxAlbumArt.Image = _Legato.AlbumArt ?? Properties.Resources.logo;
+			if (_Aimp?.IsRunning ?? false)
+				pictureBoxAlbumArt.Image = _Aimp.AlbumArt ?? Properties.Resources.logo;
 			else
 				pictureBoxAlbumArt.Image = Properties.Resources.logo;
 		}
@@ -237,9 +237,9 @@ namespace Legato.TwitterSample
 
 			await _LoadSettingsAsync();
 
-			_Legato = new Legato();
+			_Aimp = new Aimp();
 
-			_Legato.Communicator.CurrentTrackChanged += async (track) =>
+			_Aimp.Communicator.CurrentTrackChanged += async (track) =>
 			{
 				_UpdateFormTrackInfo(track);
 				_UpdateAlbumArt();
@@ -249,16 +249,16 @@ namespace Legato.TwitterSample
 					await _PostAsync();
 			};
 
-			if (_Legato.IsRunning)
+			if (_Aimp.IsRunning)
 			{
-				_UpdateFormTrackInfo(_Legato.CurrentTrack);
+				_UpdateFormTrackInfo(_Aimp.CurrentTrack);
 				_UpdateAlbumArt();
 			}
 		}
 
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			_Legato?.Dispose();
+			_Aimp?.Dispose();
 		}
 
 		private async void buttonPostNowPlaying_Click(object sender, EventArgs e)
@@ -268,9 +268,9 @@ namespace Legato.TwitterSample
 
 		private void pictureBoxAlbumArt_Click(object sender, EventArgs e)
 		{
-			if (_Legato.AlbumArt != null)
+			if (_Aimp.AlbumArt != null)
 			{
-				_Legato.AlbumArt.Save("temp.png", ImageFormat.Png);
+				_Aimp.AlbumArt.Save("temp.png", ImageFormat.Png);
 				Process.Start("temp.png");
 			}
 		}
