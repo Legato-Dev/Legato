@@ -56,7 +56,7 @@
     <Compile Include="Interop\Win32\Enum\SendMessageTimeoutType.cs" />
     <Compile Include="Interop\Win32\Enum\WindowMessage.cs" />
     <Compile Include="Interop\Win32\Helper.cs" />
-    <Compile Include="Legato.cs" />
+    <Compile Include="Aimp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
