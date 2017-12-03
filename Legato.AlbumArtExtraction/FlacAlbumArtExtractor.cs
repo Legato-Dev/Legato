@@ -38,6 +38,7 @@ namespace Legato.AlbumArtExtraction
 			if (pictureMetaData.Type != MetaDataType.PICTURE)
 				throw new ArgumentException("このメタデータはPICTUREタイプではありません");
 
+			List<byte> imageSource;
 			using (var memory = new MemoryStream())
 			{
 				memory.Write(pictureMetaData.Data.ToArray(), 0, pictureMetaData.Data.Count);
@@ -48,12 +49,16 @@ namespace Legato.AlbumArtExtraction
 					throw new InvalidDataException("mimeTypeLength is invalid value");
 				var explanationLength = Helper.ReadAsUInt(memory, skip: (int)mimeTypeLength);
 				var imageSourceSize = Helper.ReadAsUInt(memory, skip: (int)explanationLength + 4 * 4);
-				var imageSource = Helper.ReadAsByteList(memory, (int)imageSourceSize);
+				imageSource = Helper.ReadAsByteList(memory, (int)imageSourceSize);
+			}
 
-				using (var image = new MemoryStream())
+			using (var memory = new MemoryStream())
+			{
+				memory.Write(imageSource.ToArray(), 0, imageSource.Count);
+
+				using (var image = Image.FromStream(memory))
 				{
-					image.Write(imageSource.ToArray(), 0, imageSource.Count);
-					return Image.FromStream(image);
+					return new Bitmap(image);
 				}
 			}
 		}
@@ -84,8 +89,15 @@ namespace Legato.AlbumArtExtraction
 		/// <summary>
 		/// アルバムアートを抽出します
 		/// </summary>
+		/// <exception cref="FileNotFoundException" />
+		/// <exception cref="InvalidDataException" />
 		public Image Extract(string filePath)
 		{
+			if (!File.Exists(filePath))
+			{
+				throw new FileNotFoundException("指定されたファイルは存在しません");
+			}
+
 			using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
 			{
 				Helper.Skip(file, 4);

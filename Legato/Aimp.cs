@@ -7,7 +7,6 @@ using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using System.Diagnostics;
 using Legato.AlbumArtExtraction;
-using System.Collections.Generic;
 
 namespace Legato
 {
@@ -159,55 +158,46 @@ namespace Legato
 		/// 再生中のアルバムアートを取得します
 		/// </summary>
 		/// <exception cref="ApplicationException" />
-		/// <exception cref="NotSupportedException" />
 		public Image AlbumArt
 		{
 			get
 			{
-				string filePath = "";
-				IAlbumArtExtractor extractor = null;
+				if (!IsRunning)
+					throw new ApplicationException("AlbumArtの取得に失敗しました。AIMPが起動されているかを確認してください。");
 
 				try
 				{
-					if (!IsRunning)
-						throw new ApplicationException("AlbumArtの取得に失敗しました。AIMPが起動されているかを確認してください。");
-
-					// MemoryStream はcatch に移動><
-
-					filePath = CurrentTrack.FilePath;
-					var extractors = new List<IAlbumArtExtractor> {
-						new FlacAlbumArtExtractor(),
-						// new ID3v23AlbumArtExtractor(),
-						new DirectoryAlbumArtExtractor()
-					};
-					extractor = extractors.Find(i => i.CheckType(filePath));
-
-					if (extractor == null)
-						throw new NotSupportedException("CurrentTrackからAlbumArtを抽出する方法が定義されていません");
+					var filePath = CurrentTrack.FilePath;
+					var extractor = new Selector().SelectAlbumArtExtractor(filePath);
 
 					Debug.WriteLine(extractor.ToString());
 
+					return extractor.Extract(filePath);
 				}
-				catch (ApplicationException ae)
+				catch (NotSupportedException)
 				{
-					Console.WriteLine(ae.StackTrace);
-				}
+					Debug.WriteLine("利用可能な AlbumArtExtractor はありませんでした");
 
-				// ♰最後の砦♰ メモリ読出しにて AlbumArt を取得。
-				catch (NotSupportedException ne)
-				{
-					Console.WriteLine(ne.StackTrace);
-
-					if (!Interop.AimpRemote.Helper.RequestAlbumArt(Communicator))
-						return null;
-
-					using (var memory = new MemoryStream())
+					// ♰最後の砦♰ メモリ読出しにて AlbumArt を取得。
+					if (Interop.AimpRemote.Helper.RequestAlbumArt(Communicator))
 					{
-						memory.Write(_AlbumArtSource, 0, _AlbumArtSource.Length);
-						return Image.FromStream(memory);
+						using (var memory = new MemoryStream())
+						{
+							memory.Write(_AlbumArtSource, 0, _AlbumArtSource.Length);
+
+							using (var image = Image.FromStream(memory))
+							{
+								return new Bitmap(image);
+							}
+						}
 					}
 				}
-				return extractor.Extract(filePath);
+				catch (FileNotFoundException)
+				{
+					// noop: CurrentTrack.FilePathからURL等を渡された可能性がある
+				}
+
+				return null;
 			}
 		}
 		private byte[] _AlbumArtSource { get; set; }
