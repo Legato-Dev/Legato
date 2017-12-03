@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using System.Text;
+using Legato.Entities;
 
 namespace Legato.Interop.AimpRemote
 {
@@ -168,12 +169,12 @@ namespace Legato.Interop.AimpRemote
 		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
 		/// <param name="communicationWindow">ArtWork を受け取る通信ウィンドウ</param>
-		public static bool RequestAlbumArt(CommunicationWindow communicationWindow)
+		public static bool RequestAlbumArt(MessageReceiver messageReceiver)
 		{
 			bool result = false;
-			communicationWindow.Invoke((Action)(() =>
+			messageReceiver.Invoke((Action)(() =>
 			{
-				result = SendCommandMessage(CommandType.RequestAlbumArt, communicationWindow.Handle) != IntPtr.Zero;
+				result = SendCommandMessage(CommandType.RequestAlbumArt, messageReceiver.Handle) != IntPtr.Zero;
 			}));
 
 			return result;
@@ -184,12 +185,12 @@ namespace Legato.Interop.AimpRemote
 		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
 		/// <param name="communicationWindow">イベント通知を受け取る通信ウィンドウ</param>
-		public static bool RegisterNotify(CommunicationWindow communicationWindow)
+		public static bool RegisterNotify(MessageReceiver messageReceiver)
 		{
 			bool result = false;
-			communicationWindow.Invoke((Action)(() =>
+			messageReceiver.Invoke((Action)(() =>
 			{
-				result = SendCommandMessage(CommandType.RegisterNotify, communicationWindow.Handle) != IntPtr.Zero;
+				result = SendCommandMessage(CommandType.RegisterNotify, messageReceiver.Handle) != IntPtr.Zero;
 			}));
 
 			return result;
@@ -201,11 +202,11 @@ namespace Legato.Interop.AimpRemote
 		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
 		/// <param name="communicationWindow">イベント通知を受け取る通信ウィンドウ</param>
-		public static bool UnregisterNotify(CommunicationWindow communicationWindow) {
+		public static bool UnregisterNotify(MessageReceiver messageReceiver) {
 			bool result = false;
-			communicationWindow.Invoke((Action)(() =>
+			messageReceiver.Invoke((Action)(() =>
 			{
-				result = SendCommandMessage(CommandType.UnregisterNotify, communicationWindow.Handle) != IntPtr.Zero;
+				result = SendCommandMessage(CommandType.UnregisterNotify, messageReceiver.Handle) != IntPtr.Zero;
 			}));
 
 			return result;

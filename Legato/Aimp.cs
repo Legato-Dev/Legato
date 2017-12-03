@@ -2,11 +2,12 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using System.Diagnostics;
 using Legato.AlbumArtExtraction;
+using Legato.Entities;
+using Legato.Interop.AimpRemote;
 
 namespace Legato
 {
@@ -41,7 +42,9 @@ namespace Legato
 
 		#region Properties
 
-		public CommunicationWindow Communicator { get; set; }
+		private MessageReceiver _MessageReceiver { get; set; }
+
+		private NotiticationEvents _NotiticationEvents { get; set; }
 
 		/// <summary>
 		/// ポーリングの間隔を取得または設定します
@@ -179,7 +182,7 @@ namespace Legato
 					Debug.WriteLine("利用可能な AlbumArtExtractor はありませんでした");
 
 					// ♰最後の砦♰ メモリ読出しにて AlbumArt を取得。
-					if (Interop.AimpRemote.Helper.RequestAlbumArt(Communicator))
+					if (Interop.AimpRemote.Helper.RequestAlbumArt(_MessageReceiver))
 					{
 						using (var memory = new MemoryStream())
 						{
@@ -208,11 +211,12 @@ namespace Legato
 
 		private void _Initialize(int pollingIntervalMilliseconds, bool isAutoSubscribing)
 		{
-			Communicator = new CommunicationWindow();
+			_MessageReceiver = new MessageReceiver();
 			_Polling = new System.Timers.Timer(pollingIntervalMilliseconds);
 			IsAutoSubscribing = isAutoSubscribing;
 
-			Communicator.CopyDataMessageReceived += (copyData) =>
+			_NotiticationEvents = new NotiticationEvents(_MessageReceiver);
+			_NotiticationEvents.CopyDataMessageReceived += (copyData) =>
 			{
 				// AlbumArtの更新
 				if (copyData.dwData == new IntPtr(Interop.AimpRemote.Helper.CopyDataIdArtWork))
@@ -242,10 +246,7 @@ namespace Legato
 					if (IsRunning)
 					{
 						// PositionProperty
-						Communicator.Invoke((Action)(() =>
-						{
-							Communicator.OnPositionPropertyChanged(Position);
-						}));
+						_NotiticationEvents.OnPositionPropertyChanged(Position);
 					}
 					else
 					{
@@ -272,7 +273,7 @@ namespace Legato
 				throw new ApplicationException("AIMPが起動していないため、購読に失敗しました");
 
 			IsSubscribed = true;
-			Interop.AimpRemote.Helper.RegisterNotify(Communicator);
+			Interop.AimpRemote.Helper.RegisterNotify(_MessageReceiver);
 			Subscribed?.Invoke();
 		}
 
@@ -286,7 +287,7 @@ namespace Legato
 				throw new ApplicationException("通知を購読していません");
 
 			IsSubscribed = false;
-			Interop.AimpRemote.Helper.UnregisterNotify(Communicator);
+			Interop.AimpRemote.Helper.UnregisterNotify(_MessageReceiver);
 			Unsubscribed?.Invoke();
 		}
 

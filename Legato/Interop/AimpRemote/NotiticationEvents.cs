@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
+using Legato.Entities;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using Legato.Interop.Win32.Enum;
@@ -8,13 +8,8 @@ using static Legato.Interop.Win32.API;
 
 namespace Legato.Interop.AimpRemote
 {
-	/// <summary>
-	/// AIMP と通信するためのメッセージ専用ウィンドウ
-	/// </summary>
-	public class CommunicationWindow : Form
+	public class NotiticationEvents
 	{
-		// MessageReceived events
-		public event Action<WindowMessage, IntPtr, IntPtr> MessageReceived;
 		public event Action<CopyDataStruct> CopyDataMessageReceived;
 		public event Action<NotifyType, IntPtr> NotifyMessageReceived;
 
@@ -31,19 +26,9 @@ namespace Legato.Interop.AimpRemote
 		public event Action<PlayerState> StatePropertyChanged;
 		public event Action<int> VolumePropertyChanged;
 
-		public TimeSpan CurrentTrackChangedDelayTime { get; set; } = TimeSpan.FromMilliseconds(20);
-
-		public void OnPositionPropertyChanged(int position)
+		public NotiticationEvents(IWindowMessageReceivable window)
 		{
-			PositionPropertyChanged?.Invoke(position);
-		}
-
-		public CommunicationWindow()
-		{
-			// メッセージ専用ウインドウに変更
-			Win32.Helper.ChangeMessageOnlyWindow(this);
-
-			MessageReceived += (message, wParam, lParam) =>
+			window.MessageReceived += (message, wParam, lParam) =>
 			{
 				// CopyDataMessageReceived を発行
 				if (message == WindowMessage.COPYDATA)
@@ -54,26 +39,34 @@ namespace Legato.Interop.AimpRemote
 
 				// NotifyMessageReceived を発行
 				else if (message == (WindowMessage)AimpWindowMessage.Notify)
+				{
 					NotifyMessageReceived?.Invoke((NotifyType)wParam, lParam);
+				}
 			};
 
-			NotifyMessageReceived += /*async*/ (type, lParam) =>
+			NotifyMessageReceived += (type, lParam) =>
 			{
 				// PropertyChanged を発行
 				if (type == NotifyType.Property)
+				{
 					PropertyChanged?.Invoke((PlayerProperty)lParam);
+				}
 
 				// CurrentTrackChanged を発行
 				else if (type == NotifyType.TrackStart)
 				{
-					// await Task.Delay(CurrentTrackChangedDelayTime);
 					CurrentTrackChanged?.Invoke(Helper.CurrentTrack);
 				}
 
-				else if (type == NotifyType.TrackInfo) { }
+				else if (type == NotifyType.TrackInfo)
+				{
+
+				}
 
 				else
+				{
 					throw new ApplicationException($"NotifyType '{type}' is undefined value");
+				}
 			};
 
 			PropertyChanged += (type) =>
@@ -113,12 +106,9 @@ namespace Legato.Interop.AimpRemote
 			};
 		}
 
-		protected override void WndProc(ref Message message)
+		public void OnPositionPropertyChanged(int position)
 		{
-			// MessageReceived を発行
-			MessageReceived?.Invoke((WindowMessage)message.Msg, message.WParam, message.LParam);
-
-			base.WndProc(ref message);
+			PositionPropertyChanged?.Invoke(position);
 		}
 	}
 }
