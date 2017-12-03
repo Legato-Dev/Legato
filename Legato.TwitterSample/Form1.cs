@@ -51,8 +51,7 @@ namespace Legato.TwitterSample
 
 				if (checkBoxNeedAlbumArt.Checked && _Aimp.AlbumArt != null)
 				{
-					using (var memory = new MemoryStream())
-						_Aimp.AlbumArt.Save("temp.png", ImageFormat.Png);
+					_Aimp.AlbumArt.Save("temp.png", ImageFormat.Png);
 
 					await _Twitter.Statuses.UpdateWithMediaAsync(text, new FileInfo("temp.png"));
 				}
@@ -270,7 +269,8 @@ namespace Legato.TwitterSample
 		{
 			if (_Aimp.AlbumArt != null)
 			{
-				_Aimp.AlbumArt.Save("temp.png", ImageFormat.Png);
+				var albumArt = _Aimp.AlbumArt;
+				albumArt.Save("temp.png", ImageFormat.Png);
 				Process.Start("temp.png");
 			}
 		}

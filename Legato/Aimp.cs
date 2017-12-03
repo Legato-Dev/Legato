@@ -77,7 +77,7 @@ namespace Legato
 			{
 				var processPath = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Clients\Media\AIMP\shell\open\command")?.GetValue(null)?.ToString();
 				if (processPath == null)
-					throw new ApplicationException();
+					throw new ApplicationException("AIMP4.exeが見つかりませんでした。インストールされていない可能性があります。");
 
 				var fileInfo = new FileInfo(processPath);
 				if (!fileInfo.Exists)
