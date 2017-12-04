@@ -8,8 +8,9 @@ using static Legato.Interop.Win32.API;
 
 namespace Legato.Interop.AimpRemote
 {
-	public class NotiticationEvents
+	public class AimpObserver : IDisposable
 	{
+		// base events
 		public event Action<CopyDataStruct> CopyDataMessageReceived;
 		public event Action<NotifyType, IntPtr> NotifyMessageReceived;
 
@@ -26,51 +27,61 @@ namespace Legato.Interop.AimpRemote
 		public event Action<PlayerState> StatePropertyChanged;
 		public event Action<int> VolumePropertyChanged;
 
-		public NotiticationEvents(IWindowMessageReceivable window)
+		/// <summary>
+		/// AIMP の通知を購読した時に発生します
+		/// </summary>
+		public event Action Subscribed;
+
+		/// <summary>
+		/// AIMP の通知を購読解除した時(または AIMP が終了した時)に発生します
+		/// </summary>
+		public event Action Unsubscribed;
+
+		/// <summary>
+		/// AIMP のイベント通知を購読しているかどうか(受信可能であるかどうか)を示す値を取得します
+		/// </summary>	
+		public bool IsSubscribed { get; private set; } = false;
+
+		private MessageReceiver _Receiver { get; set; }
+
+		public AimpObserver(MessageReceiver receiver)
 		{
-			window.MessageReceived += (message, wParam, lParam) =>
-			{
+			_Receiver = receiver;
+
+			_Receiver.MessageReceived += (message, wParam, lParam) => {
 				// CopyDataMessageReceived を発行
-				if (message == WindowMessage.COPYDATA)
-				{
+				if (message == WindowMessage.COPYDATA) {
 					var cds = Marshal.PtrToStructure<CopyDataStruct>(lParam);
 					CopyDataMessageReceived?.Invoke(cds);
 				}
 
 				// NotifyMessageReceived を発行
-				else if (message == (WindowMessage)AimpWindowMessage.Notify)
-				{
+				else if (message == (WindowMessage)AimpWindowMessage.Notify) {
 					NotifyMessageReceived?.Invoke((NotifyType)wParam, lParam);
 				}
 			};
 
-			NotifyMessageReceived += (type, lParam) =>
-			{
+			NotifyMessageReceived += (type, lParam) => {
 				// PropertyChanged を発行
-				if (type == NotifyType.Property)
-				{
+				if (type == NotifyType.Property) {
 					PropertyChanged?.Invoke((PlayerProperty)lParam);
 				}
 
 				// CurrentTrackChanged を発行
-				else if (type == NotifyType.TrackStart)
-				{
+				else if (type == NotifyType.TrackStart) {
 					CurrentTrackChanged?.Invoke(Helper.CurrentTrack);
 				}
 
-				else if (type == NotifyType.TrackInfo)
-				{
+				else if (type == NotifyType.TrackInfo) {
 
 				}
 
-				else
-				{
+				else {
 					throw new ApplicationException($"NotifyType '{type}' is undefined value");
 				}
 			};
 
-			PropertyChanged += (type) =>
-			{
+			PropertyChanged += (type) => {
 				var propertyValue = Helper.SendPropertyMessage(type, PropertyAccessMode.Get).ToInt32();
 
 				// DurationPropertyChanged を発行
@@ -91,7 +102,7 @@ namespace Legato.Interop.AimpRemote
 
 				// PositionPropertyChanged を発行
 				else if (type == PlayerProperty.Position)
-					OnPositionPropertyChanged(propertyValue);
+					PositionPropertyChanged?.Invoke(propertyValue);
 
 				// StatePropertyChanged を発行
 				else if (type == PlayerProperty.State)
@@ -106,9 +117,45 @@ namespace Legato.Interop.AimpRemote
 			};
 		}
 
-		public void OnPositionPropertyChanged(int position)
+		/// <summary>
+		/// AIMP のイベント通知を購読します
+		/// </summary>
+		/// <exception cref="ApplicationException" />
+		public void Subscribe()
 		{
-			PositionPropertyChanged?.Invoke(position);
+			if (IsSubscribed)
+				throw new ApplicationException("既に通知を購読しています");
+
+			var isRunning = Helper.AimpRemoteWindowHandle != IntPtr.Zero;
+
+			if (!isRunning)
+				throw new ApplicationException("AIMPが起動していないため、購読に失敗しました");
+
+			Helper.RegisterNotify(_Receiver);
+			IsSubscribed = true;
+			Subscribed?.Invoke();
+		}
+
+		/// <summary>
+		/// AIMP のイベント通知の購読を解除します
+		/// </summary>
+		/// <exception cref="ApplicationException" />
+		public void Unsubscribe()
+		{
+			if (!IsSubscribed)
+				throw new ApplicationException("通知を購読していません");
+
+			
+			Helper.UnregisterNotify(_Receiver);
+			IsSubscribed = false;
+			Unsubscribed?.Invoke();
+		}
+
+		public void Dispose()
+		{
+			// 通知の購読解除
+			if (IsSubscribed)
+				Unsubscribe();
 		}
 	}
 }

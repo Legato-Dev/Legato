@@ -39,10 +39,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interop\AimpRemote\AlbumArtManager.cs" />
     <Compile Include="Interop\AimpRemote\Enum\ChannelType.cs" />
-    <Compile Include="Interop\AimpRemote\CommunicationWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Interop\AimpRemote\AimpObservable.cs" />
     <Compile Include="Interop\AimpRemote\Enum\AimpWindowMessage.cs" />
     <Compile Include="Interop\AimpRemote\Enum\NotifyType.cs" />
     <Compile Include="Interop\AimpRemote\Enum\CommandType.cs" />
@@ -57,6 +56,10 @@
     <Compile Include="Interop\Win32\Enum\WindowMessage.cs" />
     <Compile Include="Interop\Win32\Helper.cs" />
     <Compile Include="Aimp.cs" />
+    <Compile Include="Entities\IWindowMessageReceivable.cs" />
+    <Compile Include="Entities\MessageReceiver.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using System.Diagnostics;
 using Legato.AlbumArtExtraction;
 using Legato.Entities;
 using Legato.Interop.AimpRemote;
+using System.Threading.Tasks;
 
 namespace Legato
 {
@@ -26,25 +26,11 @@ namespace Legato
 			_Initialize((int)pollingInterval.TotalMilliseconds, isAutoSubscribing);
 		}
 
-		#region Events
-
-		/// <summary>
-		/// AIMP の通知を購読した時に発生します
-		/// </summary>
-		public event Action Subscribed;
-
-		/// <summary>
-		/// AIMP の通知を購読解除した時(または AIMP が終了した時)に発生します
-		/// </summary>
-		public event Action Unsubscribed;
-
-		#endregion Events
-
 		#region Properties
 
-		private MessageReceiver _MessageReceiver { get; set; }
+		public AimpObserver AimpObserver { get; set; }
 
-		private NotiticationEvents _NotiticationEvents { get; set; }
+		private AlbumArtManager _AlbumArtManager { get; set; }
 
 		/// <summary>
 		/// ポーリングの間隔を取得または設定します
@@ -58,11 +44,6 @@ namespace Legato
 		/// AIMP のイベント通知の購読を自動的に行うかどうかを示す値を取得または設定します
 		/// </summary>
 		public bool IsAutoSubscribing { get; set; }
-
-		/// <summary>
-		/// AIMP のイベント通知を購読しているかどうか(受信可能であるかどうか)を示す値を取得します
-		/// </summary>	
-		public bool IsSubscribed { get; private set; } = false;
 
 		/// <summary>
 		/// AIMP が起動しているかどうかを示す値を取得します
@@ -161,7 +142,7 @@ namespace Legato
 		/// 再生中のアルバムアートを取得します
 		/// </summary>
 		/// <exception cref="ApplicationException" />
-		public Image AlbumArt
+		public Task<Image> AlbumArt
 		{
 			get
 			{
@@ -170,40 +151,32 @@ namespace Legato
 
 				try
 				{
-					var filePath = CurrentTrack.FilePath;
-					var extractor = new Selector().SelectAlbumArtExtractor(filePath);
+					// throw new NotSupportedException(); // ← 強制的に ♰最後の砦♰ を使うときはこちらを有効にしてください(非推奨)
 
+					var filePath = CurrentTrack.FilePath;
+
+					// 利用可能な extractor を自動選択
+					var extractor = new Selector().SelectAlbumArtExtractor(filePath);
 					Debug.WriteLine(extractor.ToString());
 
-					return extractor.Extract(filePath);
+					return Task.FromResult(extractor.Extract(filePath));
 				}
 				catch (NotSupportedException)
 				{
 					Debug.WriteLine("利用可能な AlbumArtExtractor はありませんでした");
 
-					// ♰最後の砦♰ メモリ読出しにて AlbumArt を取得。
-					if (Interop.AimpRemote.Helper.RequestAlbumArt(_MessageReceiver))
-					{
-						using (var memory = new MemoryStream())
-						{
-							memory.Write(_AlbumArtSource, 0, _AlbumArtSource.Length);
-
-							using (var image = Image.FromStream(memory))
-							{
-								return new Bitmap(image);
-							}
-						}
-					}
+					// 利用可能な extractor が無かったときの ♰最後の砦♰
+					// Remote API のメモリ読出しにて AlbumArt を取得
+					return _AlbumArtManager.FetchAlbumArtAsync();
 				}
 				catch (FileNotFoundException)
 				{
 					// noop: CurrentTrack.FilePathからURL等を渡された可能性がある
 				}
 
-				return null;
+				return Task.FromResult((Image)null);
 			}
 		}
-		private byte[] _AlbumArtSource { get; set; }
 
 		#endregion Properties
 
@@ -211,32 +184,23 @@ namespace Legato
 
 		private void _Initialize(int pollingIntervalMilliseconds, bool isAutoSubscribing)
 		{
-			_MessageReceiver = new MessageReceiver();
 			_Polling = new System.Timers.Timer(pollingIntervalMilliseconds);
 			IsAutoSubscribing = isAutoSubscribing;
 
-			_NotiticationEvents = new NotiticationEvents(_MessageReceiver);
-			_NotiticationEvents.CopyDataMessageReceived += (copyData) =>
-			{
-				// AlbumArtの更新
-				if (copyData.dwData == new IntPtr(Interop.AimpRemote.Helper.CopyDataIdArtWork))
-				{
-					var dataLength = (int)copyData.cbData;
-					_AlbumArtSource = new byte[dataLength];
-					Marshal.Copy(copyData.lpData, _AlbumArtSource, 0, dataLength);
-				}
-			};
+			var receiver = new MessageReceiver();
+			AimpObserver = new AimpObserver(receiver);
+			_AlbumArtManager = new AlbumArtManager(AimpObserver, receiver);
 
 			// ポーリング
 			_Polling.Elapsed += (s, e) =>
 			{
 				// 通知が購読されていない
-				if (!IsSubscribed)
+				if (!AimpObserver.IsSubscribed)
 				{
 					if (IsRunning && IsAutoSubscribing)
 					{
 						// 通知を購読
-						Subscribe();
+						AimpObserver.Subscribe();
 					}
 				}
 
@@ -246,13 +210,12 @@ namespace Legato
 					if (IsRunning)
 					{
 						// PositionProperty
-						_NotiticationEvents.OnPositionPropertyChanged(Position);
+						// _AimpObserver.OnPositionPropertyChanged(Position); // TODO: ここで_AimpObserverのPosition変更通知を発火したい
 					}
 					else
 					{
 						// AIMPが終了した
-						IsSubscribed = false;
-						Unsubscribed?.Invoke();
+						AimpObserver.Unsubscribe();
 					}
 				}
 			};
@@ -260,44 +223,11 @@ namespace Legato
 			_Polling.Start();
 		}
 
-		/// <summary>
-		/// AIMP のイベント通知を購読します
-		/// </summary>
-		/// <exception cref="ApplicationException" />
-		public void Subscribe()
-		{
-			if (IsSubscribed)
-				throw new ApplicationException("既に通知を購読しています");
-
-			if (!IsRunning)
-				throw new ApplicationException("AIMPが起動していないため、購読に失敗しました");
-
-			IsSubscribed = true;
-			Interop.AimpRemote.Helper.RegisterNotify(_MessageReceiver);
-			Subscribed?.Invoke();
-		}
-
-		/// <summary>
-		/// AIMP のイベント通知の購読を解除します
-		/// </summary>
-		/// <exception cref="ApplicationException" />
-		public void Unsubscribe()
-		{
-			if (!IsSubscribed)
-				throw new ApplicationException("通知を購読していません");
-
-			IsSubscribed = false;
-			Interop.AimpRemote.Helper.UnregisterNotify(_MessageReceiver);
-			Unsubscribed?.Invoke();
-		}
-
 		public void Dispose()
 		{
 			_Polling.Stop();
 
-			// 通知の購読解除
-			if (IsSubscribed)
-				Unsubscribe();
+			AimpObserver.Dispose();
 		}
 
 		#region AIMPCommands
