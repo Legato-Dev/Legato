@@ -42,13 +42,13 @@ namespace Legato.Interop.AimpRemote
 		/// </summary>	
 		public bool IsSubscribed { get; private set; } = false;
 
-		private MessageReceiver _Receiver { get; set; }
+		public MessageReceiver Receiver { get; set; }
 
 		public AimpObserver(MessageReceiver receiver)
 		{
-			_Receiver = receiver;
+			Receiver = receiver;
 
-			_Receiver.MessageReceived += (message, wParam, lParam) => {
+			Receiver.MessageReceived += (message, wParam, lParam) => {
 				// CopyDataMessageReceived を発行
 				if (message == WindowMessage.COPYDATA) {
 					var cds = Marshal.PtrToStructure<CopyDataStruct>(lParam);
@@ -131,7 +131,7 @@ namespace Legato.Interop.AimpRemote
 			if (!isRunning)
 				throw new ApplicationException("AIMPが起動していないため、購読に失敗しました");
 
-			Helper.RegisterNotify(_Receiver);
+			Helper.RegisterNotify(Receiver);
 			IsSubscribed = true;
 			Subscribed?.Invoke();
 		}
@@ -146,7 +146,7 @@ namespace Legato.Interop.AimpRemote
 				throw new ApplicationException("通知を購読していません");
 
 			
-			Helper.UnregisterNotify(_Receiver);
+			Helper.UnregisterNotify(Receiver);
 			IsSubscribed = false;
 			Unsubscribed?.Invoke();
 		}

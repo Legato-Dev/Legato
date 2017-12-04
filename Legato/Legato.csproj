@@ -41,7 +41,7 @@
   <ItemGroup>
     <Compile Include="Interop\AimpRemote\AlbumArtManager.cs" />
     <Compile Include="Interop\AimpRemote\Enum\ChannelType.cs" />
-    <Compile Include="Interop\AimpRemote\AimpObservable.cs" />
+    <Compile Include="Interop\AimpRemote\AimpObserver.cs" />
     <Compile Include="Interop\AimpRemote\Enum\AimpWindowMessage.cs" />
     <Compile Include="Interop\AimpRemote\Enum\NotifyType.cs" />
     <Compile Include="Interop\AimpRemote\Enum\CommandType.cs" />

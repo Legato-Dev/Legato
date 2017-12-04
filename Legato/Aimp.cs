@@ -189,7 +189,7 @@ namespace Legato
 
 			var receiver = new MessageReceiver();
 			AimpObserver = new AimpObserver(receiver);
-			_AlbumArtManager = new AlbumArtManager(AimpObserver, receiver);
+			_AlbumArtManager = new AlbumArtManager(AimpObserver);
 
 			// ポーリング
 			_Polling.Elapsed += (s, e) =>

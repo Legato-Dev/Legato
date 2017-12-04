@@ -11,13 +11,10 @@ namespace Legato.Interop.AimpRemote
 {
 	public class AlbumArtManager
 	{
-		private MessageReceiver _Receiver { get; set; }
-
 		private AimpObserver _Observer { get; set; }
 
-		public AlbumArtManager(AimpObserver observer, MessageReceiver receiver)
+		public AlbumArtManager(AimpObserver observer)
 		{
-			_Receiver = receiver;
 			_Observer = observer;
 		}
 
@@ -51,7 +48,7 @@ namespace Legato.Interop.AimpRemote
 			};
 
 			_Observer.CopyDataMessageReceived += handle;
-			if (!Helper.RequestAlbumArt(_Receiver))
+			if (!Helper.RequestAlbumArt(_Observer.Receiver))
 			{
 				tcs.SetException(new Exception("AlbumArt のリクエストに失敗しました"));
 			}
