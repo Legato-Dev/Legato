@@ -12,8 +12,6 @@ namespace Legato {
 
 		private MessageReceiver _Receiver { get; set; }
 
-		private bool _CanCurrentTrackChanged { get; set; } = true;
-
 		/// <summary>
 		/// AIMP のイベント通知を購読しているかどうか(受信可能であるかどうか)を示す値を取得します
 		/// </summary>	
@@ -146,14 +144,11 @@ namespace Legato {
 
 				// CurrentTrackChanged を発行
 				else if (type == NotifyType.TrackStart) {
-					if (_CanCurrentTrackChanged) {
-						_CanCurrentTrackChanged = false;
-						CurrentTrackChanged?.Invoke(Helper.ReadTrackInfo());
-					}
+					CurrentTrackChanged?.Invoke(Helper.ReadTrackInfo());
 				}
 
 				else if (type == NotifyType.TrackInfo) {
-					_CanCurrentTrackChanged = true;
+
 				}
 
 				else {
@@ -205,13 +200,14 @@ namespace Legato {
 			if (IsSubscribed)
 				throw new ApplicationException("既に通知を購読しています");
 
+			IsSubscribed = true;
+
 			var isRunning = Helper.AimpRemoteWindowHandle != IntPtr.Zero;
 
 			if (!isRunning)
 				throw new ApplicationException("AIMPが起動していないため、購読に失敗しました");
 
 			Helper.RegisterNotify(_Receiver);
-			IsSubscribed = true;
 			Subscribed?.Invoke();
 		}
 
