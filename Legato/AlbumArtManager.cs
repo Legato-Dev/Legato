@@ -52,6 +52,7 @@ namespace Legato {
 		/// <para>この操作は正確なデータが取得できない可能性があります。可能であれば、代わりに AlbumArtManager.ExtractAlbumArt() を利用してください。</para>
 		/// </summary>
 		/// <param name="token">未実装</param>
+		/// <exception cref="ApplicationException" />
 		public Task<Image> FetchAlbumArtAsync(CancellationToken? token = null) {
 
 			if (Interop.AimpRemote.Helper.AimpRemoteWindowHandle == IntPtr.Zero)
@@ -82,7 +83,14 @@ namespace Legato {
 
 			_CopyDataMessageReceived += handle;
 			if (!Interop.AimpRemote.Helper.RequestAlbumArt(_Receiver)) {
-				tcs.SetException(new Exception("AlbumArt のリクエストに失敗しました"));
+
+				// 再接続
+				Interop.AimpRemote.Helper.UnregisterNotify(_Receiver);
+				_Receiver.Dispose();
+				_Receiver = new MessageReceiver();
+				Interop.AimpRemote.Helper.RegisterNotify(_Receiver);
+
+				tcs.SetException(new ApplicationException("AlbumArt のリクエストに失敗しました。アルバムアートが設定されていない可能性があります。"));
 			}
 
 			return tcs.Task;

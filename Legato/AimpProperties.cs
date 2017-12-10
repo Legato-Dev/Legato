@@ -95,23 +95,33 @@ namespace Legato {
 				if (!IsRunning)
 					throw new ApplicationException("AlbumArtの取得に失敗しました。AIMPが起動されているかを確認してください。");
 
-				try {
-					// throw new NotSupportedException(); // ← 強制的に ♰最後の砦♰ を使うときはこちらを有効にしてください(非推奨)
+				Func<Task<Image>> f = (async () => {
+					try {
+						// throw new NotSupportedException(); // ← 強制的に ♰最後の砦♰ を使うときはこちらを有効にしてください(非推奨)
 
-					var albumArt = _AlbumArtManager.ExtractAlbumArt();
-					return Task.FromResult(albumArt);
-				}
-				catch (NotSupportedException) {
-					Debug.WriteLine("利用可能な AlbumArtExtractor はありませんでした");
+						var albumArt = _AlbumArtManager.ExtractAlbumArt();
+						return albumArt;
+					}
+					catch (NotSupportedException) {
+						Debug.WriteLine("利用可能な AlbumArtExtractor はありませんでした");
 
-					// 利用可能な extractor が無かったときの ♰最後の砦♰
-					// Remote API のメモリ読出しにて AlbumArt を取得
-					return _AlbumArtManager.FetchAlbumArtAsync();
-				}
-				catch (FileNotFoundException) {
-					// CurrentTrack.FilePath からURL等を渡された可能性がある
-					return Task.FromResult((Image)null);
-				}
+						// 利用可能な extractor が無かったときの ♰最後の砦♰
+						// Remote API のメモリ読出しにて AlbumArt を取得
+						try {
+							return await _AlbumArtManager.FetchAlbumArtAsync();
+						}
+						catch (ApplicationException) {
+							// noop: アルバムアートが設定されていない可能性がある
+						}
+					}
+					catch (FileNotFoundException) {
+						// noop: CurrentTrack.FilePath からURL等を渡された可能性がある
+					}
+
+					return null;
+				});
+
+				return f();
 			}
 		}
 
