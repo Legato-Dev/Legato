@@ -3,13 +3,12 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
-using Legato.Entities;
 using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 
 namespace Legato {
-	public class AimpProperties {
+	public class AimpProperties : IDisposable {
 
 		private AlbumArtManager _AlbumArtManager { get; set; }
 
@@ -84,7 +83,7 @@ namespace Legato {
 		/// <summary>
 		/// 再生中の曲の情報を取得します
 		/// </summary>
-		public TrackInfo CurrentTrack => Helper.CurrentTrack;
+		public TrackInfo CurrentTrack => Helper.ReadTrackInfo();
 
 		/// <summary>
 		/// 再生中のアルバムアートを取得します。プロパティの利用には AlbumArtManager の設定が必要です。
@@ -120,8 +119,11 @@ namespace Legato {
 		}
 
 		public AimpProperties() {
-			_AlbumArtManager = new AlbumArtManager(this, new AimpObserver(new MessageReceiver(), this)); // 内部専用
+			_AlbumArtManager = new AlbumArtManager(this);
 		}
 
+		public void Dispose() {
+			_AlbumArtManager.Dispose();
+		}
 	}
 }

@@ -6,23 +6,35 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Legato.AlbumArtExtraction;
+using Legato.Entities;
+using Legato.Interop.Win32.Enum;
 using static Legato.Interop.Win32.API;
 
 namespace Legato {
-	public class AlbumArtManager {
+	public class AlbumArtManager : IDisposable {
 
 		private AimpProperties _Properties { get; set; }
 
-		private AimpObserver _Observer { get; set; }
+		private MessageReceiver _Receiver { get; set; }
+		private event Action<CopyDataStruct> _CopyDataMessageReceived;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="properties"></param>
 		/// <param name="observer">FetchAlbumArtAsync を利用する場合は設定してください</param>
-		public AlbumArtManager(AimpProperties properties, AimpObserver observer = null) {
+		public AlbumArtManager(AimpProperties properties) {
 			_Properties = properties;
-			_Observer = observer;
+
+			_Receiver = new MessageReceiver();
+			_Receiver.MessageReceived += (message, wParam, lParam) => {
+				// CopyDataMessageReceived を発行
+				if (message == WindowMessage.COPYDATA) {
+					var cds = Marshal.PtrToStructure<CopyDataStruct>(lParam);
+					_CopyDataMessageReceived?.Invoke(cds);
+				}
+			};
+			Interop.AimpRemote.Helper.RegisterNotify(_Receiver);
 		}
 
 		/// <summary>
@@ -31,11 +43,13 @@ namespace Legato {
 		/// <exception cref="FileNotFoundException">ファイルパスが不正である時にスローされます</exception>
 		/// <exception cref="NotSupportedException">ファイル形式が未サポートの時にスローされます</exception>
 		public Image ExtractAlbumArt() {
+			var track = Interop.AimpRemote.Helper.ReadTrackInfo();
+
 			// 利用可能な extractor を自動選択
-			var extractor = new Selector().SelectAlbumArtExtractor(_Properties.CurrentTrack.FilePath);
+			var extractor = new Selector().SelectAlbumArtExtractor(track.FilePath);
 			Debug.WriteLine($"{extractor.ToString()} が選択されました");
 
-			return extractor.Extract(_Properties.CurrentTrack.FilePath);
+			return extractor.Extract(track.FilePath);
 		}
 
 		/// <summary>
@@ -44,8 +58,6 @@ namespace Legato {
 		/// </summary>
 		/// <param name="token">未実装</param>
 		public Task<Image> FetchAlbumArtAsync(CancellationToken? token = null) {
-			if (_Observer == null)
-				throw new NullReferenceException("Observer がインスタンスに設定されていません。");
 
 			if (Interop.AimpRemote.Helper.AimpRemoteWindowHandle == IntPtr.Zero)
 				throw new ApplicationException("AlbumArtの取得に失敗しました。AIMPが起動されているかを確認してください。");
@@ -57,7 +69,7 @@ namespace Legato {
 			handle = (copyData) => {
 				// AlbumArtの更新
 				if (copyData.dwData == new IntPtr(Interop.AimpRemote.Helper.CopyDataIdArtWork)) {
-					_Observer.CopyDataMessageReceived -= handle;
+					_CopyDataMessageReceived -= handle;
 
 					var dataLength = (int)copyData.cbData;
 					var albumArtSource = new byte[dataLength];
@@ -73,12 +85,16 @@ namespace Legato {
 				}
 			};
 
-			_Observer.CopyDataMessageReceived += handle;
-			if (!Interop.AimpRemote.Helper.RequestAlbumArt(_Observer.Receiver)) {
+			_CopyDataMessageReceived += handle;
+			if (!Interop.AimpRemote.Helper.RequestAlbumArt(_Receiver)) {
 				tcs.SetException(new Exception("AlbumArt のリクエストに失敗しました"));
 			}
 
 			return tcs.Task;
+		}
+
+		public void Dispose() {
+			Interop.AimpRemote.Helper.UnregisterNotify(_Receiver);
 		}
 	}
 }

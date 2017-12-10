@@ -83,67 +83,64 @@ namespace Legato.Interop.AimpRemote
 			return new string(buf);
 		}
 
-		public static TrackInfo CurrentTrack
+		public static TrackInfo ReadTrackInfo()
 		{
-			get
+			var trackInfo = new TrackInfo();
+			var meta = new TrackMetaInfo();
+
+			MemoryMappedFile mmf = null;
+			try
 			{
-				var trackInfo = new TrackInfo();
-				var meta = new TrackMetaInfo();
-
-				MemoryMappedFile mmf = null;
-				try
-				{
-					mmf = MemoryMappedFile.OpenExisting(RemoteClassName, MemoryMappedFileRights.ReadWrite, HandleInheritability.Inheritable);
-				}
-				catch (FileNotFoundException)
-				{
-					throw new ApplicationException("CurrentTrackの取得に失敗しました。AIMPが起動されているかを確認してください。");
-				}
-
-				using (var memory = mmf.CreateViewStream(0, RemoteMapFileSize))
-				{
-					// 数値情報の読み取り
-					meta.HeaderSize = _ReadToUInt32(memory);
-
-					_ReadToUInt32(memory);
-					trackInfo.BitRate = _ReadToUInt32(memory);
-					trackInfo.ChannelType = (ChannelType)_ReadToUInt32(memory);
-					trackInfo.Duration = _ReadToUInt32(memory);
-					trackInfo.FileSize = _ReadToUInt64(memory);
-
-					meta.Mask = _ReadToUInt32(memory);
-
-					trackInfo.SampleRate = _ReadToUInt32(memory);
-					trackInfo.TrackNumber = _ReadToUInt32(memory);
-
-					meta.AlbumStringLength = _ReadToUInt32(memory);
-					meta.ArtistStringLength = _ReadToUInt32(memory);
-					meta.YearStringLength = _ReadToUInt32(memory);
-					meta.FilePathStringLength = _ReadToUInt32(memory);
-					meta.GenreStringLength = _ReadToUInt32(memory);
-					meta.TitleStringLength = _ReadToUInt32(memory);
-
-					// ヘッダの終端まで移動
-					memory.Position = meta.HeaderSize;
-
-					// 文字列の読み取り
-					var buffer = new byte[RemoteMapFileSize - meta.HeaderSize];
-					memory.Read(buffer, 0, buffer.Length);
-					var trackInfoString = Encoding.Unicode.GetString(buffer);
-
-					using (var reader = new StringReader(trackInfoString))
-					{
-						trackInfo.Album = _Read(reader, meta.AlbumStringLength);
-						trackInfo.Artist = _Read(reader, meta.ArtistStringLength);
-						trackInfo.Year = _Read(reader, meta.YearStringLength);
-						trackInfo.FilePath = _Read(reader, meta.FilePathStringLength);
-						trackInfo.Genre = _Read(reader, meta.GenreStringLength);
-						trackInfo.Title = _Read(reader, meta.TitleStringLength);
-					}
-				}
-
-				return trackInfo;
+				mmf = MemoryMappedFile.OpenExisting(RemoteClassName, MemoryMappedFileRights.ReadWrite, HandleInheritability.Inheritable);
 			}
+			catch (FileNotFoundException)
+			{
+				throw new ApplicationException("CurrentTrackの取得に失敗しました。AIMPが起動されているかを確認してください。");
+			}
+
+			using (var memory = mmf.CreateViewStream(0, RemoteMapFileSize))
+			{
+				// 数値情報の読み取り
+				meta.HeaderSize = _ReadToUInt32(memory);
+
+				_ReadToUInt32(memory);
+				trackInfo.BitRate = _ReadToUInt32(memory);
+				trackInfo.ChannelType = (ChannelType)_ReadToUInt32(memory);
+				trackInfo.Duration = _ReadToUInt32(memory);
+				trackInfo.FileSize = _ReadToUInt64(memory);
+
+				meta.Mask = _ReadToUInt32(memory);
+
+				trackInfo.SampleRate = _ReadToUInt32(memory);
+				trackInfo.TrackNumber = _ReadToUInt32(memory);
+
+				meta.AlbumStringLength = _ReadToUInt32(memory);
+				meta.ArtistStringLength = _ReadToUInt32(memory);
+				meta.YearStringLength = _ReadToUInt32(memory);
+				meta.FilePathStringLength = _ReadToUInt32(memory);
+				meta.GenreStringLength = _ReadToUInt32(memory);
+				meta.TitleStringLength = _ReadToUInt32(memory);
+
+				// ヘッダの終端まで移動
+				memory.Position = meta.HeaderSize;
+
+				// 文字列の読み取り
+				var buffer = new byte[RemoteMapFileSize - meta.HeaderSize];
+				memory.Read(buffer, 0, buffer.Length);
+				var trackInfoString = Encoding.Unicode.GetString(buffer);
+
+				using (var reader = new StringReader(trackInfoString))
+				{
+					trackInfo.Album = _Read(reader, meta.AlbumStringLength);
+					trackInfo.Artist = _Read(reader, meta.ArtistStringLength);
+					trackInfo.Year = _Read(reader, meta.YearStringLength);
+					trackInfo.FilePath = _Read(reader, meta.FilePathStringLength);
+					trackInfo.Genre = _Read(reader, meta.GenreStringLength);
+					trackInfo.Title = _Read(reader, meta.TitleStringLength);
+				}
+			}
+
+			return trackInfo;
 		}
 
 		// send Message (base)

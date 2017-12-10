@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Legato.Entities;
 using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using Legato.Interop.Win32.Enum;
-using static Legato.Interop.Win32.API;
 
 namespace Legato {
 	public class AimpObserver : IDisposable {
@@ -37,7 +35,6 @@ namespace Legato {
 		public bool IsAutoSubscribing { get; set; }
 
 		// base events
-		public event Action<CopyDataStruct> CopyDataMessageReceived;
 		public event Action<NotifyType, IntPtr> NotifyMessageReceived;
 
 		// Changed events
@@ -97,14 +94,8 @@ namespace Legato {
 			Receiver = receiver;
 
 			Receiver.MessageReceived += (message, wParam, lParam) => {
-				// CopyDataMessageReceived を発行
-				if (message == WindowMessage.COPYDATA) {
-					var cds = Marshal.PtrToStructure<CopyDataStruct>(lParam);
-					CopyDataMessageReceived?.Invoke(cds);
-				}
-
 				// NotifyMessageReceived を発行
-				else if (message == (WindowMessage)AimpWindowMessage.Notify) {
+				if (message == (WindowMessage)AimpWindowMessage.Notify) {
 					NotifyMessageReceived?.Invoke((NotifyType)wParam, lParam);
 				}
 			};
@@ -117,7 +108,7 @@ namespace Legato {
 
 				// CurrentTrackChanged を発行
 				else if (type == NotifyType.TrackStart) {
-					CurrentTrackChanged?.Invoke(Helper.CurrentTrack);
+					CurrentTrackChanged?.Invoke(Helper.ReadTrackInfo());
 				}
 
 				else if (type == NotifyType.TrackInfo) {
