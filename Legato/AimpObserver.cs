@@ -8,8 +8,6 @@ using Legato.Interop.Win32.Enum;
 namespace Legato {
 	public class AimpObserver : IDisposable {
 
-		private AimpProperties _Properties { get; set; }
-
 		private System.Timers.Timer _Polling { get; set; }
 
 		private MessageReceiver _Receiver { get; set; }
@@ -50,27 +48,28 @@ namespace Legato {
 		public event Action<PlayerState> StatePropertyChanged;
 		public event Action<int> VolumePropertyChanged;
 
-		public AimpObserver(MessageReceiver receiver, AimpProperties properties, int pollingIntervalMilliseconds = 100, bool isAutoSubscribing = true) {
-			_Initialize(receiver, properties, isAutoSubscribing, pollingIntervalMilliseconds);
+		public AimpObserver(int pollingIntervalMilliseconds = 100, bool isAutoSubscribing = true) {
+			_Initialize(isAutoSubscribing, pollingIntervalMilliseconds);
 		}
 
-		public AimpObserver(MessageReceiver receiver, AimpProperties properties, TimeSpan pollingInterval, bool isAutoSubscribing = true) {
+		public AimpObserver(TimeSpan pollingInterval, bool isAutoSubscribing = true) {
 			if (pollingInterval.TotalMilliseconds > int.MaxValue)
 				throw new ArgumentOutOfRangeException("pollingInterval");
 
-			_Initialize(receiver, properties, isAutoSubscribing, (int)pollingInterval.TotalMilliseconds);
+			_Initialize(isAutoSubscribing, (int)pollingInterval.TotalMilliseconds);
 		}
 
-		public void _Initialize(MessageReceiver receiver, AimpProperties properties, bool isAutoSubscribing, int pollingIntervalMilliseconds) {
+		public void _Initialize(bool isAutoSubscribing, int pollingIntervalMilliseconds) {
 			IsAutoSubscribing = isAutoSubscribing;
-			_Properties = properties;
 
 			// ポーリング
 			_Polling = new System.Timers.Timer(pollingIntervalMilliseconds);
 			_Polling.Elapsed += (s, e) => {
+				var isRunning = Helper.AimpRemoteWindowHandle != IntPtr.Zero;
+
 				// 通知が購読されていない
 				if (!IsSubscribed) {
-					if (_Properties.IsRunning && IsAutoSubscribing) {
+					if (isRunning && IsAutoSubscribing) {
 						// 通知を購読
 						Subscribe();
 					}
@@ -78,10 +77,11 @@ namespace Legato {
 
 				// 通知が購読されている
 				else {
-					if (_Properties.IsRunning) {
+					if (isRunning) {
 						// PositionProperty
-						PositionPropertyChanged?.Invoke(_Properties.Position); // TODO: 
-						Console.WriteLine(_Properties.Position);
+						var position = Helper.SendPropertyMessage(PlayerProperty.Position, PropertyAccessMode.Get).ToInt32();
+						PositionPropertyChanged?.Invoke(position);
+						Console.WriteLine(position);
 					}
 					else {
 						// AIMPが終了した
@@ -91,7 +91,7 @@ namespace Legato {
 			};
 			_Polling.Start();
 
-			_Receiver = receiver;
+			_Receiver = new MessageReceiver();
 			_Receiver.MessageReceived += (message, wParam, lParam) => {
 				// NotifyMessageReceived を発行
 				if (message == (WindowMessage)AimpWindowMessage.Notify) {
