@@ -1,7 +1,5 @@
-﻿namespace Legato.Interop.AimpRemote.Enum
-{
-	public enum PlayerProperty : uint
-	{
+﻿namespace Legato.Interop.AimpRemote.Enum {
+	public enum PlayerProperty : uint {
 		/* TODO
 		/// <summary>
 		/// <para>プレイヤーのバージョンを示すプロパティです</para>

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Legato.AlbumArtExtraction
-{
-	public class Selector
-	{
+namespace Legato.AlbumArtExtraction {
+	public class Selector {
 		public Selector() { }
 
 		/// <summary>
@@ -14,12 +12,10 @@ namespace Legato.AlbumArtExtraction
 		/// <param name="filePath">アルバムアート抽出の対象ファイル</param>
 		/// <exception cref="FileNotFoundException" />
 		/// <exception cref="NotSupportedException" />
-		public IAlbumArtExtractor SelectAlbumArtExtractor(string filePath)
-		{
+		public IAlbumArtExtractor SelectAlbumArtExtractor(string filePath) {
 			//if (!File.Exists(filePath))
 			//	throw new ArgumentException("指定されたファイルパスは無効です", "filePath");
-			if (!File.Exists(filePath))
-			{
+			if (!File.Exists(filePath)) {
 				throw new FileNotFoundException("指定されたファイルは存在しません");
 			}
 
@@ -30,8 +26,7 @@ namespace Legato.AlbumArtExtraction
 			};
 			var extractor = extractors.Find(i => i.CheckType(filePath));
 
-			if (extractor == null)
-			{
+			if (extractor == null) {
 				throw new NotSupportedException("CurrentTrackからAlbumArtを抽出する方法が定義されていません");
 			}
 

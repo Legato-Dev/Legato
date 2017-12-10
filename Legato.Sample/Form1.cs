@@ -3,12 +3,9 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Legato.Sample
-{
-	public partial class Form1 : Form
-	{
-		public Form1()
-		{
+namespace Legato.Sample {
+	public partial class Form1 : Form {
+		public Form1() {
 			InitializeComponent();
 		}
 
@@ -27,32 +24,26 @@ namespace Legato.Sample
 		/// <summary>
 		/// Legatoに対するイベントリスナを追加します
 		/// </summary>
-		private void _AddLegatoEventListeners()
-		{
-			_Observer.Subscribed += () =>
-			{
+		private void _AddLegatoEventListeners() {
+			_Observer.Subscribed += () => {
 				Console.WriteLine("接続されました");
 			};
 
-			_Observer.Unsubscribed += () =>
-			{
+			_Observer.Unsubscribed += () => {
 				Console.WriteLine("切断されました");
 			};
 
-			_Observer.CurrentTrackChanged += async (track) =>
-			{
+			_Observer.CurrentTrackChanged += async (track) => {
 				var os = Environment.OSVersion;
 
 				// トースト通知
-				if (os.Version.Major >= 6 && os.Version.Minor >= 2)
-				{
+				if (os.Version.Major >= 6 && os.Version.Minor >= 2) {
 					_NotifyIcon.BalloonTipTitle = $"Legato NowPlaying\r\n{track.Title} - {track.Artist}";
 					_NotifyIcon.BalloonTipText = $"Album : {track.Album}";
 					Debug.WriteLine("トースト通知が表示されました。");
 				}
 				// バルーン通知
-				else
-				{
+				else {
 					_NotifyIcon.BalloonTipTitle = $"Legato NowPlaying";
 					_NotifyIcon.BalloonTipText = $"{track.Title} - {track.Artist}\r\nAlbum : {track.Album}";
 					Debug.WriteLine("バルーン通知が表示されました。");
@@ -75,13 +66,11 @@ namespace Legato.Sample
 				await _UpdateAlbumArt();
 			};
 
-			_Observer.StatePropertyChanged += (state) =>
-			{
+			_Observer.StatePropertyChanged += (state) => {
 				Console.WriteLine($"StatePropertyChanged: {state}");
 			};
 
-			_Observer.PositionPropertyChanged += (position) =>
-			{
+			_Observer.PositionPropertyChanged += (position) => {
 				var totalSec = position / 1000;
 				var min = totalSec / 60;
 				var sec = totalSec % 60;
@@ -93,22 +82,17 @@ namespace Legato.Sample
 		/// <summary>
 		/// フォームに表示されているアルバムアートを更新します
 		/// </summary>
-		private async Task _UpdateAlbumArt()
-		{
-			if (_Properties?.IsRunning ?? false)
-			{
-				try
-				{
+		private async Task _UpdateAlbumArt() {
+			if (_Properties?.IsRunning ?? false) {
+				try {
 					var albumArt = await _Properties.AlbumArt;
 					pictureBox1.Image = albumArt ?? Properties.Resources.logo;
 				}
-				catch (Exception ex)
-				{
+				catch (Exception ex) {
 					Debug.WriteLine("unknown exception: " + ex.Message);
 				}
 			}
-			else
-			{
+			else {
 				pictureBox1.Image = Properties.Resources.logo;
 			}
 		}
@@ -117,8 +101,7 @@ namespace Legato.Sample
 
 		#region Procedures
 
-		private async void Form1_Load(object sender, EventArgs e)
-		{
+		private async void Form1_Load(object sender, EventArgs e) {
 			Icon = Properties.Resources.legato;
 
 			_NotifyIcon = new NotifyIcon();
@@ -132,41 +115,32 @@ namespace Legato.Sample
 			await _UpdateAlbumArt();
 		}
 
-		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
-		{
+		private void Form1_FormClosed(object sender, FormClosedEventArgs e) {
 			_Observer.Dispose();
 		}
 
-		private void buttonPlayPause_Click(object sender, EventArgs e)
-		{
-			if (_Properties?.IsRunning ?? false)
-			{
+		private void buttonPlayPause_Click(object sender, EventArgs e) {
+			if (_Properties?.IsRunning ?? false) {
 				_Commands.PlayPause();
 			}
 		}
 
-		private void buttonNext_Click(object sender, EventArgs e)
-		{
-			if (_Properties?.IsRunning ?? false)
-			{
+		private void buttonNext_Click(object sender, EventArgs e) {
+			if (_Properties?.IsRunning ?? false) {
 				_Commands.Next();
 			}
 		}
 
-		private void buttonPrev_Click(object sender, EventArgs e)
-		{
-			if (_Properties?.IsRunning ?? false)
-			{
+		private void buttonPrev_Click(object sender, EventArgs e) {
+			if (_Properties?.IsRunning ?? false) {
 				_Commands.Prev();
 			}
 		}
 
-		private void buttonPlayerInfo_Click(object sender, EventArgs e)
-		{
+		private void buttonPlayerInfo_Click(object sender, EventArgs e) {
 			Console.Write($"IsRunning:{_Properties.IsRunning} ");
 
-			if (_Properties?.IsRunning ?? false)
-			{
+			if (_Properties?.IsRunning ?? false) {
 				Console.Write($"State:{_Properties.State} ");
 				Console.Write($"Volume:{_Properties.Volume} ");
 				Console.Write($"IsShuffle:{_Properties.IsShuffle} ");

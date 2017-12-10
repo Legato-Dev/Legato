@@ -2,13 +2,11 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Legato.Interop.Win32
-{
+namespace Legato.Interop.Win32 {
 	/// <summary>
 	/// Win32API をサポートします
 	/// </summary>
-	public static class API
-	{
+	public static class API {
 		#region Constants
 
 		/// <summary>
@@ -24,8 +22,7 @@ namespace Legato.Interop.Win32
 		/// コピーデータ構造体
 		/// </summary>
 		[StructLayout(LayoutKind.Sequential)]
-		public struct CopyDataStruct
-		{
+		public struct CopyDataStruct {
 			public IntPtr dwData;
 			public uint cbData;
 			public IntPtr lpData;

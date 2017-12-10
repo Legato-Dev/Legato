@@ -1,8 +1,6 @@
-﻿namespace Legato.Interop.AimpRemote.Enum
-{
+﻿namespace Legato.Interop.AimpRemote.Enum {
 	[System.Flags]
-	public enum PropertyAccessMode : uint
-	{
+	public enum PropertyAccessMode : uint {
 		/// <summary>
 		/// プロパティを取得することを示す値
 		/// </summary>

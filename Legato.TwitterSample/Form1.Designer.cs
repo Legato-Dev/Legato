@@ -1,7 +1,5 @@
-﻿namespace Legato.TwitterSample
-{
-	partial class Form1
-	{
+﻿namespace Legato.TwitterSample {
+	partial class Form1 {
 		/// <summary>
 		/// 必要なデザイナー変数です。
 		/// </summary>
@@ -11,10 +9,8 @@
 		/// 使用中のリソースをすべてクリーンアップします。
 		/// </summary>
 		/// <param name="disposing">マネージ リソースを破棄する場合は true を指定し、その他の場合は false を指定します。</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
+		protected override void Dispose(bool disposing) {
+			if (disposing && (components != null)) {
 				components.Dispose();
 			}
 			base.Dispose(disposing);
@@ -26,8 +22,7 @@
 		/// デザイナー サポートに必要なメソッドです。このメソッドの内容を
 		/// コード エディターで変更しないでください。
 		/// </summary>
-		private void InitializeComponent()
-		{
+		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.buttonPostNowPlaying = new System.Windows.Forms.Button();
 			this.pictureBoxAlbumArt = new System.Windows.Forms.PictureBox();

@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Legato.AlbumArtExtraction.Flac
-{
-	public class MetaData
-	{
-		public MetaData(MetaDataType type, bool isLast, List<byte> data)
-		{
+namespace Legato.AlbumArtExtraction.Flac {
+	public class MetaData {
+		public MetaData(MetaDataType type, bool isLast, List<byte> data) {
 			Type = type;
 			IsLast = isLast;
 			Data = data;

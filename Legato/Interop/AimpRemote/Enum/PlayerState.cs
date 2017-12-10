@@ -1,10 +1,8 @@
-﻿namespace Legato.Interop.AimpRemote.Enum
-{
+﻿namespace Legato.Interop.AimpRemote.Enum {
 	/// <summary>
 	/// 音楽プレーヤーの再生状態を定義します
 	/// </summary>
-	public enum PlayerState : uint
-	{
+	public enum PlayerState : uint {
 		/// <summary>
 		/// 音楽プレーヤーの再生状態は不明です
 		/// </summary>

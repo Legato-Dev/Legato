@@ -1,8 +1,6 @@
-﻿namespace Legato.Interop.Win32.Enum
-{
+﻿namespace Legato.Interop.Win32.Enum {
 	[System.Flags]
-	public enum SendMessageTimeoutType : uint
-	{
+	public enum SendMessageTimeoutType : uint {
 		NORMAL = 0x0,
 		BLOCK = 0x1,
 		ABORTIFHUNG = 0x2,

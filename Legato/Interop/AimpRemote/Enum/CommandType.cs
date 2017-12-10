@@ -1,10 +1,8 @@
-﻿namespace Legato.Interop.AimpRemote.Enum
-{
+﻿namespace Legato.Interop.AimpRemote.Enum {
 	/// <summary>
 	/// コマンドメッセージの種類を表します
 	/// </summary>
-	public enum CommandType
-	{
+	public enum CommandType {
 		/// <summary>
 		/// 通知の登録( value に windowHandle を与えてください)
 		/// </summary>

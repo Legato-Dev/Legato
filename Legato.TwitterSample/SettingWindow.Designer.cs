@@ -1,7 +1,5 @@
-﻿namespace Legato.TwitterSample
-{
-	partial class SettingWindow
-	{
+﻿namespace Legato.TwitterSample {
+	partial class SettingWindow {
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -11,10 +9,8 @@
 		/// Clean up any resources being used.
 		/// </summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
+		protected override void Dispose(bool disposing) {
+			if (disposing && (components != null)) {
 				components.Dispose();
 			}
 			base.Dispose(disposing);
@@ -26,8 +22,7 @@
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
-		private void InitializeComponent()
-		{
+		private void InitializeComponent() {
 			this.textBoxPostingFormat = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.buttonOk = new System.Windows.Forms.Button();
@@ -37,8 +32,8 @@
 			// 
 			// textBoxPostingFormat
 			// 
-			this.textBoxPostingFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxPostingFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.textBoxPostingFormat.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.textBoxPostingFormat.Location = new System.Drawing.Point(12, 32);
 			this.textBoxPostingFormat.Multiline = true;
@@ -77,12 +72,12 @@
 			this.label2.Size = new System.Drawing.Size(236, 100);
 			this.label2.TabIndex = 3;
 			this.label2.Text = "Available tags:\r\n{Title} : Embed track title\r\n{TrackNum} : Embed track number\r\n{A" +
-    "rtist} : Embed artist name\r\n{Album} : Embed album name\r\n";
+	"rtist} : Embed artist name\r\n{Album} : Embed album name\r\n";
 			// 
 			// panel1
 			// 
-			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panel1.Cursor = System.Windows.Forms.Cursors.Default;
 			this.panel1.Location = new System.Drawing.Point(12, 240);

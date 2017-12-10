@@ -1,7 +1,5 @@
-﻿namespace Legato.AlbumArtExtraction.Flac
-{
-	public enum MetaDataType
-	{
+﻿namespace Legato.AlbumArtExtraction.Flac {
+	public enum MetaDataType {
 		STREAMINFO = 0,
 		PADDING = 1,
 		APPLICATION = 2,

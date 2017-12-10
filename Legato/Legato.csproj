@@ -57,7 +57,6 @@
     <Compile Include="Interop\Win32\Enum\SendMessageTimeoutType.cs" />
     <Compile Include="Interop\Win32\Enum\WindowMessage.cs" />
     <Compile Include="Interop\Win32\Helper.cs" />
-    <Compile Include="Entities\IWindowMessageReceivable.cs" />
     <Compile Include="Entities\MessageReceiver.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -3,13 +3,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 
-namespace Legato.AlbumArtExtraction
-{
+namespace Legato.AlbumArtExtraction {
 	/// <summary>
 	/// ディレクトリからアルバムアートを抽出する機能を表します
 	/// </summary>
-	public class DirectoryAlbumArtExtractor : IAlbumArtExtractor
-	{
+	public class DirectoryAlbumArtExtractor : IAlbumArtExtractor {
 		/// <summary>
 		/// アルバムアートのようなファイル名のFileInfo一覧を取得します
 		/// </summary>
@@ -30,10 +28,8 @@ namespace Legato.AlbumArtExtraction
 		/// アルバムアートを抽出します
 		/// </summary>
 		/// <exception cref="FileNotFoundException" />
-		public Image Extract(string filePath)
-		{
-			if (!File.Exists(filePath))
-			{
+		public Image Extract(string filePath) {
+			if (!File.Exists(filePath)) {
 				throw new FileNotFoundException("指定されたファイルは存在しません");
 			}
 

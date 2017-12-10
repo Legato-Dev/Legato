@@ -1,11 +1,9 @@
-﻿namespace Legato.Interop.AimpRemote.Enum
-{
-    public enum ChannelType : uint
-    {
+﻿namespace Legato.Interop.AimpRemote.Enum {
+	public enum ChannelType : uint {
 		/// <summary>
 		/// 未定義を表します。
 		/// </summary>
-        None = 0,
+		None = 0,
 
 		/// <summary>
 		/// モノラルタイプを表します。
