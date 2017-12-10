@@ -22,7 +22,13 @@ namespace Legato.AlbumArtExtraction {
 		/// <summary>
 		/// 対象のファイルが形式と一致しているかを判別します
 		/// </summary>
-		public bool CheckType(string filePath) => _GetFilesLikeAlbumArts(new FileInfo(filePath).Directory).Count() != 0;
+		public bool CheckType(string filePath) {
+			var fileCount = new FileInfo(filePath).Directory.EnumerateFiles().Count();
+			var albumArtCount = _GetFilesLikeAlbumArts(new FileInfo(filePath).Directory).Count();
+
+			// ディレクトリのファイル数が50個以下(間違ったアルバムアートが設定されることへの防止) & アルバムアートの画像ファイルがディレクトリにある
+			return fileCount <= 50 && albumArtCount > 0;
+		}
 
 		/// <summary>
 		/// アルバムアートを抽出します
