@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Legato.Sample
@@ -13,7 +14,11 @@ namespace Legato.Sample
 
 		#region Properties
 
-		private Aimp _Aimp { get; set; }
+		private NotifyIcon _NotifyIcon { get; set; }
+
+		private AimpCommands _Commands { get; set; }
+		private AimpProperties _Properties { get; set; }
+		private AimpObserver _Observer { get; set; }
 
 		#endregion Properties
 
@@ -24,37 +29,35 @@ namespace Legato.Sample
 		/// </summary>
 		private void _AddLegatoEventListeners()
 		{
-			_Aimp.Subscribed += () =>
+			_Observer.Subscribed += () =>
 			{
 				Console.WriteLine("接続されました");
 			};
 
-			_Aimp.Unsubscribed += () =>
+			_Observer.Unsubscribed += () =>
 			{
 				Console.WriteLine("切断されました");
 			};
 
-			_Aimp.Communicator.CurrentTrackChanged += (track) =>
+			_Observer.CurrentTrackChanged += async (track) =>
 			{
-				
 				var os = Environment.OSVersion;
-				notifyIcon.Icon = Properties.Resources.legato;
 
 				// トースト通知
 				if (os.Version.Major >= 6 && os.Version.Minor >= 2)
 				{
-					notifyIcon.BalloonTipTitle = $"Legato NowPlaying\r\n{track.Title} - {track.Artist}";
-					notifyIcon.BalloonTipText = $"Album : {track.Album}";
+					_NotifyIcon.BalloonTipTitle = $"Legato NowPlaying\r\n{track.Title} - {track.Artist}";
+					_NotifyIcon.BalloonTipText = $"Album : {track.Album}";
 					Debug.WriteLine("トースト通知が表示されました。");
 				}
 				// バルーン通知
 				else
 				{
-					notifyIcon.BalloonTipTitle = $"Legato NowPlaying";
-					notifyIcon.BalloonTipText = $"{track.Title} - {track.Artist}\r\nAlbum : {track.Album}";
+					_NotifyIcon.BalloonTipTitle = $"Legato NowPlaying";
+					_NotifyIcon.BalloonTipText = $"{track.Title} - {track.Artist}\r\nAlbum : {track.Album}";
 					Debug.WriteLine("バルーン通知が表示されました。");
 				}
-				notifyIcon.ShowBalloonTip(10000);
+				_NotifyIcon.ShowBalloonTip(10000);
 
 				Console.WriteLine("CurrentTrackChanged:");
 				Console.Write($"Title:{track.Title} ");
@@ -69,15 +72,15 @@ namespace Legato.Sample
 				Console.Write($"SampleRate:{track.SampleRate} ");
 				Console.WriteLine();
 
-				_UpdateAlbumArt();
+				await _UpdateAlbumArt();
 			};
 
-			_Aimp.Communicator.StatePropertyChanged += (state) =>
+			_Observer.StatePropertyChanged += (state) =>
 			{
 				Console.WriteLine($"StatePropertyChanged: {state}");
 			};
 
-			_Aimp.Communicator.PositionPropertyChanged += (position) =>
+			_Observer.PositionPropertyChanged += (position) =>
 			{
 				var totalSec = position / 1000;
 				var min = totalSec / 60;
@@ -90,21 +93,18 @@ namespace Legato.Sample
 		/// <summary>
 		/// フォームに表示されているアルバムアートを更新します
 		/// </summary>
-		private void _UpdateAlbumArt()
+		private async Task _UpdateAlbumArt()
 		{
-			if (_Aimp?.IsRunning ?? false)
+			if (_Properties?.IsRunning ?? false)
 			{
 				try
 				{
-					pictureBox1.Image = _Aimp.AlbumArt ?? Properties.Resources.logo;
-				}
-				catch (Exception ex) when (ex is ApplicationException || ex is NotSupportedException)
-				{
-					Console.WriteLine(ex.Message);
+					var albumArt = await _Properties.AlbumArt;
+					pictureBox1.Image = albumArt ?? Properties.Resources.logo;
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("unknown exception: " + ex.Message);
+					Debug.WriteLine("unknown exception: " + ex.Message);
 				}
 			}
 			else
@@ -117,56 +117,62 @@ namespace Legato.Sample
 
 		#region Procedures
 
-		private void Form1_Load(object sender, EventArgs e)
+		private async void Form1_Load(object sender, EventArgs e)
 		{
 			Icon = Properties.Resources.legato;
 
-			_Aimp = new Aimp();
+			_NotifyIcon = new NotifyIcon();
+			_NotifyIcon.Icon = Properties.Resources.legato;
+
+			_Properties = new AimpProperties();
+			_Commands = new AimpCommands();
+			_Observer = new AimpObserver();
+
 			_AddLegatoEventListeners();
-			_UpdateAlbumArt();
+			await _UpdateAlbumArt();
 		}
 
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			_Aimp.Dispose();
+			_Observer.Dispose();
 		}
 
 		private void buttonPlayPause_Click(object sender, EventArgs e)
 		{
-			if (_Aimp?.IsRunning ?? false)
+			if (_Properties?.IsRunning ?? false)
 			{
-				_Aimp.PlayPause();
+				_Commands.PlayPause();
 			}
 		}
 
 		private void buttonNext_Click(object sender, EventArgs e)
 		{
-			if (_Aimp?.IsRunning ?? false)
+			if (_Properties?.IsRunning ?? false)
 			{
-				_Aimp.Next();
+				_Commands.Next();
 			}
 		}
 
 		private void buttonPrev_Click(object sender, EventArgs e)
 		{
-			if (_Aimp?.IsRunning ?? false)
+			if (_Properties?.IsRunning ?? false)
 			{
-				_Aimp.Prev();
+				_Commands.Prev();
 			}
 		}
 
 		private void buttonPlayerInfo_Click(object sender, EventArgs e)
 		{
-			Console.Write($"IsRunning:{_Aimp.IsRunning} ");
+			Console.Write($"IsRunning:{_Properties.IsRunning} ");
 
-			if (_Aimp?.IsRunning ?? false)
+			if (_Properties?.IsRunning ?? false)
 			{
-				Console.Write($"State:{_Aimp.State} ");
-				Console.Write($"Volume:{_Aimp.Volume} ");
-				Console.Write($"IsShuffle:{_Aimp.IsShuffle} ");
-				Console.Write($"IsRepeat:{_Aimp.IsRepeat} ");
-				Console.Write($"IsMute:{_Aimp.IsMute} ");
-				Console.Write($"Position:{_Aimp.Position} ");
+				Console.Write($"State:{_Properties.State} ");
+				Console.Write($"Volume:{_Properties.Volume} ");
+				Console.Write($"IsShuffle:{_Properties.IsShuffle} ");
+				Console.Write($"IsRepeat:{_Properties.IsRepeat} ");
+				Console.Write($"IsMute:{_Properties.IsMute} ");
+				Console.Write($"Position:{_Properties.Position} ");
 			}
 			Console.WriteLine();
 		}

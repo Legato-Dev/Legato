@@ -9,12 +9,9 @@ using CoreTweet;
 using Legato.Interop.AimpRemote.Entities;
 using Newtonsoft.Json;
 
-namespace Legato.TwitterSample
-{
-	public partial class Form1 : Form
-	{
-		public Form1()
-		{
+namespace Legato.TwitterSample {
+	public partial class Form1 : Form {
+		public Form1() {
 			InitializeComponent();
 		}
 
@@ -27,7 +24,10 @@ namespace Legato.TwitterSample
 
 		#region Properties
 
-		private Aimp _Aimp { get; set; }
+		private AimpCommands _Commands { get; set; } = new AimpCommands();
+		private AimpProperties _Properties { get; set; } = new AimpProperties();
+		private AimpObserver _Observer { get; set; } = new AimpObserver();
+
 		private Tokens _Twitter { get; set; }
 		private string _PostingFormat { get; set; }
 
@@ -35,11 +35,9 @@ namespace Legato.TwitterSample
 
 		#region Methods
 
-		private async Task _PostAsync()
-		{
-			try
-			{
-				var track = _Aimp.CurrentTrack;
+		private async Task _PostAsync() {
+			try {
+				var track = _Properties.CurrentTrack;
 
 				// 投稿内容を構築
 				var stringBuilder = new StringBuilder(_PostingFormat);
@@ -49,36 +47,38 @@ namespace Legato.TwitterSample
 				stringBuilder = stringBuilder.Replace("{TrackNum}", "{3:D2}");
 				var text = string.Format(stringBuilder.ToString(), track.Title, track.Artist, track.Album, track.TrackNumber);
 
-				if (checkBoxNeedAlbumArt.Checked && _Aimp.AlbumArt != null)
-				{
-					_Aimp.AlbumArt.Save("temp.png", ImageFormat.Png);
+				var albumArt = await _Properties.AlbumArt;
+
+				if (checkBoxNeedAlbumArt.Checked && albumArt != null) {
+					albumArt.Save("temp.png", ImageFormat.Png);
 
 					await _Twitter.Statuses.UpdateWithMediaAsync(text, new FileInfo("temp.png"));
 				}
-				else
+				else {
 					await _Twitter.Statuses.UpdateAsync(text);
+				}
 
 				Console.WriteLine("Twitter への投稿が完了しました");
 			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine(ex.Message);
+			catch (Exception ex) {
+				Debug.WriteLine(ex.Message);
 			}
 		}
 
 		/// <summary>
 		/// フォームに表示されているアルバムアートを更新します
 		/// </summary>
-		private void _UpdateAlbumArt()
-		{
-			if (_Aimp?.IsRunning ?? false)
-				pictureBoxAlbumArt.Image = _Aimp.AlbumArt ?? Properties.Resources.logo;
-			else
+		private async Task _UpdateAlbumArt() {
+			if (_Properties?.IsRunning ?? false) {
+				var albumArt = await _Properties.AlbumArt;
+				pictureBoxAlbumArt.Image = albumArt ?? Properties.Resources.logo;
+			}
+			else {
 				pictureBoxAlbumArt.Image = Properties.Resources.logo;
+			}
 		}
 
-		private void _UpdateFormTrackInfo(TrackInfo track)
-		{
+		private void _UpdateFormTrackInfo(TrackInfo track) {
 			labelTrackNumber.Text = $"{track.TrackNumber:D2}.";
 			labelTitle.Text = track.Title;
 			labelArtist.Text = track.Artist;
@@ -88,15 +88,13 @@ namespace Legato.TwitterSample
 			notifyIcon.Icon = Properties.Resources.legato;
 
 			// トースト通知
-			if (os.Version.Major >= 6 && os.Version.Minor >= 2)
-			{
+			if (os.Version.Major >= 6 && os.Version.Minor >= 2) {
 				notifyIcon.BalloonTipTitle = $"Legato NowPlaying\r\n{track.Title} - {track.Artist}";
 				notifyIcon.BalloonTipText = $"Album : {track.Album}";
 				Debug.WriteLine("トースト通知が表示されました。");
 			}
 			// バルーン通知
-			else
-			{
+			else {
 				notifyIcon.BalloonTipTitle = $"Legato NowPlaying";
 				notifyIcon.BalloonTipText = $"{track.Title} - {track.Artist}\r\nAlbum : {track.Album}";
 				Debug.WriteLine("バルーン通知が表示されました。");
@@ -110,10 +108,8 @@ namespace Legato.TwitterSample
 		/// settings.json から設定を読み込みます
 		/// <para>settings.json が存在しないときは新規に生成します</para>
 		/// </summary>
-		private async Task _LoadSettingsAsync()
-		{
-			try
-			{
+		private async Task _LoadSettingsAsync() {
+			try {
 				string jsonString = null;
 				using (var reader = new StreamReader("settings.json", Encoding.UTF8))
 					jsonString = await reader.ReadToEndAsync();
@@ -122,8 +118,7 @@ namespace Legato.TwitterSample
 
 				_PostingFormat = json.format ?? _DefaultPostingFormat;
 			}
-			catch
-			{
+			catch {
 				_PostingFormat = _DefaultPostingFormat;
 				await _SaveSettingsAsync();
 			}
@@ -132,15 +127,12 @@ namespace Legato.TwitterSample
 		/// <summary>
 		/// settings.json に設定を保存します
 		/// </summary>
-		private async Task _SaveSettingsAsync()
-		{
+		private async Task _SaveSettingsAsync() {
 			// 設定ファイルに保存すべき情報がある場合
-			if (_PostingFormat != null)
-			{
+			if (_PostingFormat != null) {
 				var data = new { format = _PostingFormat };
 
-				var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings
-				{
+				var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings {
 					StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
 				});
 
@@ -152,10 +144,8 @@ namespace Legato.TwitterSample
 		/// <summary>
 		/// tokens.json からアカウント情報を読み込みます
 		/// </summary>
-		private async Task _LoadTokensFileAsync()
-		{
-			try
-			{
+		private async Task _LoadTokensFileAsync() {
+			try {
 				string jsonString = null;
 				using (var reader = new StreamReader("tokens.json", Encoding.UTF8))
 					jsonString = await reader.ReadToEndAsync();
@@ -168,21 +158,18 @@ namespace Legato.TwitterSample
 				var ats = (string)json.AccessTokenSecret;
 
 				var isNotDefaultTokens = ck != _DefaultTokensKey && cs != _DefaultTokensKey && at != _DefaultTokensKey && ats != _DefaultTokensKey;
-				if (isNotDefaultTokens)
-				{
+				if (isNotDefaultTokens) {
 					var tokens = Tokens.Create(ck, cs, at, ats);
 
 					// トークンの有効性を検証
-					try
-					{
+					try {
 						var account = await tokens.Account.VerifyCredentialsAsync(include_entities: false, skip_status: true);
 						_Twitter = tokens;
 					}
 					catch { }
 				}
 			}
-			catch
-			{
+			catch {
 				// JSONの構造が間違っている、もしくは存在しなかった場合
 				await _CreateTokensFileAsync();
 			}
@@ -191,18 +178,15 @@ namespace Legato.TwitterSample
 		/// <summary>
 		/// tokens.json を生成します
 		/// </summary>
-		private async Task _CreateTokensFileAsync()
-		{
-			var data = new
-			{
+		private async Task _CreateTokensFileAsync() {
+			var data = new {
 				ConsumerKey = _DefaultTokensKey,
 				ConsumerSecret = _DefaultTokensKey,
 				AccessToken = _DefaultTokensKey,
 				AccessTokenSecret = _DefaultTokensKey
 			};
 
-			var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings
-			{
+			var jsonString = JsonConvert.SerializeObject(data, new JsonSerializerSettings {
 				StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
 			});
 
@@ -216,19 +200,15 @@ namespace Legato.TwitterSample
 
 		#region Procedures
 
-		private async void Form1_Load(object sender, EventArgs e)
-		{
+		private async void Form1_Load(object sender, EventArgs e) {
 			Icon = Properties.Resources.legato;
 
 			await _LoadTokensFileAsync();
 
-			if (_Twitter == null)
-			{
+			if (_Twitter == null) {
 				MessageBox.Show(
-					"有効なTwitterのトークン情報の設定が必要です。tokens.jsonの中身を編集してからアプリケーションを再実行してください。",
-					"情報",
-					MessageBoxButtons.OK,
-					MessageBoxIcon.Information);
+					"有効なTwitterのトークン情報の設定が必要です。tokens.jsonの中身を編集してからアプリケーションを再実行してください。", "情報",
+					MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 				Close();
 				return;
@@ -236,56 +216,49 @@ namespace Legato.TwitterSample
 
 			await _LoadSettingsAsync();
 
-			_Aimp = new Aimp();
+			_Observer.CurrentTrackChanged += async (track) => {
+				Console.WriteLine("トラックが変更されました");
 
-			_Aimp.Communicator.CurrentTrackChanged += async (track) =>
-			{
 				_UpdateFormTrackInfo(track);
-				_UpdateAlbumArt();
+				await _UpdateAlbumArt();
 
 				// auto posting
 				if (checkBoxAutoPosting.Checked)
 					await _PostAsync();
 			};
 
-			if (_Aimp.IsRunning)
-			{
-				_UpdateFormTrackInfo(_Aimp.CurrentTrack);
-				_UpdateAlbumArt();
+			if (_Properties.IsRunning) {
+				_UpdateFormTrackInfo(_Properties.CurrentTrack);
+				await _UpdateAlbumArt();
 			}
 		}
 
-		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
-		{
-			_Aimp?.Dispose();
+		private void Form1_FormClosed(object sender, FormClosedEventArgs e) {
+			_Properties?.Dispose();
+			_Observer?.Dispose();
 		}
 
-		private async void buttonPostNowPlaying_Click(object sender, EventArgs e)
-		{
+		private async void buttonPostNowPlaying_Click(object sender, EventArgs e) {
 			await _PostAsync();
 		}
 
-		private void pictureBoxAlbumArt_Click(object sender, EventArgs e)
-		{
-			if (_Aimp.AlbumArt != null)
-			{
-				var albumArt = _Aimp.AlbumArt;
+		private async void pictureBoxAlbumArt_Click(object sender, EventArgs e) {
+			var albumArt = await _Properties.AlbumArt;
+
+			if (albumArt != null) {
 				albumArt.Save("temp.png", ImageFormat.Png);
 				Process.Start("temp.png");
 			}
 		}
 
-		private void checkBoxAutoPosting_CheckedChanged(object sender, EventArgs e)
-		{
+		private void checkBoxAutoPosting_CheckedChanged(object sender, EventArgs e) {
 			buttonPostNowPlaying.Enabled = !checkBoxAutoPosting.Checked;
 		}
 
-		private async void buttonShowSettingWindow_Click(object sender, EventArgs e)
-		{
+		private async void buttonShowSettingWindow_Click(object sender, EventArgs e) {
 			var settingWindow = new SettingWindow(_PostingFormat);
 
-			if (settingWindow.ShowDialog() == DialogResult.OK)
-			{
+			if (settingWindow.ShowDialog() == DialogResult.OK) {
 				_PostingFormat = settingWindow.PostingFormat;
 				await _SaveSettingsAsync();
 			}
