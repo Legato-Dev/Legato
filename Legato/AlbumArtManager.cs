@@ -13,9 +13,8 @@ using static Legato.Interop.Win32.API;
 namespace Legato {
 	public class AlbumArtManager : IDisposable {
 
-		private AimpProperties _Properties { get; set; }
-
 		private MessageReceiver _Receiver { get; set; }
+
 		private event Action<CopyDataStruct> _CopyDataMessageReceived;
 
 		/// <summary>
@@ -23,9 +22,7 @@ namespace Legato {
 		/// </summary>
 		/// <param name="properties"></param>
 		/// <param name="observer">FetchAlbumArtAsync を利用する場合は設定してください</param>
-		public AlbumArtManager(AimpProperties properties) {
-			_Properties = properties;
-
+		public AlbumArtManager() {
 			_Receiver = new MessageReceiver();
 			_Receiver.MessageReceived += (message, wParam, lParam) => {
 				// CopyDataMessageReceived を発行

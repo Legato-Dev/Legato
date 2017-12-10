@@ -119,7 +119,7 @@ namespace Legato {
 		}
 
 		public AimpProperties() {
-			_AlbumArtManager = new AlbumArtManager(this);
+			_AlbumArtManager = new AlbumArtManager();
 		}
 
 		public void Dispose() {
