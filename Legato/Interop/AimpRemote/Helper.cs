@@ -7,6 +7,7 @@ using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using System.Text;
 using Legato.Entities;
+using Microsoft.Win32;
 
 namespace Legato.Interop.AimpRemote
 {
@@ -24,6 +25,22 @@ namespace Legato.Interop.AimpRemote
 		public static readonly uint CopyDataIdArtWork = 0x41495043;
 
 		public static IntPtr AimpRemoteWindowHandle => Win32.API.FindWindow(RemoteClassName, null);
+
+		/// <exception cref="ApplicationException" />
+		/// <exception cref="FileNotFoundException" />
+		public static string AimpProcessPath {
+			get {
+				var processPath = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Clients\Media\AIMP\shell\open\command")?.GetValue(null)?.ToString();
+				if (processPath == null)
+					throw new ApplicationException("AIMP4.exeが見つかりませんでした。インストールされていない可能性があります。");
+
+				var fileInfo = new FileInfo(processPath);
+				if (!fileInfo.Exists)
+					throw new FileNotFoundException("AIMP4.exeが見つかりませんでした。ファイルが移動したか、削除された可能性があります");
+
+				return processPath;
+			}
+		}
 
 		/// <summary>
 		/// 4 byte 単位のメモリ読出し/値変換を行います。
