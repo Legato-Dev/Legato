@@ -12,15 +12,7 @@ namespace Legato {
 
 		private MessageReceiver _Receiver { get; set; }
 
-		/// <summary>
-		/// AIMP の通知を購読した時に発生します
-		/// </summary>
-		public event Action Subscribed;
-
-		/// <summary>
-		/// AIMP の通知を購読解除した時(または AIMP が終了した時)に発生します
-		/// </summary>
-		public event Action Unsubscribed;
+		private bool _CanCurrentTrackChanged { get; set; } = true;
 
 		/// <summary>
 		/// AIMP のイベント通知を購読しているかどうか(受信可能であるかどうか)を示す値を取得します
@@ -32,21 +24,69 @@ namespace Legato {
 		/// </summary>
 		public bool IsAutoSubscribing { get; set; }
 
-		// base events
+		/// <summary>
+		/// AIMP の通知を購読した時に発生します
+		/// </summary>
+		public event Action Subscribed;
+
+		/// <summary>
+		/// AIMP の通知を購読解除した時(または AIMP が終了した時)に発生します
+		/// </summary>
+		public event Action Unsubscribed;
+
+		#region Notification events
+
+		/// <summary>
+		/// 何らかの通知が発生した時に発生します
+		/// </summary>
 		public event Action<NotifyType, IntPtr> NotifyMessageReceived;
 
-		// Changed events
+		/// <summary>
+		/// 何らかのプロパティが変更された時に発生します
+		/// </summary>
 		public event Action<PlayerProperty> PropertyChanged;
+
+		/// <summary>
+		/// CurrentTrack プロパティが変更された時に発生します
+		/// </summary>
 		public event Action<TrackInfo> CurrentTrackChanged;
 
-		// PropertyChanged events
+		/// <summary>
+		/// Duration プロパティが変更された時に発生します
+		/// </summary>
 		public event Action<TimeSpan> DurationPropertyChanged;
+
+		/// <summary>
+		/// IsMute プロパティが変更された時に発生します
+		/// </summary>
 		public event Action<bool> IsMutePropertyChanged;
+
+		/// <summary>
+		/// IsRepeat プロパティが変更された時に発生します
+		/// </summary>
 		public event Action<bool> IsRepeatPropertyChanged;
+
+		/// <summary>
+		/// IsShuffle プロパティが変更された時に発生します
+		/// </summary>
 		public event Action<bool> IsShufflePropertyChanged;
+
+		/// <summary>
+		/// Position プロパティが変更された時に発生します
+		/// </summary>
 		public event Action<int> PositionPropertyChanged;
+
+		/// <summary>
+		/// State プロパティが変更された時に発生します
+		/// </summary>
 		public event Action<PlayerState> StatePropertyChanged;
+
+		/// <summary>
+		/// Volume プロパティが変更された時に発生します
+		/// </summary>
 		public event Action<int> VolumePropertyChanged;
+
+		#endregion Notification events
 
 		public AimpObserver(int pollingIntervalMilliseconds = 100, bool isAutoSubscribing = true) {
 			_Initialize(isAutoSubscribing, pollingIntervalMilliseconds);
@@ -81,7 +121,6 @@ namespace Legato {
 						// PositionProperty
 						var position = Helper.SendPropertyMessage(PlayerProperty.Position, PropertyAccessMode.Get).ToInt32();
 						PositionPropertyChanged?.Invoke(position);
-						Console.WriteLine(position);
 					}
 					else {
 						// AIMPが終了した
@@ -107,11 +146,14 @@ namespace Legato {
 
 				// CurrentTrackChanged を発行
 				else if (type == NotifyType.TrackStart) {
-					CurrentTrackChanged?.Invoke(Helper.ReadTrackInfo());
+					if (_CanCurrentTrackChanged) {
+						_CanCurrentTrackChanged = false;
+						CurrentTrackChanged?.Invoke(Helper.ReadTrackInfo());
+					}
 				}
 
 				else if (type == NotifyType.TrackInfo) {
-
+					_CanCurrentTrackChanged = true;
 				}
 
 				else {
@@ -180,7 +222,6 @@ namespace Legato {
 		public void Unsubscribe() {
 			if (!IsSubscribed)
 				throw new ApplicationException("通知を購読していません");
-
 
 			Helper.UnregisterNotify(_Receiver);
 			IsSubscribed = false;

@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Legato.Entities;
 
 namespace Legato.Sample
 {
@@ -100,15 +99,12 @@ namespace Legato.Sample
 			{
 				try
 				{
-					pictureBox1.Image = (await _Properties.AlbumArt) ?? Properties.Resources.logo;
-				}
-				catch (Exception ex) when (ex is ApplicationException || ex is NotSupportedException)
-				{
-					Console.WriteLine(ex.Message);
+					var albumArt = await _Properties.AlbumArt;
+					pictureBox1.Image = albumArt ?? Properties.Resources.logo;
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("unknown exception: " + ex.Message);
+					Debug.WriteLine("unknown exception: " + ex.Message);
 				}
 			}
 			else

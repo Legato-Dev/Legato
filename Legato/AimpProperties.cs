@@ -86,15 +86,12 @@ namespace Legato {
 		public TrackInfo CurrentTrack => Helper.ReadTrackInfo();
 
 		/// <summary>
-		/// 再生中のアルバムアートを取得します。プロパティの利用には AlbumArtManager の設定が必要です。
+		/// 再生中のアルバムアートを取得します。
 		/// </summary>
 		/// <exception cref="ApplicationException" />
 		public Task<Image> AlbumArt
 		{
 			get {
-				if (_AlbumArtManager == null)
-					throw new NullReferenceException("AlbumArtManager がインスタンスに設定されていません。");
-
 				if (!IsRunning)
 					throw new ApplicationException("AlbumArtの取得に失敗しました。AIMPが起動されているかを確認してください。");
 

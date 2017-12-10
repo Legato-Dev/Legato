@@ -20,8 +20,6 @@ namespace Legato {
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="properties"></param>
-		/// <param name="observer">FetchAlbumArtAsync を利用する場合は設定してください</param>
 		public AlbumArtManager() {
 			_Receiver = new MessageReceiver();
 			_Receiver.MessageReceived += (message, wParam, lParam) => {
@@ -50,7 +48,7 @@ namespace Legato {
 		}
 
 		/// <summary>
-		/// <para>AIMP Remote API のメモリ読出しにてアルバムアートを取得します。利用には Observer の設定が必要です。</para>
+		/// <para>AIMP Remote API のメモリ読出しにてアルバムアートを取得します。</para>
 		/// <para>この操作は正確なデータが取得できない可能性があります。可能であれば、代わりに AlbumArtManager.ExtractAlbumArt() を利用してください。</para>
 		/// </summary>
 		/// <param name="token">未実装</param>
