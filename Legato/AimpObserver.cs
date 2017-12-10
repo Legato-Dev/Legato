@@ -12,7 +12,7 @@ namespace Legato {
 
 		private System.Timers.Timer _Polling { get; set; }
 
-		public MessageReceiver Receiver { get; set; }
+		private MessageReceiver _Receiver { get; set; }
 
 		/// <summary>
 		/// AIMP の通知を購読した時に発生します
@@ -91,9 +91,8 @@ namespace Legato {
 			};
 			_Polling.Start();
 
-			Receiver = receiver;
-
-			Receiver.MessageReceived += (message, wParam, lParam) => {
+			_Receiver = receiver;
+			_Receiver.MessageReceived += (message, wParam, lParam) => {
 				// NotifyMessageReceived を発行
 				if (message == (WindowMessage)AimpWindowMessage.Notify) {
 					NotifyMessageReceived?.Invoke((NotifyType)wParam, lParam);
@@ -169,7 +168,7 @@ namespace Legato {
 			if (!isRunning)
 				throw new ApplicationException("AIMPが起動していないため、購読に失敗しました");
 
-			Helper.RegisterNotify(Receiver);
+			Helper.RegisterNotify(_Receiver);
 			IsSubscribed = true;
 			Subscribed?.Invoke();
 		}
@@ -183,7 +182,7 @@ namespace Legato {
 				throw new ApplicationException("通知を購読していません");
 
 
-			Helper.UnregisterNotify(Receiver);
+			Helper.UnregisterNotify(_Receiver);
 			IsSubscribed = false;
 			Unsubscribed?.Invoke();
 		}
