@@ -80,16 +80,10 @@ namespace Legato {
 					}
 				}
 			};
-
 			_CopyDataMessageReceived += handle;
+
 			if (!Interop.AimpRemote.Helper.RequestAlbumArt(_Receiver)) {
-
-				// 再接続
-				Interop.AimpRemote.Helper.UnregisterNotify(_Receiver);
-				_Receiver.Dispose();
-				_Receiver = new MessageReceiver();
-				Interop.AimpRemote.Helper.RegisterNotify(_Receiver);
-
+				_CopyDataMessageReceived -= handle;
 				tcs.SetException(new ApplicationException("AlbumArt のリクエストに失敗しました。アルバムアートが設定されていない可能性があります。"));
 			}
 
