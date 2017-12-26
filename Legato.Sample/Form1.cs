@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Legato.Sample {
@@ -11,108 +10,29 @@ namespace Legato.Sample {
 
 		#region Properties
 
-		private NotifyIcon _NotifyIcon { get; set; }
+		private NotifyIcon _NotifyIcon { get; set; } = new NotifyIcon { Visible = true, Icon = Properties.Resources.legato };
 
-		private AimpCommands _Commands { get; set; }
-		private AimpProperties _Properties { get; set; }
-		private AimpObserver _Observer { get; set; }
+		private AimpCommands _Commands { get; set; } = new AimpCommands();
+		private AimpProperties _Properties { get; set; } = new AimpProperties();
+		private AimpObserver _Observer { get; set; } = new AimpObserver();
 
 		#endregion Properties
 
 		#region Methods
 
-		/// <summary>
-		/// Legatoに対するイベントリスナを追加します
-		/// </summary>
-		private void _AddLegatoEventListeners() {
-			_Observer.Subscribed += () => {
-				Console.WriteLine("接続されました");
-			};
-
-			_Observer.Unsubscribed += () => {
-				Console.WriteLine("切断されました");
-			};
-
-			_Observer.CurrentTrackChanged += async (track) => {
-				var os = Environment.OSVersion;
-
-				// トースト通知
-				if (os.Version.Major >= 6 && os.Version.Minor >= 2) {
-					_NotifyIcon.BalloonTipTitle = $"Legato NowPlaying\r\n{track.Title} - {track.Artist}";
-					_NotifyIcon.BalloonTipText = $"Album : {track.Album}";
-					Debug.WriteLine("トースト通知が表示されました。");
-				}
-				// バルーン通知
-				else {
-					_NotifyIcon.BalloonTipTitle = $"Legato NowPlaying";
-					_NotifyIcon.BalloonTipText = $"{track.Title} - {track.Artist}\r\nAlbum : {track.Album}";
-					Debug.WriteLine("バルーン通知が表示されました。");
-				}
-				_NotifyIcon.ShowBalloonTip(10000);
-
-				Console.WriteLine("CurrentTrackChanged:");
-				Console.Write($"Title:{track.Title} ");
-				Console.Write($"Artist:{track.Artist} ");
-				Console.Write($"Album:{track.Album} ");
-				Console.Write($"Genre:{track.Genre} ");
-				Console.Write($"Duration:{track.Duration} ");
-				Console.Write($"TrackNumber:{track.TrackNumber} ");
-				Console.Write($"Year:{track.Year} ");
-				Console.Write($"ChannelType:{track.ChannelType} ");
-				Console.Write($"BitRate:{track.BitRate} ");
-				Console.Write($"SampleRate:{track.SampleRate} ");
-				Console.WriteLine();
-
-				await _UpdateAlbumArt();
-			};
-
-			_Observer.StatePropertyChanged += (state) => {
-				Console.WriteLine($"StatePropertyChanged: {state}");
-			};
-
-			_Observer.PositionPropertyChanged += (position) => {
-				var totalSec = position / 1000;
-				var min = totalSec / 60;
-				var sec = totalSec % 60;
-
-				CurrentPos.Text = $"{min:D2}:{sec:D2}";
-			};
-		}
-
-		/// <summary>
-		/// フォームに表示されているアルバムアートを更新します
-		/// </summary>
-		private async Task _UpdateAlbumArt() {
-			if (_Properties?.IsRunning ?? false) {
-				try {
-					var albumArt = await _Properties.AlbumArt;
-					pictureBox1.Image = albumArt ?? Properties.Resources.logo;
-				}
-				catch (Exception ex) {
-					Debug.WriteLine("unknown exception: " + ex.Message);
-				}
-			}
-			else {
-				pictureBox1.Image = Properties.Resources.logo;
-			}
-		}
-
-		#endregion Methods
-
-		#region Procedures
-
-		private async void Form1_Load(object sender, EventArgs e) {
+		private void Form1_Load(object sender, EventArgs e) {
 			Icon = Properties.Resources.legato;
 
-			_NotifyIcon = new NotifyIcon();
-			_NotifyIcon.Icon = Properties.Resources.legato;
+			// 各種イベントハンドラの登録
+			_Observer.Subscribed += _Subscribed;
+			_Observer.Unsubscribed += _Unsubscribed;
+			_Observer.CurrentTrackChanged += _CurrentTrackChanged;
+			_Observer.StatePropertyChanged += _StatePropertyChanged;
+			_Observer.PositionPropertyChanged += _PositionPropertyChanged;
 
-			_Properties = new AimpProperties();
-			_Commands = new AimpCommands();
-			_Observer = new AimpObserver();
-
-			_AddLegatoEventListeners();
-			await _UpdateAlbumArt();
+			// 直接イベントハンドラを呼び出して画面を初期化
+			_CurrentTrackChanged(_Properties.CurrentTrack);
+			_StatePropertyChanged(_Properties.State);
 		}
 
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e) {
@@ -120,37 +40,76 @@ namespace Legato.Sample {
 		}
 
 		private void buttonPlayPause_Click(object sender, EventArgs e) {
-			if (_Properties?.IsRunning ?? false) {
+			if (_Properties.IsRunning) {
 				_Commands.PlayPause();
 			}
 		}
 
 		private void buttonNext_Click(object sender, EventArgs e) {
-			if (_Properties?.IsRunning ?? false) {
+			if (_Properties.IsRunning) {
 				_Commands.Next();
 			}
 		}
 
 		private void buttonPrev_Click(object sender, EventArgs e) {
-			if (_Properties?.IsRunning ?? false) {
+			if (_Properties.IsRunning) {
 				_Commands.Prev();
 			}
 		}
 
-		private void buttonPlayerInfo_Click(object sender, EventArgs e) {
-			Console.Write($"IsRunning:{_Properties.IsRunning} ");
-
-			if (_Properties?.IsRunning ?? false) {
-				Console.Write($"State:{_Properties.State} ");
-				Console.Write($"Volume:{_Properties.Volume} ");
-				Console.Write($"IsShuffle:{_Properties.IsShuffle} ");
-				Console.Write($"IsRepeat:{_Properties.IsRepeat} ");
-				Console.Write($"IsMute:{_Properties.IsMute} ");
-				Console.Write($"Position:{_Properties.Position} ");
-			}
-			Console.WriteLine();
+		private void _Subscribed() {
+			Console.WriteLine("接続されました");
 		}
 
-		#endregion Procedures
+		private void _Unsubscribed() {
+			Console.WriteLine("切断されました");
+		}
+
+		private void _CurrentTrackChanged(Interop.AimpRemote.Entities.TrackInfo track) {
+			var os = Environment.OSVersion;
+
+			// トースト通知
+			if (os.Version.Major >= 6 && os.Version.Minor >= 2) {
+				_NotifyIcon.BalloonTipTitle = $"Legato\r\n{track.Title} - {track.Artist}";
+				_NotifyIcon.BalloonTipText = $"Album : {track.Album}";
+				Debug.WriteLine("トースト通知");
+			}
+			// バルーン通知
+			else {
+				_NotifyIcon.BalloonTipTitle = $"Legato";
+				_NotifyIcon.BalloonTipText = $"{track.Title} - {track.Artist}\r\nAlbum : {track.Album}";
+				Debug.WriteLine("バルーン通知");
+			}
+			_NotifyIcon.ShowBalloonTip(1000);
+
+			// 曲情報ラベルのTextを更新
+			titleLabel.Text = track.Title;
+			artistLabel.Text = track.Artist;
+			albumLabel.Text = track.Album;
+		}
+
+		private void _StatePropertyChanged(Interop.AimpRemote.Enum.PlayerState state) {
+			// 再生・停止ボタンのTextを更新
+			if (state == Interop.AimpRemote.Enum.PlayerState.Playing) {
+				buttonPlayPause.Text = "Play";
+			}
+			else if (state == Interop.AimpRemote.Enum.PlayerState.Stopped) {
+				buttonPlayPause.Text = "Pause";
+			}
+			else {
+				buttonPlayPause.Text = "Play / Pause";
+			}
+		}
+
+		private void _PositionPropertyChanged(int position) {
+			var totalSec = position / 1000;
+			var min = totalSec / 60;
+			var sec = totalSec % 60;
+
+			// 再生時間ラベルのTextを更新
+			CurrentPos.Text = $"{min:D2}:{sec:D2}";
+		}
+
+		#endregion Methods
 	}
 }

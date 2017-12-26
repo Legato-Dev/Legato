@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="AimpProperties.cs" />
     <Compile Include="AimpCommands.cs" />
-    <Compile Include="AlbumArtManager.cs" />
     <Compile Include="Interop\AimpRemote\Enum\ChannelType.cs" />
     <Compile Include="AimpObserver.cs" />
     <Compile Include="Interop\AimpRemote\Enum\AimpWindowMessage.cs" />
@@ -61,12 +60,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Legato.AlbumArtExtraction\Legato.AlbumArtExtraction.csproj">
-      <Project>{89bd928a-0196-47d5-be87-9deb0947b9a5}</Project>
-      <Name>Legato.AlbumArtExtraction</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Legato.nuspec" />

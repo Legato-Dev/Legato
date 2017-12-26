@@ -16,20 +16,6 @@ namespace Legato.Interop.Win32 {
 
 		#endregion Constants
 
-		#region Structs
-
-		/// <summary>
-		/// コピーデータ構造体
-		/// </summary>
-		[StructLayout(LayoutKind.Sequential)]
-		public struct CopyDataStruct {
-			public IntPtr dwData;
-			public uint cbData;
-			public IntPtr lpData;
-		}
-
-		#endregion Structs
-
 		#region Functions
 
 		[DllImport("user32.dll", SetLastError = true)]

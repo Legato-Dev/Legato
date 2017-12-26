@@ -16,12 +16,6 @@ namespace Legato.Interop.AimpRemote {
 	public class Helper {
 		public static readonly string RemoteClassName = "AIMP2_RemoteInfo";
 		public static readonly int RemoteMapFileSize = 2048;
-
-		/// <summary>
-		/// アートワークの CopyDataId を示します
-		/// </summary>
-		public static readonly uint CopyDataIdArtWork = 0x41495043;
-
 		public static IntPtr AimpRemoteWindowHandle => Win32.API.FindWindow(RemoteClassName, null);
 
 		/// <exception cref="ApplicationException" />
@@ -166,20 +160,6 @@ namespace Legato.Interop.AimpRemote {
 
 		public static IntPtr SendCommandMessage(CommandType commandType) =>
 			SendCommandMessage(commandType, IntPtr.Zero);
-
-		/// <summary>
-		/// アルバムアートをリクエストします
-		/// <para>この操作はスレッドセーフです</para>
-		/// </summary>
-		/// <param name="communicationWindow">ArtWork を受け取る通信ウィンドウ</param>
-		public static bool RequestAlbumArt(MessageReceiver messageReceiver) {
-			bool result = false;
-			messageReceiver.Invoke((Action)(() => {
-				result = SendCommandMessage(CommandType.RequestAlbumArt, messageReceiver.Handle) != IntPtr.Zero;
-			}));
-
-			return result;
-		}
 
 		/// <summary>
 		/// イベント通知を行うウィンドウを AIMP に登録します
