@@ -3,6 +3,9 @@ using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Enum;
 
 namespace Legato {
+	/// <summary>
+	/// AIMPに対するコマンド送信をサポートします
+	/// </summary>
 	public class AimpCommands {
 
 		/// <summary>

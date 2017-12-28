@@ -4,6 +4,9 @@ using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 
 namespace Legato {
+	/// <summary>
+	/// AIMPからのプロパティデータの取得をサポートします
+	/// </summary>
 	public class AimpProperties {
 
 		/// <summary>

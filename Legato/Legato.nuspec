@@ -2,21 +2,18 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Legato</id>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <authors>Legato Dev</authors>
         <description>AIMP4 Remote API Wrapper Library for .NET</description>
-        <tags>AIMP Remote-API Wrapper Win32API CSharp NowPlaying</tags>
+        <tags>AIMP Remote-API Wrapper Win32API CSharp</tags>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <projectUrl>https://github.com/Legato-Dev/Legato</projectUrl>
         <licenseUrl>https://github.com/Legato-Dev/Legato/blob/master/LICENSE</licenseUrl>
         <iconUrl>https://github.com/Legato-Dev/Legato/raw/master/logo64.png</iconUrl>
-        <dependencies>
-            <dependency id="Legato.AlbumArtExtraction" version="1.0.0" />
-        </dependencies>
     </metadata>
     <files>
-        <file src="bin\Release\Legato.dll" target="lib\net46\Legato.dll" />
-        <file src="bin\Release\Legato.pdb" target="lib\net46\Legato.pdb" />
-        <file src="bin\Release\Legato.xml" target="lib\net46\Legato.xml" />
+        <file src="bin\Release\Legato.dll" target="lib\net461\Legato.dll" />
+        <file src="bin\Release\Legato.pdb" target="lib\net461\Legato.pdb" />
+        <file src="bin\Release\Legato.xml" target="lib\net461\Legato.xml" />
     </files>
 </package>

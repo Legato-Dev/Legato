@@ -6,6 +6,9 @@ using Legato.Interop.AimpRemote.Enum;
 using Legato.Interop.Win32.Enum;
 
 namespace Legato {
+	/// <summary>
+	/// AIMPからのイベント受信をサポートします
+	/// </summary>
 	public class AimpObserver : IDisposable {
 
 		private System.Timers.Timer _Polling { get; set; }
