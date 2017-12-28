@@ -3,7 +3,7 @@
     <metadata>
         <id>Legato</id>
         <version>1.1.0</version>
-        <authors>Legato Dev</authors>
+        <authors>Legato-Dev</authors>
         <description>AIMP4 Remote API Wrapper Library for .NET</description>
         <tags>AIMP Remote-API Wrapper Win32API CSharp</tags>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -12,8 +12,6 @@
         <iconUrl>https://github.com/Legato-Dev/Legato/raw/master/logo64.png</iconUrl>
     </metadata>
     <files>
-        <file src="bin\Release\Legato.dll" target="lib\net461\Legato.dll" />
         <file src="bin\Release\Legato.pdb" target="lib\net461\Legato.pdb" />
-        <file src="bin\Release\Legato.xml" target="lib\net461\Legato.xml" />
     </files>
 </package>
