@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Legato.Entities;
 using Microsoft.Win32;
+using System.ComponentModel;
 
 namespace Legato.Interop.AimpRemote {
 	/// <summary>
@@ -135,11 +136,10 @@ namespace Legato.Interop.AimpRemote {
 			var result = Win32.API.SendMessageTimeout(AimpRemoteWindowHandle, windowMessage, param, value, SendMessageTimeoutType.NORMAL, 1000, out output);
 
 			if (result == IntPtr.Zero) {
-				var code = Marshal.GetLastWin32Error();
-				if (code == 0)
-					throw new TimeoutException("AIMPとの通信がタイムアウトしました");
+				var errorCode = Marshal.GetLastWin32Error();
+				var error = new Win32Exception(errorCode);
 
-				throw new ApplicationException($"AIMPとの通信中に失敗しました。(原因不明, code={code})");
+				throw new ApplicationException($"AIMPとの通信に失敗しました。(errorCode={errorCode}, message=\"{error.Message}\")", error);
 			}
 
 			return output;
