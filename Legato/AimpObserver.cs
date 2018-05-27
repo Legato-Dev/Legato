@@ -89,9 +89,8 @@ namespace Legato {
 
 		#endregion Notification events
 
-		public AimpObserver(int pollingIntervalMilliseconds = 100, bool isAutoSubscribing = true) {
+		public AimpObserver(int pollingIntervalMilliseconds = 100, bool isAutoSubscribing = true) =>
 			_Initialize(isAutoSubscribing, pollingIntervalMilliseconds);
-		}
 
 		public AimpObserver(TimeSpan pollingInterval, bool isAutoSubscribing = true) {
 			if (pollingInterval.TotalMilliseconds > int.MaxValue)
@@ -134,29 +133,24 @@ namespace Legato {
 			_Receiver = new MessageReceiver();
 			_Receiver.MessageReceived += (message, wParam, lParam) => {
 				// NotifyMessageReceived を発行
-				if (message == (WindowMessage)AimpWindowMessage.Notify) {
+				if (message == (WindowMessage)AimpWindowMessage.Notify) 
 					NotifyMessageReceived?.Invoke((NotifyType)wParam, lParam);
-				}
 			};
 
 			NotifyMessageReceived += (type, lParam) => {
 				// PropertyChanged を発行
-				if (type == NotifyType.Property) {
+				if (type == NotifyType.Property)
 					PropertyChanged?.Invoke((PlayerProperty)lParam);
-				}
 
 				// CurrentTrackChanged を発行
-				else if (type == NotifyType.TrackStart) {
+				else if (type == NotifyType.TrackStart)
 					CurrentTrackChanged?.Invoke(Helper.ReadTrackInfo());
-				}
 
-				else if (type == NotifyType.TrackInfo) {
+				else if (type == NotifyType.TrackInfo)
+					; // noop
 
-				}
-
-				else {
+				else
 					throw new ApplicationException($"NotifyType '{type}' is undefined value");
-				}
 			};
 
 			PropertyChanged += (type) => {

@@ -8,8 +8,7 @@ namespace Legato.Interop.Win32 {
 		/// <summary>
 		/// 対象をメッセージ専用ウインドウに変更します
 		/// </summary>
-		public static void ChangeMessageOnlyWindow(IWin32Window window) {
+		public static void ChangeMessageOnlyWindow(IWin32Window window) =>
 			API.SetParent(window.Handle, API.HWND_MESSAGE);
-		}
 	}
 }

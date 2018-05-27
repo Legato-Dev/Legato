@@ -9,10 +9,10 @@ namespace Legato.Entities {
 	public class MessageReceiver : Form {
 		public event Action<WindowMessage, IntPtr, IntPtr> MessageReceived;
 
-		public MessageReceiver() {
-			// メッセージ専用ウインドウに変更
-			Interop.Win32.Helper.ChangeMessageOnlyWindow(this);
-		}
+		/// <summary>
+		/// メッセージ専用ウインドウに変更
+		/// </summary>
+		public MessageReceiver() => Interop.Win32.Helper.ChangeMessageOnlyWindow(this);
 
 		protected override void WndProc(ref Message message) {
 			// MessageReceived を発行
