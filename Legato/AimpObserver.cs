@@ -216,7 +216,12 @@ namespace Legato {
 			if (!IsSubscribed)
 				throw new ApplicationException("通知を購読していません");
 
-			Helper.UnregisterNotify(_Receiver);
+			var isRunning = Helper.AimpRemoteWindowHandle != IntPtr.Zero;
+
+			if (isRunning) {
+				Helper.UnregisterNotify(_Receiver);
+			}
+
 			IsSubscribed = false;
 			Unsubscribed?.Invoke();
 		}
