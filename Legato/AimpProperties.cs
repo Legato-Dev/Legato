@@ -4,12 +4,13 @@ using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 
-namespace Legato {
+namespace Legato
+{
 	/// <summary>
 	/// AIMPからのプロパティデータの取得をサポートします
 	/// </summary>
-	public class AimpProperties {
-
+	public class AimpProperties
+	{
 		/// <summary>
 		/// AIMP が起動しているかどうかを示す値を取得します
 		/// </summary>

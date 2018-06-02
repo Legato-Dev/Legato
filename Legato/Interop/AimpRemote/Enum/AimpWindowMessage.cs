@@ -1,10 +1,12 @@
 ﻿using Legato.Interop.Win32.Enum;
 
-namespace Legato.Interop.AimpRemote.Enum {
+namespace Legato.Interop.AimpRemote.Enum
+{
 	/// <summary>
 	/// 各種ウィンドウメッセージを示します
 	/// </summary>
-	public enum AimpWindowMessage : uint {
+	public enum AimpWindowMessage : uint
+	{
 		/// <summary>
 		/// コマンドを示すウインドウメッセージです
 		/// </summary>

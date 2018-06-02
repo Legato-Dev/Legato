@@ -1,10 +1,12 @@
 ﻿using Legato.Interop.AimpRemote.Enum;
 
-namespace Legato.Interop.AimpRemote.Entities {
+namespace Legato.Interop.AimpRemote.Entities
+{
 	/// <summary>
 	/// 再生中のトラック情報を扱います。
 	/// </summary>
-	public class TrackInfo {
+	public class TrackInfo
+	{
 		/// <summary>
 		/// 再生中の曲のビットレートを取得・設定します。
 		/// </summary>

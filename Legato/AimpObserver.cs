@@ -5,12 +5,13 @@ using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;
 using Legato.Interop.Win32.Enum;
 
-namespace Legato {
+namespace Legato
+{
 	/// <summary>
 	/// AIMPからのイベント受信をサポートします
 	/// </summary>
-	public class AimpObserver : IDisposable {
-
+	public class AimpObserver : IDisposable
+	{
 		private System.Timers.Timer _Polling { get; set; }
 
 		private MessageReceiver _Receiver { get; set; }
@@ -102,37 +103,45 @@ namespace Legato {
 		/// </summary>
 		/// <param name="pollingInterval"></param>
 		/// <param name="isAutoSubscribing"></param>
-		public AimpObserver(TimeSpan pollingInterval, bool isAutoSubscribing = true) {
+		public AimpObserver(TimeSpan pollingInterval, bool isAutoSubscribing = true)
+		{
 			if (pollingInterval.TotalMilliseconds > int.MaxValue)
 				throw new ArgumentOutOfRangeException("pollingInterval");
 
 			_Initialize(isAutoSubscribing, (int)pollingInterval.TotalMilliseconds);
 		}
 
-		private void _Initialize(bool isAutoSubscribing, int pollingIntervalMilliseconds) {
+		private void _Initialize(bool isAutoSubscribing, int pollingIntervalMilliseconds)
+		{
 			IsAutoSubscribing = isAutoSubscribing;
 
 			// ポーリング
 			_Polling = new System.Timers.Timer(pollingIntervalMilliseconds);
-			_Polling.Elapsed += (s, e) => {
+			_Polling.Elapsed += (s, e) =>
+			{
 				var isRunning = Helper.AimpRemoteWindowHandle != IntPtr.Zero;
 
 				// 通知が購読されていない
-				if (!IsSubscribed) {
-					if (isRunning && IsAutoSubscribing) {
+				if (!IsSubscribed)
+				{
+					if (isRunning && IsAutoSubscribing)
+					{
 						// 通知を購読
 						Subscribe();
 					}
 				}
 
 				// 通知が購読されている
-				else {
-					if (isRunning) {
+				else
+				{
+					if (isRunning)
+					{
 						// PositionProperty
 						var position = Helper.SendPropertyMessage(PlayerProperty.Position, PropertyAccessMode.Get).ToInt32();
 						PositionPropertyChanged?.Invoke(position);
 					}
-					else {
+					else
+					{
 						// AIMPが終了した
 						Unsubscribe();
 					}
@@ -141,13 +150,15 @@ namespace Legato {
 			_Polling.Start();
 
 			_Receiver = new MessageReceiver();
-			_Receiver.MessageReceived += (message, wParam, lParam) => {
+			_Receiver.MessageReceived += (message, wParam, lParam) =>
+			{
 				// NotifyMessageReceived を発行
-				if (message == (WindowMessage)AimpWindowMessage.Notify) 
+				if (message == (WindowMessage)AimpWindowMessage.Notify)
 					NotifyMessageReceived?.Invoke((NotifyType)wParam, lParam);
 			};
 
-			NotifyMessageReceived += (type, lParam) => {
+			NotifyMessageReceived += (type, lParam) =>
+			{
 				// PropertyChanged を発行
 				if (type == NotifyType.Property)
 					PropertyChanged?.Invoke((PlayerProperty)lParam);
@@ -162,7 +173,8 @@ namespace Legato {
 					throw new ApplicationException($"NotifyType '{type}' is undefined value");
 			};
 
-			PropertyChanged += (type) => {
+			PropertyChanged += (type) =>
+			{
 				var propertyValue = Helper.SendPropertyMessage(type, PropertyAccessMode.Get).ToInt32();
 
 				// DurationPropertyChanged を発行
@@ -202,7 +214,8 @@ namespace Legato {
 		/// AIMP のイベント通知を購読します
 		/// </summary>
 		/// <exception cref="ApplicationException" />
-		public void Subscribe() {
+		public void Subscribe()
+		{
 			if (IsSubscribed)
 				throw new ApplicationException("既に通知を購読しています");
 
@@ -221,13 +234,15 @@ namespace Legato {
 		/// AIMP のイベント通知の購読を解除します
 		/// </summary>
 		/// <exception cref="ApplicationException" />
-		public void Unsubscribe() {
+		public void Unsubscribe()
+		{
 			if (!IsSubscribed)
 				throw new ApplicationException("通知を購読していません");
 
 			var isRunning = Helper.AimpRemoteWindowHandle != IntPtr.Zero;
 
-			if (isRunning) {
+			if (isRunning)
+			{
 				Helper.UnregisterNotify(_Receiver);
 			}
 
@@ -238,7 +253,8 @@ namespace Legato {
 		/// <summary>
 		/// 解放します
 		/// </summary>
-		public void Dispose() {
+		public void Dispose()
+		{
 			// 通知の購読解除
 			if (IsSubscribed)
 				Unsubscribe();

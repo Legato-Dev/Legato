@@ -1,10 +1,12 @@
-﻿namespace Legato.Interop.Win32.Enum {
+﻿namespace Legato.Interop.Win32.Enum
+{
 	/// <summary>
 	/// Windows Messages
 	/// Defined in winuser.h from Windows SDK v6.1
 	/// Documentation pulled from MSDN.
 	/// </summary>
-	public enum WindowMessage : uint {
+	public enum WindowMessage : uint
+	{
 		/// <summary>
 		/// The WM_NULL message performs no operation. An application sends the WM_NULL message if it wants to post a message that the recipient window will ignore.
 		/// </summary>

@@ -2,11 +2,14 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Legato.Interop.Win32 {
+namespace Legato.Interop.Win32
+{
 	/// <summary>
 	/// Win32API をサポートします
 	/// </summary>
-	public static class API {
+	public static class API
+	{
+
 		#region Constants
 
 		/// <summary>
@@ -32,5 +35,6 @@ namespace Legato.Interop.Win32 {
 			IntPtr windowHandle, WindowMessage windowMessage, IntPtr wParam, IntPtr lParam, SendMessageTimeoutType timeoutType, uint timeout, out IntPtr result);
 
 		#endregion Functions
+
 	}
 }

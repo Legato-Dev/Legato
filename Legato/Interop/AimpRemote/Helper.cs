@@ -10,12 +10,13 @@ using Legato.Entities;
 using Microsoft.Win32;
 using System.ComponentModel;
 
-namespace Legato.Interop.AimpRemote {
+namespace Legato.Interop.AimpRemote
+{
 	/// <summary>
 	/// AIMP のリモート API に関するヘルパーを提供します
 	/// </summary>
-	public class Helper {
-
+	public class Helper
+	{
 		public static readonly string RemoteClassName = "AIMP2_RemoteInfo";
 
 		public static readonly int RemoteMapFileSize = 2048;
@@ -44,7 +45,8 @@ namespace Legato.Interop.AimpRemote {
 		/// </summary>
 		/// <param name="stream"></param>
 		/// <returns></returns>
-		private static uint _ReadToUInt32(Stream stream) {
+		private static uint _ReadToUInt32(Stream stream)
+		{
 			var buf = new byte[4];
 			stream.Read(buf, 0, 4);
 
@@ -56,7 +58,8 @@ namespace Legato.Interop.AimpRemote {
 		/// </summary>
 		/// <param name="stream"></param>
 		/// <returns></returns>
-		private static ulong _ReadToUInt64(Stream stream) {
+		private static ulong _ReadToUInt64(Stream stream)
+		{
 			var buf = new byte[8];
 			stream.Read(buf, 0, 8);
 
@@ -68,7 +71,8 @@ namespace Legato.Interop.AimpRemote {
 		/// </summary>
 		/// <param name="reader"></param>
 		/// <param name="count"></param>
-		private static string _Read(StringReader reader, uint count) {
+		private static string _Read(StringReader reader, uint count)
+		{
 			const uint mask = 0x7FFFFFFF;
 			var maskedCount = (int)(count & mask);
 			var buf = new char[maskedCount];
@@ -77,19 +81,23 @@ namespace Legato.Interop.AimpRemote {
 			return new string(buf);
 		}
 
-		public static TrackInfo ReadTrackInfo() {
+		public static TrackInfo ReadTrackInfo()
+		{
 			var trackInfo = new TrackInfo();
 			var meta = new TrackMetaInfo();
 
 			MemoryMappedFile mmf = null;
-			try {
+			try
+			{
 				mmf = MemoryMappedFile.OpenExisting(RemoteClassName, MemoryMappedFileRights.ReadWrite, HandleInheritability.Inheritable);
 			}
-			catch (FileNotFoundException) {
+			catch (FileNotFoundException)
+			{
 				throw new ApplicationException("CurrentTrackの取得に失敗しました。AIMPが起動されているかを確認してください。");
 			}
 
-			using (var memory = mmf.CreateViewStream(0, RemoteMapFileSize)) {
+			using (var memory = mmf.CreateViewStream(0, RemoteMapFileSize))
+			{
 				// 数値情報の読み取り
 				meta.HeaderSize = _ReadToUInt32(memory);
 
@@ -119,7 +127,8 @@ namespace Legato.Interop.AimpRemote {
 				memory.Read(buffer, 0, buffer.Length);
 				var trackInfoString = Encoding.Unicode.GetString(buffer);
 
-				using (var reader = new StringReader(trackInfoString)) {
+				using (var reader = new StringReader(trackInfoString))
+				{
 					trackInfo.Album = _Read(reader, meta.AlbumStringLength);
 					trackInfo.Artist = _Read(reader, meta.ArtistStringLength);
 					trackInfo.Year = _Read(reader, meta.YearStringLength);
@@ -134,10 +143,12 @@ namespace Legato.Interop.AimpRemote {
 
 		// send Message (base)
 
-		private static IntPtr _SendMessageBase(WindowMessage windowMessage, IntPtr param, IntPtr value) {
+		private static IntPtr _SendMessageBase(WindowMessage windowMessage, IntPtr param, IntPtr value)
+		{
 			var result = Win32.API.SendMessageTimeout(AimpRemoteWindowHandle, windowMessage, param, value, SendMessageTimeoutType.NORMAL, 1000, out IntPtr output);
 
-			if (result == IntPtr.Zero) {
+			if (result == IntPtr.Zero)
+			{
 				var errorCode = Marshal.GetLastWin32Error();
 				var error = new Win32Exception(errorCode);
 
@@ -168,9 +179,11 @@ namespace Legato.Interop.AimpRemote {
 		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
 		/// <param name="messageReceiver">イベント通知を受け取る通信ウィンドウ</param>
-		public static bool RegisterNotify(MessageReceiver messageReceiver) {
+		public static bool RegisterNotify(MessageReceiver messageReceiver)
+		{
 			bool result = false;
-			messageReceiver.Invoke((Action)(() => {
+			messageReceiver.Invoke((Action)(() =>
+			{
 				result = SendCommandMessage(CommandType.RegisterNotify, messageReceiver.Handle) != IntPtr.Zero;
 			}));
 
@@ -182,9 +195,11 @@ namespace Legato.Interop.AimpRemote {
 		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
 		/// <param name="messageReceiver">イベント通知を受け取る通信ウィンドウ</param>
-		public static bool UnregisterNotify(MessageReceiver messageReceiver) {
+		public static bool UnregisterNotify(MessageReceiver messageReceiver)
+		{
 			bool result = false;
-			messageReceiver.Invoke((Action)(() => {
+			messageReceiver.Invoke((Action)(() =>
+			{
 				result = SendCommandMessage(CommandType.UnregisterNotify, messageReceiver.Handle) != IntPtr.Zero;
 			}));
 

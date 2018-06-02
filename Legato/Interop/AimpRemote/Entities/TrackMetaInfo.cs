@@ -1,8 +1,10 @@
-﻿namespace Legato.Interop.AimpRemote.Entities {
+﻿namespace Legato.Interop.AimpRemote.Entities
+{
 	/// <summary>
 	/// 再生中のトラック情報に関するメタ情報を表します
 	/// </summary>
-	internal class TrackMetaInfo {
+	internal class TrackMetaInfo
+	{
 		/// <summary>
 		/// ヘッダサイズを取得・設定します。
 		/// </summary>

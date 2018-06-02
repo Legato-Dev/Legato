@@ -2,12 +2,13 @@
 using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Enum;
 
-namespace Legato {
+namespace Legato
+{
 	/// <summary>
 	/// AIMPに対するコマンド送信をサポートします
 	/// </summary>
-	public class AimpCommands {
-
+	public class AimpCommands
+	{
 		/// <summary>
 		/// AIMP を起動します
 		/// </summary>

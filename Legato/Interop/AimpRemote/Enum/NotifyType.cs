@@ -1,8 +1,10 @@
-﻿namespace Legato.Interop.AimpRemote.Enum {
+﻿namespace Legato.Interop.AimpRemote.Enum
+{
 	/// <summary>
 	/// 通知の種類を表します
 	/// </summary>
-	public enum NotifyType {
+	public enum NotifyType
+	{
 		/// <summary>
 		/// トラック情報
 		/// </summary>

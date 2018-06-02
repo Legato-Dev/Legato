@@ -1,8 +1,10 @@
-﻿namespace Legato.Interop.AimpRemote.Enum {
+﻿namespace Legato.Interop.AimpRemote.Enum
+{
 	/// <summary>
 	/// 音楽プレーヤーのプロパティの種類を表します
 	/// </summary>
-	public enum PlayerProperty : uint {
+	public enum PlayerProperty : uint
+	{
 		/* TODO
 		/// <summary>
 		/// <para>プレイヤーのバージョンを示すプロパティです</para>
