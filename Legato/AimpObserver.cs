@@ -89,9 +89,19 @@ namespace Legato {
 
 		#endregion Notification events
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="pollingIntervalMilliseconds"></param>
+		/// <param name="isAutoSubscribing"></param>
 		public AimpObserver(int pollingIntervalMilliseconds = 100, bool isAutoSubscribing = true) =>
 			_Initialize(isAutoSubscribing, pollingIntervalMilliseconds);
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="pollingInterval"></param>
+		/// <param name="isAutoSubscribing"></param>
 		public AimpObserver(TimeSpan pollingInterval, bool isAutoSubscribing = true) {
 			if (pollingInterval.TotalMilliseconds > int.MaxValue)
 				throw new ArgumentOutOfRangeException("pollingInterval");
@@ -99,7 +109,7 @@ namespace Legato {
 			_Initialize(isAutoSubscribing, (int)pollingInterval.TotalMilliseconds);
 		}
 
-		public void _Initialize(bool isAutoSubscribing, int pollingIntervalMilliseconds) {
+		private void _Initialize(bool isAutoSubscribing, int pollingIntervalMilliseconds) {
 			IsAutoSubscribing = isAutoSubscribing;
 
 			// ポーリング
@@ -146,8 +156,7 @@ namespace Legato {
 				else if (type == NotifyType.TrackStart)
 					CurrentTrackChanged?.Invoke(Helper.ReadTrackInfo());
 
-				else if (type == NotifyType.TrackInfo)
-					; // noop
+				else if (type == NotifyType.TrackInfo) { }
 
 				else
 					throw new ApplicationException($"NotifyType '{type}' is undefined value");
@@ -226,6 +235,9 @@ namespace Legato {
 			Unsubscribed?.Invoke();
 		}
 
+		/// <summary>
+		/// 解放します
+		/// </summary>
 		public void Dispose() {
 			// 通知の購読解除
 			if (IsSubscribed)

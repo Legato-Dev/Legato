@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Legato.Interop.AimpRemote;
 using Legato.Interop.AimpRemote.Entities;
 using Legato.Interop.AimpRemote.Enum;

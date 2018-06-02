@@ -13,5 +13,6 @@
     </metadata>
     <files>
         <file src="bin\Release\Legato.pdb" target="lib\net461\Legato.pdb" />
+        <file src="bin\Release\Legato.xml" target="lib\net461\Legato.xml" />
     </files>
 </package>

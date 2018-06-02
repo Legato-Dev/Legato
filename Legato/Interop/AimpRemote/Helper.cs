@@ -15,8 +15,11 @@ namespace Legato.Interop.AimpRemote {
 	/// AIMP のリモート API に関するヘルパーを提供します
 	/// </summary>
 	public class Helper {
+
 		public static readonly string RemoteClassName = "AIMP2_RemoteInfo";
+
 		public static readonly int RemoteMapFileSize = 2048;
+
 		public static IntPtr AimpRemoteWindowHandle => Win32.API.FindWindow(RemoteClassName, null);
 
 		/// <exception cref="ApplicationException" />
@@ -132,8 +135,7 @@ namespace Legato.Interop.AimpRemote {
 		// send Message (base)
 
 		private static IntPtr _SendMessageBase(WindowMessage windowMessage, IntPtr param, IntPtr value) {
-			IntPtr output;
-			var result = Win32.API.SendMessageTimeout(AimpRemoteWindowHandle, windowMessage, param, value, SendMessageTimeoutType.NORMAL, 1000, out output);
+			var result = Win32.API.SendMessageTimeout(AimpRemoteWindowHandle, windowMessage, param, value, SendMessageTimeoutType.NORMAL, 1000, out IntPtr output);
 
 			if (result == IntPtr.Zero) {
 				var errorCode = Marshal.GetLastWin32Error();
@@ -165,7 +167,7 @@ namespace Legato.Interop.AimpRemote {
 		/// イベント通知を行うウィンドウを AIMP に登録します
 		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
-		/// <param name="communicationWindow">イベント通知を受け取る通信ウィンドウ</param>
+		/// <param name="messageReceiver">イベント通知を受け取る通信ウィンドウ</param>
 		public static bool RegisterNotify(MessageReceiver messageReceiver) {
 			bool result = false;
 			messageReceiver.Invoke((Action)(() => {
@@ -179,7 +181,7 @@ namespace Legato.Interop.AimpRemote {
 		/// イベント通知を行うウィンドウを AIMP から登録解除します
 		/// <para>この操作はスレッドセーフです</para>
 		/// </summary>
-		/// <param name="communicationWindow">イベント通知を受け取る通信ウィンドウ</param>
+		/// <param name="messageReceiver">イベント通知を受け取る通信ウィンドウ</param>
 		public static bool UnregisterNotify(MessageReceiver messageReceiver) {
 			bool result = false;
 			messageReceiver.Invoke((Action)(() => {
