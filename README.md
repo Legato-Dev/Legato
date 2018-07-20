@@ -5,9 +5,6 @@ AIMP4 Remote API Wrapper Library for .NET
 
 Let's get your track information from AIMP4!  
 
-**This software is in alpha release now.**  
-**Therefore, unimplemented modules and unstable behavior may be done.**
-
 ## Legato.Sample
 ![LegatoSample](LegatoSample.png)
 
@@ -23,9 +20,6 @@ MIT license
 .NET向けAIMP4 Remote APIラッパーライブラリです。
 
 AIMP4からトラック情報を取得しましょう！
-
-**現在このソフトウェアはアルファリリース中です。**  
-**そのため、未実装の機能や不安定な動作をする場合があります。**
 
 ## Legato.Sample
 ![LegatoSample](LegatoSample.png)
